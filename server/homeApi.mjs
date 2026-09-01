@@ -11,11 +11,21 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = path.resolve(__dirname, '..', '..');
-const OHLC_PATH = path.join(REPO_ROOT, 'data', 'ohlc.json');
-const MARKET_FEED_PATH = path.join(REPO_ROOT, 'data', 'embedded_csv', 'finance_market_feed.json');
-const WAR_PATH = path.join(REPO_ROOT, 'data', 'embedded_csv', 'geopolitics_war_tracker.json');
-const PUBLIC_DATA = path.join(__dirname, '..', 'public', 'data');
+const APP_ROOT = path.resolve(__dirname, '..');
+const REPO_ROOT = path.resolve(APP_ROOT, '..');
+const PUBLIC_DATA = path.join(APP_ROOT, 'public', 'data');
+const OHLC_PATH = [
+  path.join(PUBLIC_DATA, 'ohlc.json'),
+  path.join(REPO_ROOT, 'data', 'ohlc.json'),
+].find((p) => fs.existsSync(p)) || path.join(PUBLIC_DATA, 'ohlc.json');
+const MARKET_FEED_PATH = [
+  path.join(PUBLIC_DATA, 'embedded_csv', 'finance_market_feed.json'),
+  path.join(REPO_ROOT, 'data', 'embedded_csv', 'finance_market_feed.json'),
+].find((p) => fs.existsSync(p)) || path.join(PUBLIC_DATA, 'embedded_csv', 'finance_market_feed.json');
+const WAR_PATH = [
+  path.join(PUBLIC_DATA, 'embedded_csv', 'geopolitics_war_tracker.json'),
+  path.join(REPO_ROOT, 'data', 'embedded_csv', 'geopolitics_war_tracker.json'),
+].find((p) => fs.existsSync(p)) || path.join(PUBLIC_DATA, 'embedded_csv', 'geopolitics_war_tracker.json');
 
 const UA =
   'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
