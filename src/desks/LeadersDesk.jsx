@@ -1,0 +1,136 @@
+import { useMemo, useState } from 'react';
+import AiPanel from '../ai/AiPanel.jsx';
+import { exportJson, GeoAi, GeoDossierChrome, GeoKv, GeoSources } from './GeoDossier.jsx';
+
+const AI_SUMMARY =
+  'The tracked cohort skews toward long-tenure strongmen (Putin 1999-, Xi 2012-, Erdogan 2014-). Democratic incumbents face fragmented parliaments and fiscal constraint. Watch succession/health risk in the Gulf and the impact of 2026 elections on Ukraine support.';
+
+const PROMPTS = [
+  [
+    'Succession risk',
+    'Which tracked leaders carry the highest succession or stability risk in the next 24 months, and why?',
+  ],
+  [
+    'Alignment map',
+    'Group these leaders by their real strategic alignment (US-led, China-Russia, non-aligned) with reasoning.',
+  ],
+  ['Elections ahead', 'Which upcoming elections most affect global geopolitics and how?'],
+];
+
+const SOURCES = [
+  ['Wikidata', 'https://www.wikidata.org/'],
+  ['CIA World Factbook', 'https://www.cia.gov/the-world-factbook/'],
+  ['Government portals', 'https://www.gov.uk/'],
+];
+
+function isoOf(id) {
+  return String(id || '')
+    .replace(/\d+$/, '')
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+export default function LeadersDesk({ feed, selected, onSelect }) {
+  const [tab, setTab] = useState('analytics');
+  const leaders = useMemo(() => (feed?.rows || []).filter((r) => r.name && r.country), [feed]);
+  const stats = feed?.meta?.stats || {};
+  const asOf = feed?.meta?.asOf || '2026-07';
+  const n = stats.tracked || leaders.length;
+  const aut = stats.autocracies || 0;
+  const selectedId = selected?.id || '';
+
+  function goAsk(prompt) {
+    setTab('ai');
+    onSelect?.(selected || leaders[0] || null);
+    void prompt;
+  }
+
+  return (
+    <>
+      <GeoDossierChrome
+        title="HEADS OF STATE"
+        tag="WORLD LEADERS"
+        subtitle={`AS OF ${String(asOf).toUpperCase()} · ${n} PROFILES`}
+        kpis={[
+          [n, 'Leaders tracked', 'acc'],
+          [aut, 'Autocracies', 'warn'],
+          [stats.electionsThisYear ?? 0, 'Elections · this year'],
+          [stats.avgTenure || '—', 'Avg tenure'],
+          [leaders.length, 'Profiled'],
+          ['24/7', 'Statement watch', 'acc'],
+        ]}
+        tab={tab}
+        onTab={setTab}
+        onExport={() => exportJson('leaders', { asOf, stats, leaders })}
+        onAsk={() => goAsk(PROMPTS[0][1])}
+      >
+        <div className="geo-grid">
+          <section className="geo-panel">
+            <div className="geo-panel-h">
+              <span>Leader profiles · {leaders.length}</span>
+            </div>
+            <div className="geo-panel-b">
+              <div className="geo-egrid">
+                {leaders.map((l) => (
+                  <button
+                    key={l.id || l.country}
+                    type="button"
+                    className={`geo-e${selectedId === l.id ? ' on' : ''}`}
+                    onClick={() => onSelect?.(selectedId === l.id ? null : l)}
+                  >
+                    <div className="geo-e-h">
+                      {l.flag ? <span className="geo-e-flag">{l.flag}</span> : null}
+                      <span className="geo-mono">{isoOf(l.id) || '?'}</span>
+                      <div>
+                        <div className="geo-e-nm">{l.name}</div>
+                        <div className="geo-e-sub">
+                          {l.country} · {l.role}
+                        </div>
+                      </div>
+                    </div>
+                    <dl className="geo-e-meta">
+                      <dt>Party</dt>
+                      <dd>{l.party || '—'}</dd>
+                      <dt>Ideology</dt>
+                      <dd>{l.ideology || '—'}</dd>
+                      <dt>Since</dt>
+                      <dd>
+                        {l.since}
+                        {l.age ? ` · age ${l.age}` : ''}
+                      </dd>
+                    </dl>
+                    {l.latest ? <div className="geo-e-latest">{l.latest}</div> : null}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
+          <div>
+            <GeoAi summary={AI_SUMMARY} prompts={PROMPTS} onAsk={goAsk} />
+            <section className="geo-panel">
+              <div className="geo-panel-h">
+                <span>By government type</span>
+              </div>
+              <div className="geo-panel-b">
+                <GeoKv
+                  rows={[
+                    ['Democracies', n - aut],
+                    ['Autocracies', aut],
+                    ['Elections / yr', stats.electionsThisYear ?? 0],
+                    ['Avg tenure', stats.avgTenure || '—'],
+                  ]}
+                />
+              </div>
+            </section>
+            <GeoSources links={SOURCES} asOf={asOf} />
+          </div>
+        </div>
+      </GeoDossierChrome>
+      {tab === 'ai' ? (
+        <div className="gld-ai-wrap">
+          <AiPanel feed={feed} selected={selected} lang="en" />
+        </div>
+      ) : null}
+    </>
+  );
+}

@@ -1,0 +1,1 @@
+try{localStorage.setItem('niyantranTheme','light');}catch(e){}try{document.documentElement.setAttribute('data-theme','light');var _v2f=function(){try{document.documentElement.setAttribute('data-theme','light');}catch(e){}};document.addEventListener('DOMContentLoaded',_v2f);setTimeout(_v2f,300);setTimeout(_v2f,1500);}catch(e){}

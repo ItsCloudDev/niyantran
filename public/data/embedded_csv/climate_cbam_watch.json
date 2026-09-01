@@ -1,0 +1,58 @@
+[
+  {
+    "id": "1",
+    "milestone": "EU CBAM regulation enters into force",
+    "jurisdiction": "European Union",
+    "date": "2023-05-17",
+    "detail": "Regulation (EU) 2023/956 published; covers cement, iron & steel, aluminium, fertilisers, electricity, hydrogen.",
+    "source_url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX%3A32023R0956"
+  },
+  {
+    "id": "2",
+    "milestone": "CBAM transitional period begins",
+    "jurisdiction": "European Union",
+    "date": "2023-10-01",
+    "detail": "Importers must report embedded emissions quarterly; no financial adjustment yet.",
+    "source_url": "https://taxation-customs.ec.europa.eu/carbon-border-adjustment-mechanism_en"
+  },
+  {
+    "id": "3",
+    "milestone": "First CBAM reporting deadline",
+    "jurisdiction": "European Union",
+    "date": "2024-01-31",
+    "detail": "First quarterly report due for Q4-2023 imports.",
+    "source_url": "https://taxation-customs.ec.europa.eu/carbon-border-adjustment-mechanism_en"
+  },
+  {
+    "id": "4",
+    "milestone": "CBAM 'Omnibus I' simplification proposed",
+    "jurisdiction": "European Union",
+    "date": "2025-02-26",
+    "detail": "EC proposal exempting ~90% of importers via 50-tonne de-minimis while keeping ~99% of covered emissions.",
+    "source_url": "https://taxation-customs.ec.europa.eu/carbon-border-adjustment-mechanism_en"
+  },
+  {
+    "id": "5",
+    "milestone": "CBAM definitive regime starts",
+    "jurisdiction": "European Union",
+    "date": "2026-01-01",
+    "detail": "CBAM certificates must be purchased; free EU ETS allocation for covered sectors begins phase-out.",
+    "source_url": "https://taxation-customs.ec.europa.eu/carbon-border-adjustment-mechanism_en"
+  },
+  {
+    "id": "6",
+    "milestone": "UK confirms its own CBAM",
+    "jurisdiction": "United Kingdom",
+    "date": "2023-12-18",
+    "detail": "UK CBAM announced for 2027; aluminium, cement, fertilisers, hydrogen, iron & steel.",
+    "source_url": "https://www.gov.uk/government/consultations/addressing-carbon-leakage-risk-to-support-decarbonisation"
+  },
+  {
+    "id": "7",
+    "milestone": "India-EU CBAM consultations",
+    "jurisdiction": "India",
+    "date": "2024-05-15",
+    "detail": "India raises CBAM at WTO and in EU FTA talks; MoC evaluates export-carbon-intensity support for steel/aluminium.",
+    "source_url": "https://commerce.gov.in/"
+  }
+]

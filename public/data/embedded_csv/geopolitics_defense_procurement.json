@@ -1,0 +1,72 @@
+[
+  {
+    "program_name": "Rafale Marine (Rafale-M) Naval Fighter",
+    "category": "Combat aircraft",
+    "stage": "contract signed",
+    "vendor_or_origin": "Dassault Aviation, France",
+    "detail": "26 Rafale-M jets for INS Vikrant deck operations, part of a broader France-India defense agreement signed in 2025."
+  },
+  {
+    "program_name": "S-400 Triumf Air Defense System",
+    "category": "Air defense",
+    "stage": "delivery ongoing",
+    "vendor_or_origin": "Almaz-Antey, Russia",
+    "detail": "A long-range surface-to-air missile system; multiple regiments have been delivered, with remaining units pending amid sanctions-related delays."
+  },
+  {
+    "program_name": "P-75I Submarines",
+    "category": "Submarines",
+    "stage": "under negotiation",
+    "vendor_or_origin": "Foreign OEM + Mazagon Dock, India",
+    "detail": "Six conventional submarines with air-independent propulsion, to be built in India under a Strategic Partnership tie-up."
+  },
+  {
+    "program_name": "MQ-9B SkyGuardian/SeaGuardian Drones",
+    "category": "Unmanned systems",
+    "stage": "contract signed",
+    "vendor_or_origin": "General Atomics, USA",
+    "detail": "31 armed/ISR drones for the three services under a government-to-government Foreign Military Sales deal."
+  },
+  {
+    "program_name": "Tejas Mk1A Light Combat Aircraft",
+    "category": "Combat aircraft",
+    "stage": "deliveries underway",
+    "vendor_or_origin": "HAL, India",
+    "detail": "An indigenous fighter upgrade with AESA radar; deliveries to IAF squadrons are ramping up after earlier engine-supply delays."
+  },
+  {
+    "program_name": "Agni-Prime Ballistic Missile",
+    "category": "Strategic missile",
+    "stage": "tested and inducted",
+    "vendor_or_origin": "DRDO, India",
+    "detail": "A canisterised, shorter, lighter successor in the Agni series, undergoing induction into the Strategic Forces Command."
+  },
+  {
+    "program_name": "Apache AH-64E & Chinook Helicopters",
+    "category": "Rotary-wing aircraft",
+    "stage": "delivered",
+    "vendor_or_origin": "Boeing, USA",
+    "detail": "Attack and heavy-lift helicopters delivered to the Indian Army and Air Force under earlier Foreign Military Sales deals."
+  },
+  {
+    "program_name": "Astra Beyond-Visual-Range Air-to-Air Missile",
+    "category": "Air-to-air missile",
+    "stage": "inducted",
+    "vendor_or_origin": "DRDO / Bharat Dynamics, India",
+    "detail": "An indigenous BVR missile inducted on Su-30MKI and Tejas aircraft; a longer-range Astra Mk2 is in development."
+  },
+  {
+    "program_name": "Project 75 Kalvari-class Submarines",
+    "category": "Submarines",
+    "stage": "delivered (final unit)",
+    "vendor_or_origin": "Naval Group + Mazagon Dock",
+    "detail": "Six Scorpene-class submarines built under technology transfer, with the final unit now commissioned."
+  },
+  {
+    "program_name": "Akash-NG Air Defense Missile",
+    "category": "Air defense",
+    "stage": "tested",
+    "vendor_or_origin": "DRDO, India",
+    "detail": "A next-generation surface-to-air missile with a sealed-canister launch, an evolution of the earlier Akash system."
+  }
+]

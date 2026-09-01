@@ -1,0 +1,882 @@
+[
+  {
+    "conflict_name": "Russia–Ukraine War",
+    "region": "Eastern Europe",
+    "conflict_type": "Interstate war",
+    "current_stage": "active",
+    "intensity": "Critical",
+    "trend": "Escalating",
+    "started": "February 2022",
+    "latest_development": "Attritional front largely static; artillery, drones and deep strikes define the fighting; Western aid and mobilisation remain decisive variables."
+  },
+  {
+    "conflict_name": "Armenia–Azerbaijan (Karabakh aftermath)",
+    "region": "Caucasus",
+    "conflict_type": "Territorial dispute",
+    "current_stage": "under review",
+    "intensity": "Medium",
+    "trend": "Easing",
+    "started": "2020 (flare 2023)",
+    "latest_development": "Karabakh depopulated after 2023; focus shifted to a border-delimitation and peace-treaty track between Yerevan and Baku."
+  },
+  {
+    "conflict_name": "Georgia — Abkhazia / South Ossetia",
+    "region": "Caucasus",
+    "conflict_type": "Frozen conflict",
+    "current_stage": "frozen",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2008",
+    "latest_development": "Russian-backed breakaway regions remain outside Tbilisi's control; line of contact quiet but unresolved."
+  },
+  {
+    "conflict_name": "Moldova — Transnistria",
+    "region": "Eastern Europe",
+    "conflict_type": "Frozen conflict",
+    "current_stage": "frozen",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "1992",
+    "latest_development": "Russian troops and a self-declared republic persist on the Dniester; energy leverage is the main pressure lever."
+  },
+  {
+    "conflict_name": "Israel–Hamas War (Gaza)",
+    "region": "Middle East",
+    "conflict_type": "Interstate war",
+    "current_stage": "ceasefire fragile",
+    "intensity": "Critical",
+    "trend": "Stable",
+    "started": "October 2023",
+    "latest_development": "Phased ceasefire and hostage-release framework in effect but repeatedly strained; reconstruction and governance of Gaza unresolved."
+  },
+  {
+    "conflict_name": "Israel–Hezbollah (Lebanon)",
+    "region": "Middle East",
+    "conflict_type": "Interstate war",
+    "current_stage": "ceasefire fragile",
+    "intensity": "High",
+    "trend": "Easing",
+    "started": "September 2024",
+    "latest_development": "US/France-brokered ceasefire holding unevenly; disputes over withdrawal lines and Hezbollah disarmament recur."
+  },
+  {
+    "conflict_name": "Syria — Post-Assad Transition",
+    "region": "Middle East",
+    "conflict_type": "Civil war",
+    "current_stage": "under review",
+    "intensity": "High",
+    "trend": "Escalating",
+    "started": "December 2024",
+    "latest_development": "Interim authority consolidating after Assad's fall; sectarian violence, Kurdish integration and foreign strikes complicate the transition."
+  },
+  {
+    "conflict_name": "Yemen — Houthi Conflict / Red Sea",
+    "region": "Middle East",
+    "conflict_type": "Civil war",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Stable",
+    "started": "2015 (escalated 2023)",
+    "latest_development": "Houthi forces conduct periodic Red Sea shipping attacks; internal front lines frozen amid stalled UN-led talks."
+  },
+  {
+    "conflict_name": "Iraq — ISIS remnants",
+    "region": "Middle East",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "low-intensity",
+    "intensity": "Medium",
+    "trend": "Easing",
+    "started": "2014",
+    "latest_development": "Residual ISIS cells persist in rural areas; focus turned to militia politics and US-troop drawdown negotiations."
+  },
+  {
+    "conflict_name": "Iran–Israel shadow & direct strikes",
+    "region": "Middle East",
+    "conflict_type": "Interstate war",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Escalating",
+    "started": "2024",
+    "latest_development": "Escalated from proxy shadow-war to direct exchanges of strikes; nuclear programme and regional deterrence are the flashpoints."
+  },
+  {
+    "conflict_name": "Turkey–PKK insurgency",
+    "region": "Middle East",
+    "conflict_type": "Separatist insurgency",
+    "current_stage": "under review",
+    "intensity": "Medium",
+    "trend": "Easing",
+    "started": "1984",
+    "latest_development": "A 2025 PKK disarmament/dissolution process is underway, potentially ending one of the region's longest insurgencies."
+  },
+  {
+    "conflict_name": "Israel — West Bank unrest",
+    "region": "Middle East",
+    "conflict_type": "Insurgency",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "2023",
+    "latest_development": "Recurrent Israeli raids, settler violence and militant attacks; settlement expansion sharpens tensions."
+  },
+  {
+    "conflict_name": "Turkey–Syria (SDF/YPG)",
+    "region": "Middle East",
+    "conflict_type": "Interstate war",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "2016",
+    "latest_development": "Turkish operations against Kurdish-led SDF continue; post-Assad realignment reopens questions on north-east Syria."
+  },
+  {
+    "conflict_name": "Israel–Syria strikes",
+    "region": "Middle East",
+    "conflict_type": "Interstate war",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "2024",
+    "latest_development": "Israel struck Syrian military assets during and after the transition, seizing a buffer zone near the Golan."
+  },
+  {
+    "conflict_name": "US–Iran Gulf standoff",
+    "region": "Middle East",
+    "conflict_type": "Interstate standoff",
+    "current_stage": "under review",
+    "intensity": "Medium",
+    "trend": "Stable",
+    "started": "2019",
+    "latest_development": "Naval frictions in the Strait of Hormuz persist alongside sanctions pressure and nuclear diplomacy."
+  },
+  {
+    "conflict_name": "Iran — Baloch/Kurdish unrest",
+    "region": "Middle East",
+    "conflict_type": "Insurgency",
+    "current_stage": "low-intensity",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2022",
+    "latest_development": "Sporadic clashes with Baloch (Jaish al-Adl) and Kurdish groups continue in the periphery."
+  },
+  {
+    "conflict_name": "Libya — Civil conflict",
+    "region": "North Africa",
+    "conflict_type": "Civil war",
+    "current_stage": "ceasefire fragile",
+    "intensity": "Medium",
+    "trend": "Stable",
+    "started": "2014",
+    "latest_development": "Rival Tripoli and eastern administrations hold an uneasy truce; militia clashes and stalled elections recur."
+  },
+  {
+    "conflict_name": "Western Sahara (Morocco–Polisario)",
+    "region": "North Africa",
+    "conflict_type": "Territorial dispute",
+    "current_stage": "active",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "1975 (resumed 2020)",
+    "latest_development": "Low-level hostilities resumed after the 2020 ceasefire collapse; a UN-mediated status process remains stalled."
+  },
+  {
+    "conflict_name": "Egypt — Sinai insurgency",
+    "region": "North Africa",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "low-intensity",
+    "intensity": "Low",
+    "trend": "Easing",
+    "started": "2011",
+    "latest_development": "Militant activity in northern Sinai has declined substantially after prolonged military operations."
+  },
+  {
+    "conflict_name": "Tunisia — Political crisis",
+    "region": "North Africa",
+    "conflict_type": "Political crisis",
+    "current_stage": "under review",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2021",
+    "latest_development": "Executive consolidation of power and opposition arrests keep governance contested."
+  },
+  {
+    "conflict_name": "Mali — Jihadist insurgency (JNIM/ISGS)",
+    "region": "West Africa",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Escalating",
+    "started": "2012",
+    "latest_development": "Al-Qaeda- and IS-affiliated groups expand amid the junta's pivot to Russian security partners and UN mission exit."
+  },
+  {
+    "conflict_name": "Burkina Faso — Insurgency",
+    "region": "West Africa",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Escalating",
+    "started": "2015",
+    "latest_development": "One of the world's fastest-growing displacement crises; large territory outside state control."
+  },
+  {
+    "conflict_name": "Niger — Insurgency & instability",
+    "region": "West Africa",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Escalating",
+    "started": "2015",
+    "latest_development": "Post-coup junta realigned away from Western partners as tri-border militant violence persists."
+  },
+  {
+    "conflict_name": "Nigeria — Boko Haram / ISWAP",
+    "region": "West Africa",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Stable",
+    "started": "2009",
+    "latest_development": "Insurgency entrenched around Lake Chad; ISWAP has eclipsed the original Boko Haram faction."
+  },
+  {
+    "conflict_name": "Nigeria — Banditry & farmer–herder",
+    "region": "West Africa",
+    "conflict_type": "Communal / criminal",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "2018",
+    "latest_development": "Armed 'bandit' groups and communal violence drive mass kidnappings across the north-west and Middle Belt."
+  },
+  {
+    "conflict_name": "Cameroon — Anglophone crisis",
+    "region": "West Africa",
+    "conflict_type": "Separatist insurgency",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Stable",
+    "started": "2017",
+    "latest_development": "Ambazonian separatists and security forces clash in the two Anglophone regions; dialogue stalled."
+  },
+  {
+    "conflict_name": "Mali — Azawad / CSP-Tuareg",
+    "region": "West Africa",
+    "conflict_type": "Separatist insurgency",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "2023",
+    "latest_development": "Northern Tuareg coalition resumed fighting the state after the 2015 Algiers accord collapsed."
+  },
+  {
+    "conflict_name": "Coastal spillover (Benin/Togo)",
+    "region": "West Africa",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "2021",
+    "latest_development": "Sahelian militancy is pushing south into littoral West African states' northern borderlands."
+  },
+  {
+    "conflict_name": "Côte d'Ivoire — Northern spillover",
+    "region": "West Africa",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "low-intensity",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2020",
+    "latest_development": "Occasional cross-border attacks from the Sahel; reinforced border deployments."
+  },
+  {
+    "conflict_name": "Senegal — Casamance",
+    "region": "West Africa",
+    "conflict_type": "Separatist insurgency",
+    "current_stage": "low-intensity",
+    "intensity": "Low",
+    "trend": "Easing",
+    "started": "1982",
+    "latest_development": "Africa's longest low-grade insurgency has wound down through successive peace deals."
+  },
+  {
+    "conflict_name": "Guinea — Political instability",
+    "region": "West Africa",
+    "conflict_type": "Political crisis",
+    "current_stage": "under review",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2021",
+    "latest_development": "Post-coup transition timeline and opposition restrictions keep politics tense."
+  },
+  {
+    "conflict_name": "DRC — M23 / Rwanda",
+    "region": "Central Africa",
+    "conflict_type": "Interstate war",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Escalating",
+    "started": "2021 (escalated 2024)",
+    "latest_development": "Rwanda-backed M23 seized major eastern cities; a wider regional war risk looms over mineral-rich Kivus."
+  },
+  {
+    "conflict_name": "DRC — ADF (eastern)",
+    "region": "Central Africa",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Escalating",
+    "started": "1996",
+    "latest_development": "IS-affiliated ADF conducts massacres in Ituri and North Kivu alongside a Ugandan joint operation."
+  },
+  {
+    "conflict_name": "Central African Republic — Civil war",
+    "region": "Central Africa",
+    "conflict_type": "Civil war",
+    "current_stage": "ceasefire fragile",
+    "intensity": "Medium",
+    "trend": "Easing",
+    "started": "2012",
+    "latest_development": "Government, Russian partners and rebel coalitions hold a fragile balance; peace process partial."
+  },
+  {
+    "conflict_name": "Uganda — ADF/LRA remnants",
+    "region": "Central Africa",
+    "conflict_type": "Insurgency",
+    "current_stage": "low-intensity",
+    "intensity": "Low",
+    "trend": "Easing",
+    "started": "1987",
+    "latest_development": "LRA effectively defeated; residual ADF activity spills from the DRC."
+  },
+  {
+    "conflict_name": "Rwanda–Burundi tensions",
+    "region": "Central Africa",
+    "conflict_type": "Interstate standoff",
+    "current_stage": "under review",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2015",
+    "latest_development": "Mutual accusations of backing rebels; periodic border closures amid the DRC crisis."
+  },
+  {
+    "conflict_name": "Sudan — Civil War (SAF vs RSF)",
+    "region": "East Africa",
+    "conflict_type": "Civil war",
+    "current_stage": "active",
+    "intensity": "Critical",
+    "trend": "Escalating",
+    "started": "April 2023",
+    "latest_development": "SAF–RSF war has triggered the world's largest displacement and hunger crisis; Darfur sees ethnic-targeted violence."
+  },
+  {
+    "conflict_name": "Ethiopia — Amhara (Fano)",
+    "region": "East Africa",
+    "conflict_type": "Civil war",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Escalating",
+    "started": "2023",
+    "latest_development": "Fano militia insurgency spread across Amhara after the Tigray war; federal offensives ongoing."
+  },
+  {
+    "conflict_name": "Ethiopia — Oromia (OLA)",
+    "region": "East Africa",
+    "conflict_type": "Insurgency",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Stable",
+    "started": "2018",
+    "latest_development": "Oromo Liberation Army insurgency persists amid failed talks."
+  },
+  {
+    "conflict_name": "Somalia — Al-Shabaab",
+    "region": "East Africa",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Stable",
+    "started": "2006",
+    "latest_development": "Al-Shabaab remains resilient despite government offensives and an AU mission transition."
+  },
+  {
+    "conflict_name": "South Sudan — Instability",
+    "region": "East Africa",
+    "conflict_type": "Civil war",
+    "current_stage": "ceasefire fragile",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "2013",
+    "latest_development": "2018 peace deal fraying; delayed elections and elite rivalry risk renewed war."
+  },
+  {
+    "conflict_name": "Ethiopia–Somalia (Somaliland port)",
+    "region": "East Africa",
+    "conflict_type": "Interstate standoff",
+    "current_stage": "under review",
+    "intensity": "Medium",
+    "trend": "Stable",
+    "started": "2024",
+    "latest_development": "A Somaliland port-access MoU inflamed Addis Ababa–Mogadishu relations before Turkish-brokered de-escalation."
+  },
+  {
+    "conflict_name": "Eritrea–Ethiopia tensions",
+    "region": "East Africa",
+    "conflict_type": "Interstate standoff",
+    "current_stage": "under review",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "2023",
+    "latest_development": "Post-Tigray fallout and Red Sea access ambitions raise the risk of renewed interstate conflict."
+  },
+  {
+    "conflict_name": "Kenya — Al-Shabaab spillover",
+    "region": "East Africa",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "low-intensity",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2011",
+    "latest_development": "Cross-border raids continue in the north-east and coast regions."
+  },
+  {
+    "conflict_name": "Somaliland — Sool (SSC-Khaatumo)",
+    "region": "East Africa",
+    "conflict_type": "Territorial dispute",
+    "current_stage": "active",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2023",
+    "latest_development": "Clan-based forces wrested Sool region control from Somaliland, seeking federal recognition."
+  },
+  {
+    "conflict_name": "Sudan–South Sudan (Abyei)",
+    "region": "East Africa",
+    "conflict_type": "Territorial dispute",
+    "current_stage": "frozen",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2011",
+    "latest_development": "Disputed, oil-adjacent Abyei remains under an expiring UN interim arrangement."
+  },
+  {
+    "conflict_name": "Mozambique — Cabo Delgado (ISIS-M)",
+    "region": "Southern Africa",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Stable",
+    "started": "2017",
+    "latest_development": "IS-linked insurgency near gas projects; Rwandan and SADC forces contain but have not ended it."
+  },
+  {
+    "conflict_name": "India–China LAC Standoff (Ladakh)",
+    "region": "South Asia",
+    "conflict_type": "Border standoff",
+    "current_stage": "under review",
+    "intensity": "Medium",
+    "trend": "Easing",
+    "started": "2020",
+    "latest_development": "Disengagement reached at most friction points; patrolling arrangements restored on parts of the LAC."
+  },
+  {
+    "conflict_name": "India–Pakistan LoC Tensions",
+    "region": "South Asia",
+    "conflict_type": "Interstate standoff",
+    "current_stage": "under review",
+    "intensity": "Medium",
+    "trend": "Stable",
+    "started": "2025",
+    "latest_development": "A ceasefire understanding holds after a 2025 escalation; cross-border militancy remains the core dispute."
+  },
+  {
+    "conflict_name": "Afghanistan — Taliban vs ISKP",
+    "region": "South Asia",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Stable",
+    "started": "2021",
+    "latest_development": "ISKP mounts periodic mass-casualty attacks against the Taliban government and minorities."
+  },
+  {
+    "conflict_name": "Afghanistan–Pakistan (TTP/border)",
+    "region": "South Asia",
+    "conflict_type": "Insurgency",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Escalating",
+    "started": "2021",
+    "latest_development": "TTP attacks surged from Afghan soil; Islamabad–Kabul relations deteriorated with cross-border strikes."
+  },
+  {
+    "conflict_name": "Pakistan — Balochistan insurgency",
+    "region": "South Asia",
+    "conflict_type": "Separatist insurgency",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "2004",
+    "latest_development": "Baloch separatists escalated attacks on security forces and Chinese/CPEC interests."
+  },
+  {
+    "conflict_name": "India — Manipur ethnic conflict",
+    "region": "South Asia",
+    "conflict_type": "Communal / ethnic",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Stable",
+    "started": "2023",
+    "latest_development": "Meitei–Kuki violence displaced tens of thousands; the state remains effectively partitioned."
+  },
+  {
+    "conflict_name": "India — Naxalite (Maoist)",
+    "region": "South Asia",
+    "conflict_type": "Insurgency",
+    "current_stage": "low-intensity",
+    "intensity": "Low",
+    "trend": "Easing",
+    "started": "1967",
+    "latest_development": "Maoist insurgency is at a historic low, confined to shrinking pockets of central India under a stated 2026 elimination goal."
+  },
+  {
+    "conflict_name": "India — J&K militancy",
+    "region": "South Asia",
+    "conflict_type": "Insurgency",
+    "current_stage": "low-intensity",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "1989",
+    "latest_development": "Militancy has ebbed but periodic attacks and infiltration continue post-2019 reorganisation."
+  },
+  {
+    "conflict_name": "Pakistan–Iran border strikes",
+    "region": "South Asia",
+    "conflict_type": "Interstate standoff",
+    "current_stage": "ceasefire fragile",
+    "intensity": "Medium",
+    "trend": "Easing",
+    "started": "2024",
+    "latest_development": "Tit-for-tat strikes on militant havens in 2024 were quickly de-escalated diplomatically."
+  },
+  {
+    "conflict_name": "Bangladesh — Political instability",
+    "region": "South Asia",
+    "conflict_type": "Political crisis",
+    "current_stage": "under review",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2024",
+    "latest_development": "An interim government took over after mass protests ousted the prime minister; transition contested."
+  },
+  {
+    "conflict_name": "India–Nepal (Kalapani)",
+    "region": "South Asia",
+    "conflict_type": "Territorial dispute",
+    "current_stage": "frozen",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2020",
+    "latest_development": "Overlapping Himalayan boundary claims remain unresolved but non-violent."
+  },
+  {
+    "conflict_name": "China–Bhutan border",
+    "region": "South Asia",
+    "conflict_type": "Territorial dispute",
+    "current_stage": "under review",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "1984",
+    "latest_development": "Boundary talks continue amid Chinese construction in disputed areas that concern India."
+  },
+  {
+    "conflict_name": "Myanmar — Civil War",
+    "region": "Southeast Asia",
+    "conflict_type": "Civil war",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Escalating",
+    "started": "February 2021",
+    "latest_development": "Post-coup junta is losing ground to a broad ethnic-resistance and PDF alliance across multiple fronts."
+  },
+  {
+    "conflict_name": "Philippines — NPA insurgency",
+    "region": "Southeast Asia",
+    "conflict_type": "Insurgency",
+    "current_stage": "low-intensity",
+    "intensity": "Low",
+    "trend": "Easing",
+    "started": "1969",
+    "latest_development": "The communist NPA is much weakened; localised clashes and peace overtures continue."
+  },
+  {
+    "conflict_name": "Philippines — Mindanao (ASG/BIFF)",
+    "region": "Southeast Asia",
+    "conflict_type": "Jihadist insurgency",
+    "current_stage": "low-intensity",
+    "intensity": "Low",
+    "trend": "Easing",
+    "started": "1969",
+    "latest_development": "BARMM autonomy has reduced violence; splinter militant cells persist."
+  },
+  {
+    "conflict_name": "Thailand — South (Patani)",
+    "region": "Southeast Asia",
+    "conflict_type": "Separatist insurgency",
+    "current_stage": "active",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2004",
+    "latest_development": "A low-grade Malay-Muslim insurgency continues in the deep south amid on-off talks."
+  },
+  {
+    "conflict_name": "Indonesia — Papua",
+    "region": "Southeast Asia",
+    "conflict_type": "Separatist insurgency",
+    "current_stage": "active",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "1963",
+    "latest_development": "West Papua liberation fighters clash with security forces; access tightly restricted."
+  },
+  {
+    "conflict_name": "Taiwan Strait tensions",
+    "region": "East Asia",
+    "conflict_type": "Interstate standoff",
+    "current_stage": "under review",
+    "intensity": "High",
+    "trend": "Escalating",
+    "started": "1949 (escalated 2022)",
+    "latest_development": "Record PLA air and naval incursions and drills raise cross-strait invasion and blockade concerns."
+  },
+  {
+    "conflict_name": "Korean Peninsula (DPRK)",
+    "region": "East Asia",
+    "conflict_type": "Interstate standoff",
+    "current_stage": "frozen",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "1950",
+    "latest_development": "North Korean missile tests, a scrapped inter-Korean posture and DPRK–Russia alignment heighten risk."
+  },
+  {
+    "conflict_name": "South China Sea disputes",
+    "region": "East Asia",
+    "conflict_type": "Maritime dispute",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "2012",
+    "latest_development": "China–Philippines standoffs at Second Thomas/Scarborough Shoals recur amid competing claims."
+  },
+  {
+    "conflict_name": "Senkaku/Diaoyu (China–Japan)",
+    "region": "East Asia",
+    "conflict_type": "Maritime dispute",
+    "current_stage": "under review",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2012",
+    "latest_development": "Chinese coast-guard patrols near Japan-administered islands sustain a simmering dispute."
+  },
+  {
+    "conflict_name": "Japan–Russia (Kuril Islands)",
+    "region": "East Asia",
+    "conflict_type": "Territorial dispute",
+    "current_stage": "frozen",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "1945",
+    "latest_development": "No WWII peace treaty; the dispute hardened further after 2022."
+  },
+  {
+    "conflict_name": "Mexico — Cartel war",
+    "region": "North America",
+    "conflict_type": "Criminal insurgency",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Stable",
+    "started": "2006",
+    "latest_development": "Cartel fragmentation drives homicides, disappearances and fentanyl trafficking; a militarised response continues."
+  },
+  {
+    "conflict_name": "Haiti — Gang crisis",
+    "region": "Caribbean",
+    "conflict_type": "Criminal / state collapse",
+    "current_stage": "active",
+    "intensity": "Critical",
+    "trend": "Escalating",
+    "started": "2021",
+    "latest_development": "Armed gangs control most of the capital; a Kenya-led multinational mission struggles to restore order."
+  },
+  {
+    "conflict_name": "Colombia — ELN / FARC dissidents",
+    "region": "South America",
+    "conflict_type": "Insurgency",
+    "current_stage": "ceasefire fragile",
+    "intensity": "Medium",
+    "trend": "Stable",
+    "started": "1964",
+    "latest_development": "'Total Peace' talks stall as ELN and FARC-dissident factions fight over coca and mining economies."
+  },
+  {
+    "conflict_name": "Venezuela–Guyana (Essequibo)",
+    "region": "South America",
+    "conflict_type": "Territorial dispute",
+    "current_stage": "under review",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "2023",
+    "latest_development": "Caracas revived a claim to two-thirds of Guyana around the oil-rich Essequibo, prompting a regional standoff."
+  },
+  {
+    "conflict_name": "Ecuador — Narco violence",
+    "region": "South America",
+    "conflict_type": "Criminal insurgency",
+    "current_stage": "active",
+    "intensity": "High",
+    "trend": "Escalating",
+    "started": "2024",
+    "latest_development": "A declared 'internal armed conflict' against gangs after prison takeovers and a TV-station siege."
+  },
+  {
+    "conflict_name": "Venezuela — Political crisis",
+    "region": "South America",
+    "conflict_type": "Political crisis",
+    "current_stage": "under review",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "2024",
+    "latest_development": "A disputed 2024 election deepened the standoff between Maduro and the opposition amid emigration."
+  },
+  {
+    "conflict_name": "Brazil — Militia & faction violence",
+    "region": "South America",
+    "conflict_type": "Criminal",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Stable",
+    "started": "2010",
+    "latest_development": "Rio militias and the PCC/CV drug factions contest territory in major cities."
+  },
+  {
+    "conflict_name": "Central America — El Salvador crackdown",
+    "region": "Central America",
+    "conflict_type": "Criminal / state",
+    "current_stage": "under review",
+    "intensity": "Medium",
+    "trend": "Easing",
+    "started": "2022",
+    "latest_development": "A prolonged state of exception slashed gang homicides amid mass-detention rights concerns."
+  },
+  {
+    "conflict_name": "Honduras — Gang violence",
+    "region": "Central America",
+    "conflict_type": "Criminal",
+    "current_stage": "active",
+    "intensity": "Medium",
+    "trend": "Stable",
+    "started": "2010",
+    "latest_development": "MS-13 and Barrio 18 drive violence; a state of exception is in force."
+  },
+  {
+    "conflict_name": "Nicaragua — Repression",
+    "region": "Central America",
+    "conflict_type": "Political crisis",
+    "current_stage": "low-intensity",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2018",
+    "latest_development": "Post-2018 crackdown entrenched authoritarian rule and mass exile of the opposition."
+  },
+  {
+    "conflict_name": "Peru — Political unrest",
+    "region": "South America",
+    "conflict_type": "Political crisis",
+    "current_stage": "low-intensity",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2022",
+    "latest_development": "Recurrent protests and instability since the 2022 presidential crisis, especially in the south."
+  },
+  {
+    "conflict_name": "Chile — Araucanía (Mapuche)",
+    "region": "South America",
+    "conflict_type": "Land / separatist",
+    "current_stage": "low-intensity",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2008",
+    "latest_development": "Mapuche land conflict with forestry firms and the state sees periodic arson and clashes."
+  },
+  {
+    "conflict_name": "Kosovo–Serbia tensions",
+    "region": "Europe",
+    "conflict_type": "Ethnic / territorial",
+    "current_stage": "under review",
+    "intensity": "Medium",
+    "trend": "Escalating",
+    "started": "2008 (flare 2023)",
+    "latest_development": "Serb-majority north sees recurrent violence; EU-facilitated normalisation is stalled."
+  },
+  {
+    "conflict_name": "Cyprus — Division",
+    "region": "Europe",
+    "conflict_type": "Frozen conflict",
+    "current_stage": "frozen",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "1974",
+    "latest_development": "The island stays split between the Republic and the Turkish-Cypriot north; talks dormant."
+  },
+  {
+    "conflict_name": "Bosnia — Republika Srpska",
+    "region": "Europe",
+    "conflict_type": "Political / secession",
+    "current_stage": "under review",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "1995",
+    "latest_development": "Serb-entity secessionist rhetoric and institutional defiance strain the Dayton settlement."
+  },
+  {
+    "conflict_name": "Greece–Turkey (Aegean/EEZ)",
+    "region": "Europe",
+    "conflict_type": "Maritime dispute",
+    "current_stage": "under review",
+    "intensity": "Medium",
+    "trend": "Stable",
+    "started": "1996",
+    "latest_development": "Overlapping airspace and maritime-zone claims persist despite a recent diplomatic thaw."
+  },
+  {
+    "conflict_name": "Spain — Catalonia",
+    "region": "Europe",
+    "conflict_type": "Separatist (political)",
+    "current_stage": "frozen",
+    "intensity": "Low",
+    "trend": "Easing",
+    "started": "2017",
+    "latest_development": "The independence push has cooled into a political/amnesty track after 2017."
+  },
+  {
+    "conflict_name": "Tajikistan–Kyrgyzstan border",
+    "region": "Central Asia",
+    "conflict_type": "Border dispute",
+    "current_stage": "ceasefire fragile",
+    "intensity": "Low",
+    "trend": "Easing",
+    "started": "2021",
+    "latest_development": "Deadly 2021–22 clashes gave way to a delimitation deal reducing tensions."
+  },
+  {
+    "conflict_name": "Afghanistan–Iran (water/border)",
+    "region": "Central Asia",
+    "conflict_type": "Interstate standoff",
+    "current_stage": "under review",
+    "intensity": "Low",
+    "trend": "Stable",
+    "started": "2023",
+    "latest_development": "Helmand water-rights disputes and border skirmishes recur with the Taliban government."
+  }
+]

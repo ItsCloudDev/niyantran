@@ -1,0 +1,585 @@
+[
+  {
+    "file": "000-niy-gotham-js.js",
+    "id": "niy-gotham-js",
+    "chars": 897
+  },
+  {
+    "file": "001-niy-rail-js.js",
+    "id": "niy-rail-js",
+    "chars": 3872
+  },
+  {
+    "file": "002-niy-home-js.js",
+    "id": "niy-home-js",
+    "chars": 401457
+  },
+  {
+    "file": "003.js",
+    "id": "",
+    "chars": 328
+  },
+  {
+    "file": "004.js",
+    "id": "",
+    "chars": 802
+  },
+  {
+    "file": "005.js",
+    "id": "",
+    "chars": 658
+  },
+  {
+    "file": "006.js",
+    "id": "",
+    "chars": 3799
+  },
+  {
+    "file": "007.js",
+    "id": "",
+    "chars": 1653
+  },
+  {
+    "file": "008.js",
+    "id": "",
+    "chars": 3932
+  },
+  {
+    "file": "009.js",
+    "id": "",
+    "chars": 1477
+  },
+  {
+    "file": "010.js",
+    "id": "",
+    "chars": 1073
+  },
+  {
+    "file": "011.js",
+    "id": "",
+    "chars": 623
+  },
+  {
+    "file": "012.js",
+    "id": "",
+    "chars": 2786
+  },
+  {
+    "file": "013.js",
+    "id": "",
+    "chars": 4345
+  },
+  {
+    "file": "014.js",
+    "id": "",
+    "chars": 877
+  },
+  {
+    "file": "015.js",
+    "id": "",
+    "chars": 2903
+  },
+  {
+    "file": "016.js",
+    "id": "",
+    "chars": 1893
+  },
+  {
+    "file": "017.js",
+    "id": "",
+    "chars": 6313
+  },
+  {
+    "file": "018.js",
+    "id": "",
+    "chars": 432
+  },
+  {
+    "file": "019.js",
+    "id": "",
+    "chars": 5887
+  },
+  {
+    "file": "020.js",
+    "id": "",
+    "chars": 5855
+  },
+  {
+    "file": "021.js",
+    "id": "",
+    "chars": 23
+  },
+  {
+    "file": "022.js",
+    "id": "",
+    "chars": 871
+  },
+  {
+    "file": "023.js",
+    "id": "",
+    "chars": 907
+  },
+  {
+    "file": "024.js",
+    "id": "",
+    "chars": 25158
+  },
+  {
+    "file": "025.js",
+    "id": "",
+    "chars": 5675
+  },
+  {
+    "file": "026.js",
+    "id": "",
+    "chars": 7098
+  },
+  {
+    "file": "027-niy-geo-data.js",
+    "id": "niy-geo-data",
+    "chars": 378388
+  },
+  {
+    "file": "028.js",
+    "id": "",
+    "chars": 48
+  },
+  {
+    "file": "029-niy-scope-engine.js",
+    "id": "niy-scope-engine",
+    "chars": 22922
+  },
+  {
+    "file": "030.js",
+    "id": "",
+    "chars": 64
+  },
+  {
+    "file": "031.js",
+    "id": "",
+    "chars": 16
+  },
+  {
+    "file": "032.js",
+    "id": "",
+    "chars": 3163
+  },
+  {
+    "file": "033.js",
+    "id": "",
+    "chars": 42
+  },
+  {
+    "file": "034.js",
+    "id": "",
+    "chars": 5887
+  },
+  {
+    "file": "035.js",
+    "id": "",
+    "chars": 854
+  },
+  {
+    "file": "036.js",
+    "id": "",
+    "chars": 2201
+  },
+  {
+    "file": "037.js",
+    "id": "",
+    "chars": 12612
+  },
+  {
+    "file": "038.js",
+    "id": "",
+    "chars": 2658
+  },
+  {
+    "file": "039.js",
+    "id": "",
+    "chars": 12707
+  },
+  {
+    "file": "040.js",
+    "id": "",
+    "chars": 12603
+  },
+  {
+    "file": "041.js",
+    "id": "",
+    "chars": 12242
+  },
+  {
+    "file": "042.js",
+    "id": "",
+    "chars": 9871
+  },
+  {
+    "file": "043.js",
+    "id": "",
+    "chars": 9837
+  },
+  {
+    "file": "044.js",
+    "id": "",
+    "chars": 15971
+  },
+  {
+    "file": "045.js",
+    "id": "",
+    "chars": 11994
+  },
+  {
+    "file": "046.js",
+    "id": "",
+    "chars": 10121
+  },
+  {
+    "file": "047.js",
+    "id": "",
+    "chars": 35046
+  },
+  {
+    "file": "048.js",
+    "id": "",
+    "chars": 3586
+  },
+  {
+    "file": "049.js",
+    "id": "",
+    "chars": 21460
+  },
+  {
+    "file": "050.js",
+    "id": "",
+    "chars": 40159
+  },
+  {
+    "file": "051.js",
+    "id": "",
+    "chars": 9553
+  },
+  {
+    "file": "052.js",
+    "id": "",
+    "chars": 7310
+  },
+  {
+    "file": "053.js",
+    "id": "",
+    "chars": 21164
+  },
+  {
+    "file": "054.js",
+    "id": "",
+    "chars": 8622
+  },
+  {
+    "file": "055.js",
+    "id": "",
+    "chars": 23417
+  },
+  {
+    "file": "056.js",
+    "id": "",
+    "chars": 9006
+  },
+  {
+    "file": "057.js",
+    "id": "",
+    "chars": 6417
+  },
+  {
+    "file": "058.js",
+    "id": "",
+    "chars": 758
+  },
+  {
+    "file": "059.js",
+    "id": "",
+    "chars": 3635
+  },
+  {
+    "file": "060.js",
+    "id": "",
+    "chars": 3145
+  },
+  {
+    "file": "061.js",
+    "id": "",
+    "chars": 3278
+  },
+  {
+    "file": "062.js",
+    "id": "",
+    "chars": 3181
+  },
+  {
+    "file": "063.js",
+    "id": "",
+    "chars": 3791
+  },
+  {
+    "file": "064.js",
+    "id": "",
+    "src": "e05d2fac-9f2a-4df1-9c50-bfd8a3ee90c6",
+    "mime": "application/javascript"
+  },
+  {
+    "file": "065.js",
+    "id": "",
+    "src": "513a51b5-4ee2-4e8e-9a56-e833aa9c76c7",
+    "mime": "application/javascript"
+  },
+  {
+    "file": "066.js",
+    "id": "",
+    "src": "53c82c5b-0320-406d-a45a-5a21669724e3",
+    "mime": "application/javascript"
+  },
+  {
+    "file": "067.js",
+    "id": "",
+    "chars": 11747519
+  },
+  {
+    "file": "068.js",
+    "id": "",
+    "chars": 69330
+  },
+  {
+    "file": "069.js",
+    "id": "",
+    "chars": 34544
+  },
+  {
+    "file": "070.js",
+    "id": "",
+    "chars": 8236
+  },
+  {
+    "file": "071.js",
+    "id": "",
+    "chars": 10962
+  },
+  {
+    "file": "072.js",
+    "id": "",
+    "chars": 63813
+  },
+  {
+    "file": "073.js",
+    "id": "",
+    "chars": 368604
+  },
+  {
+    "file": "074.js",
+    "id": "",
+    "chars": 172050
+  },
+  {
+    "file": "075-niy-stream-module.js",
+    "id": "niy-stream-module",
+    "chars": 153087
+  },
+  {
+    "file": "076-niy-mediasuite-module.js",
+    "id": "niy-mediasuite-module",
+    "chars": 117923
+  },
+  {
+    "file": "077-niy-extras-module.js",
+    "id": "niy-extras-module",
+    "chars": 35664
+  },
+  {
+    "file": "078-niy-ohlc-embed.js",
+    "id": "niy-ohlc-embed",
+    "chars": 1160855
+  },
+  {
+    "file": "079-niy-market-meta.js",
+    "id": "niy-market-meta",
+    "chars": 20777
+  },
+  {
+    "file": "080-niy-market-ext.js",
+    "id": "niy-market-ext",
+    "chars": 1178726
+  },
+  {
+    "file": "081-niy-markets-plus-module.js",
+    "id": "niy-markets-plus-module",
+    "chars": 22141
+  },
+  {
+    "file": "082-niy-landmap.js",
+    "id": "niy-landmap",
+    "chars": 3374
+  },
+  {
+    "file": "083-niy-seaborne-module.js",
+    "id": "niy-seaborne-module",
+    "chars": 60955
+  },
+  {
+    "file": "084-niy-broker-module.js",
+    "id": "niy-broker-module",
+    "chars": 16219
+  },
+  {
+    "file": "085-niy-ds-module.js",
+    "id": "niy-ds-module",
+    "chars": 31093
+  },
+  {
+    "file": "086-niy-ux-polish.js",
+    "id": "niy-ux-polish",
+    "chars": 2625
+  },
+  {
+    "file": "087-niy-calm-module.js",
+    "id": "niy-calm-module",
+    "chars": 12247
+  },
+  {
+    "file": "088-niy-conflict-module.js",
+    "id": "niy-conflict-module",
+    "chars": 5495
+  },
+  {
+    "file": "089-niy-shell-module.js",
+    "id": "niy-shell-module",
+    "chars": 25166
+  },
+  {
+    "file": "090-niy-virtual-module.js",
+    "id": "niy-virtual-module",
+    "chars": 5227
+  },
+  {
+    "file": "091-niy-tabs-module.js",
+    "id": "niy-tabs-module",
+    "chars": 11151
+  },
+  {
+    "file": "092-niy-geo-conflicts-data.js",
+    "id": "niy-geo-conflicts-data",
+    "chars": 11906
+  },
+  {
+    "file": "093-niy-geo-modules-data.js",
+    "id": "niy-geo-modules-data",
+    "chars": 13950
+  },
+  {
+    "file": "094-niy-geo-expand-data.js",
+    "id": "niy-geo-expand-data",
+    "chars": 30280
+  },
+  {
+    "file": "095-niy-geo-dossier.js",
+    "id": "niy-geo-dossier",
+    "chars": 50076
+  },
+  {
+    "file": "096-niy-featbar-module.js",
+    "id": "niy-featbar-module",
+    "chars": 4293
+  },
+  {
+    "file": "097-niy-color-module.js",
+    "id": "niy-color-module",
+    "chars": 9194
+  },
+  {
+    "file": "098.js",
+    "id": "",
+    "chars": 3705
+  },
+  {
+    "file": "099-niy-brain-ontology.js",
+    "id": "niy-brain-ontology",
+    "chars": 134930
+  },
+  {
+    "file": "100-niy-brain-module.js",
+    "id": "niy-brain-module",
+    "chars": 185042
+  },
+  {
+    "file": "101-niy-brain-refresh.js",
+    "id": "niy-brain-refresh",
+    "chars": 5059
+  },
+  {
+    "file": "102.js",
+    "id": "",
+    "chars": 52529
+  },
+  {
+    "file": "103.js",
+    "id": "",
+    "chars": 15772
+  },
+  {
+    "file": "104-niy-topnav.js",
+    "id": "niy-topnav",
+    "chars": 12821
+  },
+  {
+    "file": "105-niy-hdr-actions.js",
+    "id": "niy-hdr-actions",
+    "chars": 7323
+  },
+  {
+    "file": "106-nmg-bill-brain-bridge.js",
+    "id": "nmg-bill-brain-bridge",
+    "chars": 171101
+  },
+  {
+    "file": "107-nmg-national-desk-changes.js",
+    "id": "nmg-national-desk-changes",
+    "chars": 40248
+  },
+  {
+    "file": "108-niy-open-fronts-analytics-js.js",
+    "id": "niy-open-fronts-analytics-js",
+    "chars": 28054
+  },
+  {
+    "file": "109-niy-conflicts-redesign-js.js",
+    "id": "niy-conflicts-redesign-js",
+    "chars": 14286
+  },
+  {
+    "file": "110-niy-global-intelligence-js.js",
+    "id": "niy-global-intelligence-js",
+    "chars": 37391
+  },
+  {
+    "file": "111-niy-alliances-workbench-js.js",
+    "id": "niy-alliances-workbench-js",
+    "chars": 91513
+  },
+  {
+    "file": "112-niy-sanctions-workbench-js.js",
+    "id": "niy-sanctions-workbench-js",
+    "chars": 67770
+  },
+  {
+    "file": "113-niy-global-aid-workbench-js.js",
+    "id": "niy-global-aid-workbench-js",
+    "chars": 64297
+  },
+  {
+    "file": "114-niy-professional-ui-polish-js.js",
+    "id": "niy-professional-ui-polish-js",
+    "chars": 4127
+  },
+  {
+    "file": "115-niy-nuclear-watch-js.js",
+    "id": "niy-nuclear-watch-js",
+    "chars": 75824
+  }
+]

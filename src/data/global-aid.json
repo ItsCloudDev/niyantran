@@ -1,0 +1,1025 @@
+{
+  "appeals": [
+    {
+      "id": "gho26",
+      "name": "UN Global Humanitarian Appeal 2026",
+      "agency": "UN OCHA",
+      "region": "Global",
+      "geography": "23 country operations + 6 regional/refugee plans",
+      "type": "Inter-agency appeal",
+      "status": "Active appeal",
+      "requirement": 33000000000,
+      "target": 135000000,
+      "need": null,
+      "period": "2026",
+      "dataThrough": "08 Dec 2025",
+      "latestDate": "08 Dec 2025",
+      "latest": "The UN and aid partners launched a $33 billion appeal to support 135 million people through 23 country operations and six refugee or migrant plans.",
+      "brief": "The 2026 appeal is the top-level humanitarian financing benchmark. The analytical priority is funding conversion into country plans, because the launch figure is a requirement—not cash received.",
+      "source": "https://www.un.org/sg/en/content/highlight/2025-12-08.html",
+      "sourceLabel": "United Nations",
+      "fundingNote": "Funding receipts must be reconciled against the live OCHA Financial Tracking Service.",
+      "sectors": [
+        "Food security",
+        "Health",
+        "WASH",
+        "Shelter",
+        "Protection",
+        "Education"
+      ],
+      "delivery": "UN-coordinated country and regional response plans",
+      "coordinator": "UN OCHA with UN agencies and humanitarian partners",
+      "indicators": [
+        [
+          "Country operations",
+          23,
+          "23"
+        ],
+        [
+          "Regional / refugee plans",
+          6,
+          "6"
+        ]
+      ],
+      "milestones": [
+        [
+          "08 Dec 2025",
+          "2026 global appeal launched"
+        ],
+        [
+          "2026",
+          "Funding and delivery tracked through OCHA FTS and country plans"
+        ]
+      ]
+    },
+    {
+      "id": "unicef26",
+      "name": "UNICEF Humanitarian Action for Children 2026",
+      "agency": "UNICEF",
+      "region": "Global",
+      "geography": "35 country, multi-country, regional and global appeals",
+      "type": "Child-focused appeal",
+      "status": "Active appeal",
+      "requirement": 7660000000,
+      "target": 73000000,
+      "need": null,
+      "period": "2026",
+      "dataThrough": "Dec 2025",
+      "latestDate": "Dec 2025",
+      "latest": "UNICEF opened 35 humanitarian appeals requiring $7.66 billion to assist more than 73 million vulnerable children, families and caregivers.",
+      "brief": "This is a portfolio of child-centred emergency programmes rather than one undifferentiated fund. Monitor funding by country appeal and by service line: health, nutrition, WASH, education and child protection.",
+      "source": "https://www.unicef.org/appeals",
+      "sourceLabel": "UNICEF HAC",
+      "fundingNote": "Current receipts are published in country situation reports and should not be inferred from the appeal requirement.",
+      "sectors": [
+        "Health",
+        "Nutrition",
+        "WASH",
+        "Education",
+        "Child protection",
+        "Social protection"
+      ],
+      "delivery": "UNICEF country offices with government and implementing partners",
+      "coordinator": "UNICEF",
+      "indicators": [
+        [
+          "Country appeals",
+          23,
+          "23"
+        ],
+        [
+          "Multi-country appeals",
+          4,
+          "4"
+        ],
+        [
+          "Regional appeals",
+          7,
+          "7"
+        ],
+        [
+          "Global support appeal",
+          1,
+          "1"
+        ]
+      ],
+      "milestones": [
+        [
+          "Dec 2025",
+          "2026 HAC portfolio published"
+        ],
+        [
+          "2026",
+          "Country situation reports update funding and delivery"
+        ]
+      ]
+    },
+    {
+      "id": "fao26",
+      "name": "FAO Global Emergency & Resilience Appeal 2026",
+      "agency": "FAO",
+      "region": "Global",
+      "geography": "54 countries",
+      "type": "Food-security appeal",
+      "status": "Active appeal",
+      "requirement": 2500000000,
+      "target": 100000000,
+      "need": 295000000,
+      "period": "2026",
+      "dataThrough": "Dec 2025",
+      "latestDate": "15 Dec 2025",
+      "latest": "FAO launched its first global Emergency and Resilience Appeal, seeking $2.5 billion to assist more than 100 million people in 54 countries.",
+      "brief": "The programme is designed around restoring local production, not only emergency consumption. FAO reports that each dollar invested in a farmer’s field produces about $3 in local food value, while just 5% of relevant funding supports food production.",
+      "source": "https://www.fao.org/emergencies/appeals/global-appeal/en",
+      "sourceLabel": "FAO",
+      "fundingNote": "The appeal supports earmarked, soft-earmarked and flexible SFERA contributions.",
+      "sectors": [
+        "Agriculture",
+        "Livestock",
+        "Cash & vouchers",
+        "Food systems",
+        "Anticipatory action",
+        "Resilience"
+      ],
+      "delivery": "FAO country operations with ministries, local organizations and NGOs",
+      "coordinator": "FAO",
+      "indicators": [
+        [
+          "People targeted",
+          100000000,
+          "100M+"
+        ],
+        [
+          "Countries",
+          54,
+          "54"
+        ],
+        [
+          "People assisted in 2024",
+          42400000,
+          "42.4M"
+        ],
+        [
+          "National / local partners",
+          400,
+          "400+"
+        ]
+      ],
+      "milestones": [
+        [
+          "2024",
+          "Emergency and resilience support reached 42.4 million people"
+        ],
+        [
+          "15 Dec 2025",
+          "2026 global appeal launched"
+        ]
+      ]
+    },
+    {
+      "id": "who25",
+      "name": "WHO Health Emergency Appeal 2025",
+      "agency": "WHO",
+      "region": "Global",
+      "geography": "42 health emergencies",
+      "type": "Health emergency appeal",
+      "status": "Reporting cycle",
+      "requirement": 1500000000,
+      "target": null,
+      "need": 305000000,
+      "period": "2025",
+      "dataThrough": "15 Jan 2025",
+      "latestDate": "15 Jan 2025",
+      "latest": "WHO requested $1.5 billion for 42 health emergencies, including 17 Grade 3 emergencies requiring its highest level of response.",
+      "brief": "The appeal protects emergency health services, outbreak control and continuity of care. Compare the published requirement with country-level allocations before drawing conclusions about geographic coverage.",
+      "source": "https://www.who.int/emergencies/funding/health-emergency-appeals/2025/",
+      "sourceLabel": "WHO",
+      "fundingNote": "The public appeal summary states the requirement but not a consolidated current receipt total.",
+      "sectors": [
+        "Emergency health",
+        "Outbreak response",
+        "Trauma care",
+        "Health systems",
+        "Medical supply chains"
+      ],
+      "delivery": "WHO country offices and health-cluster partners",
+      "coordinator": "WHO",
+      "indicators": [
+        [
+          "Health emergencies",
+          42,
+          "42"
+        ],
+        [
+          "Grade 3 emergencies",
+          17,
+          "17"
+        ]
+      ],
+      "milestones": [
+        [
+          "15 Jan 2025",
+          "WHO Health Emergency Appeal published"
+        ],
+        [
+          "2025",
+          "Country and flash appeals updated as emergencies evolved"
+        ]
+      ]
+    },
+    {
+      "id": "ida21",
+      "name": "IDA21 Concessional Financing Package",
+      "agency": "World Bank / IDA",
+      "region": "Global",
+      "geography": "78 IDA countries",
+      "type": "Development finance",
+      "status": "Implementation",
+      "requirement": 100000000000,
+      "funded": 23700000000,
+      "coverageComparable": false,
+      "target": 1900000000,
+      "need": null,
+      "period": "FY2025–FY2028",
+      "dataThrough": "Jul 2026",
+      "latestDate": "01 Jul 2025",
+      "latest": "IDA21 entered implementation with up to $100 billion in grants and low-interest finance, backed by up to $23.7 billion in donor contributions from more than 60 donors.",
+      "brief": "IDA21 is concessional development finance, not a humanitarian appeal; donor contributions are leveraged into a larger financing package. Track commitments and disbursements separately, and do not label the $100 billion package as grant aid.",
+      "source": "https://ida.worldbank.org/en/replenishments",
+      "sourceLabel": "World Bank IDA",
+      "fundingNote": "$23.7 billion is the donor-contribution component; the $100 billion package includes leveraged financing. A funding-coverage percentage would be invalid.",
+      "sectors": [
+        "People",
+        "Planet",
+        "Prosperity",
+        "Infrastructure",
+        "Digital transformation"
+      ],
+      "delivery": "Grants and zero- to low-interest credits through IDA country programmes",
+      "coordinator": "International Development Association",
+      "indicators": [
+        [
+          "Population served",
+          1900000000,
+          "1.9B"
+        ],
+        [
+          "Health goal",
+          1500000000,
+          "1.5B"
+        ],
+        [
+          "Safety-net goal",
+          500000000,
+          "500M"
+        ],
+        [
+          "Africa electricity goal",
+          300000000,
+          "300M"
+        ]
+      ],
+      "milestones": [
+        [
+          "Dec 2024",
+          "IDA21 replenishment finalized"
+        ],
+        [
+          "01 Jul 2025",
+          "IDA21 implementation period began"
+        ],
+        [
+          "30 Jun 2028",
+          "Current replenishment period ends"
+        ]
+      ]
+    },
+    {
+      "id": "unhcr25",
+      "name": "UNHCR Global Appeal 2025",
+      "agency": "UNHCR",
+      "region": "Global",
+      "geography": "136 countries and territories",
+      "type": "Protection & displacement",
+      "status": "Reporting cycle",
+      "requirement": 10248000000,
+      "target": 139300000,
+      "need": 139300000,
+      "period": "2025",
+      "dataThrough": "Nov 2024",
+      "latestDate": "03 Dec 2024",
+      "latest": "UNHCR presented a $10.248 billion appeal to protect and assist a projected 139.3 million forcibly displaced and stateless people across 136 countries and territories.",
+      "brief": "The appeal combines protection, basic needs, emergency response and durable solutions. The operative comparison is between outcome-area budgets and subsequent funding—not a single undifferentiated “refugee aid” number.",
+      "source": "https://www.unhcr.org/publications/global-appeal-2025",
+      "sourceLabel": "UNHCR",
+      "fundingNote": "UNHCR Global Focus publishes subsequent funding and expenditure updates.",
+      "sectors": [
+        "Protect",
+        "Respond",
+        "Well-being & basic needs",
+        "Empower",
+        "Solve",
+        "Climate action"
+      ],
+      "delivery": "UNHCR field operations with governments and partner organizations",
+      "coordinator": "UNHCR",
+      "indicators": [
+        [
+          "Respond",
+          4427000000,
+          "$4.427B"
+        ],
+        [
+          "Protect",
+          2591000000,
+          "$2.591B"
+        ],
+        [
+          "Well-being & basic needs",
+          2079000000,
+          "$2.079B"
+        ],
+        [
+          "Empower",
+          1365000000,
+          "$1.365B"
+        ],
+        [
+          "Solve",
+          1365000000,
+          "$1.365B"
+        ]
+      ],
+      "milestones": [
+        [
+          "Nov 2024",
+          "Global Appeal 2025 published"
+        ],
+        [
+          "03 Dec 2024",
+          "Annual pledging conference held"
+        ]
+      ]
+    },
+    {
+      "id": "wfp26",
+      "name": "WFP 2026 Operational Plan",
+      "agency": "WFP",
+      "region": "Global",
+      "geography": "Food-crisis countries",
+      "type": "Food assistance",
+      "status": "Implementation",
+      "requirement": null,
+      "target": 110000000,
+      "need": 266000000,
+      "period": "2026",
+      "dataThrough": "Jul 2026",
+      "latestDate": "Jul 2026",
+      "latest": "WFP’s 2026 planning assumptions allow assistance for approximately 110 million beneficiaries; its mid-year outlook reported life-saving support sustained for more than 45 million people.",
+      "brief": "Funding constraints affect beneficiary counts, transfer duration and ration size, so planned and reached populations must remain distinct. The 110 million figure is an operational planning envelope, not a confirmed year-end reach.",
+      "source": "https://executiveboard.wfp.org/document_download/WFP-0000169010",
+      "sourceLabel": "WFP Executive Board",
+      "fundingNote": "The management plan states planned beneficiaries; current resource availability must be read from WFP funding reporting.",
+      "sectors": [
+        "Emergency food assistance",
+        "Nutrition",
+        "Cash transfers",
+        "School meals",
+        "Resilience",
+        "Government services"
+      ],
+      "delivery": "In-kind food, cash-based transfers and services through WFP country plans",
+      "coordinator": "World Food Programme",
+      "indicators": [
+        [
+          "Planned beneficiaries",
+          110000000,
+          "110M"
+        ],
+        [
+          "Reached by mid-2026",
+          45000000,
+          "45M+"
+        ],
+        [
+          "People facing acute hunger",
+          266000000,
+          "266M"
+        ]
+      ],
+      "milestones": [
+        [
+          "2026",
+          "Strategic Plan 2026–2029 entered force"
+        ],
+        [
+          "Jul 2026",
+          "Global Outlook mid-year update published"
+        ]
+      ]
+    },
+    {
+      "id": "afg26",
+      "name": "Afghanistan HAC 2026",
+      "agency": "UNICEF",
+      "region": "South Asia",
+      "geography": "Afghanistan",
+      "type": "Country humanitarian appeal",
+      "status": "Active appeal",
+      "requirement": 949100000,
+      "target": 12000000,
+      "need": 21900000,
+      "period": "2026",
+      "dataThrough": "Dec 2025",
+      "latestDate": "Dec 2025",
+      "latest": "UNICEF requested $949.1 million to reach 12 million people, including 6.5 million children, with life-saving aid and basic services.",
+      "brief": "The appeal combines immediate humanitarian services with community resilience. The widest gap between need and planned reach is about 9.9 million people, based on the published need and target figures—not an estimate of exclusion by sector.",
+      "source": "https://www.unicef.org/afghanistan/documents/humanitarian-action-children-hac-2026",
+      "sourceLabel": "UNICEF Afghanistan",
+      "fundingNote": "Funding coverage must be updated from UNICEF Afghanistan situation reports.",
+      "sectors": [
+        "Health",
+        "Nutrition",
+        "WASH",
+        "Education",
+        "Child protection",
+        "Social protection"
+      ],
+      "delivery": "UNICEF and partners, including cross-border returnee response",
+      "coordinator": "UNICEF Afghanistan",
+      "indicators": [
+        [
+          "People in need",
+          21900000,
+          "21.9M"
+        ],
+        [
+          "People targeted",
+          12000000,
+          "12M"
+        ],
+        [
+          "Children targeted",
+          6500000,
+          "6.5M"
+        ]
+      ],
+      "milestones": [
+        [
+          "Dec 2025",
+          "2026 appeal published"
+        ],
+        [
+          "2026",
+          "Situation reports track reach and receipts"
+        ]
+      ]
+    },
+    {
+      "id": "sdn26",
+      "name": "Sudan HAC 2026",
+      "agency": "UNICEF",
+      "region": "Eastern & Southern Africa",
+      "geography": "Sudan",
+      "type": "Country humanitarian appeal",
+      "status": "Active appeal",
+      "requirement": 962900000,
+      "funded": 351000000,
+      "target": 13800000,
+      "need": 33700000,
+      "period": "2026",
+      "dataThrough": "30 Jun 2026",
+      "latestDate": "Aug 2026",
+      "latest": "By mid-year UNICEF had mobilized $351 million against its $962.9 million appeal, leaving a reported 64% funding gap while reaching millions through health, nutrition, WASH and education services.",
+      "brief": "Sudan is the only country record here with a dated, source-reported mid-year receipt total. Coverage is therefore calculated directly from displayed amounts; other appeals remain explicitly unscored until comparable reporting is available.",
+      "source": "https://www.unicef.org/sudan/reports/unicef-sudan-humanitarian-mid-year-situation-report-2026",
+      "sourceLabel": "UNICEF Sudan",
+      "fundingNote": "$351 million mobilized by 30 June 2026; UNICEF reports a 64% gap.",
+      "sectors": [
+        "Health",
+        "Nutrition",
+        "WASH",
+        "Education",
+        "Child protection"
+      ],
+      "delivery": "UNICEF and partners across all 18 states",
+      "coordinator": "UNICEF Sudan",
+      "indicators": [
+        [
+          "Safe-water access",
+          6600000,
+          "6.6M"
+        ],
+        [
+          "Children screened",
+          5300000,
+          "5.3M"
+        ],
+        [
+          "Polio vaccinations",
+          4600000,
+          "4.6M"
+        ],
+        [
+          "Primary health care",
+          1300000,
+          "1.3M"
+        ],
+        [
+          "Education services",
+          1300000,
+          "1.3M"
+        ]
+      ],
+      "milestones": [
+        [
+          "Dec 2025",
+          "2026 appeal launched"
+        ],
+        [
+          "30 Jun 2026",
+          "Mid-year delivery and funding snapshot"
+        ],
+        [
+          "Aug 2026",
+          "Mid-year situation report published"
+        ]
+      ]
+    },
+    {
+      "id": "pal26",
+      "name": "State of Palestine HAC 2026",
+      "agency": "UNICEF",
+      "region": "Middle East & North Africa",
+      "geography": "Gaza Strip and West Bank, including East Jerusalem",
+      "type": "Country humanitarian appeal",
+      "status": "Active appeal",
+      "requirement": 707800000,
+      "target": null,
+      "need": 3600000,
+      "period": "2026",
+      "dataThrough": "Feb 2026",
+      "latestDate": "Feb 2026",
+      "latest": "UNICEF sought $707.8 million for life-saving WASH, health, nutrition, education, protection, social protection and cash assistance across the Gaza Strip and West Bank.",
+      "brief": "The programme publishes service-specific targets rather than one total beneficiary figure. Read each sector target independently because the same person may receive more than one service.",
+      "source": "https://www.unicef.org/appeals/state-of-palestine",
+      "sourceLabel": "UNICEF State of Palestine",
+      "fundingNote": "The public appeal page provides the requirement; current receipts are reported in situation reports.",
+      "sectors": [
+        "WASH",
+        "Health",
+        "Nutrition",
+        "Education",
+        "Child protection",
+        "Cash transfers"
+      ],
+      "delivery": "UNICEF-supported facilities, systems and humanitarian partners",
+      "coordinator": "UNICEF State of Palestine",
+      "indicators": [
+        [
+          "Water access",
+          800000,
+          "800K"
+        ],
+        [
+          "Health services",
+          600000,
+          "600K"
+        ],
+        [
+          "Explosive-risk prevention",
+          591800,
+          "591.8K"
+        ],
+        [
+          "Education access",
+          436000,
+          "436K"
+        ]
+      ],
+      "milestones": [
+        [
+          "Dec 2025",
+          "Initial 2026 appeal published"
+        ],
+        [
+          "Feb 2026",
+          "Appeal page updated"
+        ],
+        [
+          "30 Jun 2026",
+          "Mid-year situation report recorded"
+        ]
+      ]
+    },
+    {
+      "id": "som26",
+      "name": "Somalia HAC 2026",
+      "agency": "UNICEF",
+      "region": "Eastern & Southern Africa",
+      "geography": "Somalia",
+      "type": "Country humanitarian appeal",
+      "status": "Active appeal",
+      "requirement": 121000000,
+      "target": 1200000,
+      "need": 4800000,
+      "period": "2026",
+      "dataThrough": "Dec 2025",
+      "latestDate": "Dec 2025",
+      "latest": "UNICEF requested $121 million to reach 1.2 million people, including 744,000 children, prioritizing nutrition, health, WASH and child protection.",
+      "brief": "The response is deliberately concentrated on the most vulnerable quarter of the published population in need. Sector targets overlap, so they should not be summed as unique beneficiaries.",
+      "source": "https://www.unicef.org/appeals/somalia",
+      "sourceLabel": "UNICEF Somalia",
+      "fundingNote": "Current coverage is reported through UNICEF Somalia situation reports.",
+      "sectors": [
+        "Nutrition",
+        "Health",
+        "WASH",
+        "Child protection",
+        "Education",
+        "Social protection"
+      ],
+      "delivery": "Integrated community services and local partnerships",
+      "coordinator": "UNICEF Somalia",
+      "indicators": [
+        [
+          "People targeted",
+          1200000,
+          "1.2M"
+        ],
+        [
+          "Health services",
+          850000,
+          "850K"
+        ],
+        [
+          "Children targeted",
+          744000,
+          "744K"
+        ],
+        [
+          "Severe wasting treatment",
+          430000,
+          "430K"
+        ],
+        [
+          "Psychosocial support",
+          116000,
+          "116K"
+        ]
+      ],
+      "milestones": [
+        [
+          "Dec 2025",
+          "2026 appeal published"
+        ],
+        [
+          "26 Mar 2026",
+          "UNICEF called for urgent support as malnutrition worsened"
+        ]
+      ]
+    },
+    {
+      "id": "yem26",
+      "name": "Yemen HAC 2026",
+      "agency": "UNICEF",
+      "region": "Middle East & North Africa",
+      "geography": "Yemen",
+      "type": "Country humanitarian appeal",
+      "status": "Active appeal",
+      "requirement": 146300000,
+      "target": 5200000,
+      "need": 19700000,
+      "period": "2026",
+      "dataThrough": "Mar 2026",
+      "latestDate": "Mar 2026",
+      "latest": "UNICEF requested $146.3 million to provide essential services to 5.2 million people, including 3.5 million children.",
+      "brief": "The appeal is tightly prioritized relative to the 19.7 million people reported in need. Health, nutrition and emergency coordination are the stated funding priorities; target figures should not be read as full national coverage.",
+      "source": "https://www.unicef.org/appeals/yemen",
+      "sourceLabel": "UNICEF Yemen",
+      "fundingNote": "Current receipts should be checked against the latest UNICEF Yemen situation report.",
+      "sectors": [
+        "Health",
+        "Nutrition",
+        "WASH",
+        "Child protection",
+        "Education",
+        "Emergency coordination"
+      ],
+      "delivery": "Multisectoral services with government and local partners",
+      "coordinator": "UNICEF Yemen",
+      "indicators": [
+        [
+          "People targeted",
+          5200000,
+          "5.2M"
+        ],
+        [
+          "Children targeted",
+          3500000,
+          "3.5M"
+        ],
+        [
+          "Explosive-risk services",
+          1100000,
+          "1.1M"
+        ],
+        [
+          "Water access",
+          1000000,
+          "1M"
+        ],
+        [
+          "Health services",
+          500000,
+          "500K"
+        ]
+      ],
+      "milestones": [
+        [
+          "Mar 2026",
+          "Revised 2026 appeal published"
+        ],
+        [
+          "2026",
+          "Funding and programme outputs updated in situation reports"
+        ]
+      ]
+    },
+    {
+      "id": "hti26",
+      "name": "Haiti HAC 2026",
+      "agency": "UNICEF",
+      "region": "Latin America & Caribbean",
+      "geography": "Haiti",
+      "type": "Country humanitarian appeal",
+      "status": "Active appeal",
+      "requirement": 256600000,
+      "target": 1700000,
+      "need": null,
+      "period": "2026",
+      "dataThrough": "Dec 2025",
+      "latestDate": "Dec 2025",
+      "latest": "UNICEF requested $256.6 million to assist 1.7 million people in Haiti, including 1.2 million children.",
+      "brief": "The programme focuses on conflict- and disaster-affected children and families. Funding and delivery should be monitored against the latest situation report because the appeal page is a planning baseline.",
+      "source": "https://www.unicef.org/appeals/haiti",
+      "sourceLabel": "UNICEF Haiti",
+      "fundingNote": "Current funding coverage is not stated in the appeal summary.",
+      "sectors": [
+        "Health",
+        "Nutrition",
+        "WASH",
+        "Education",
+        "Child protection",
+        "Social protection"
+      ],
+      "delivery": "UNICEF and implementing partners in high-risk communities",
+      "coordinator": "UNICEF Haiti",
+      "indicators": [
+        [
+          "People targeted",
+          1700000,
+          "1.7M"
+        ],
+        [
+          "Children targeted",
+          1200000,
+          "1.2M"
+        ]
+      ],
+      "milestones": [
+        [
+          "Dec 2025",
+          "2026 appeal published"
+        ],
+        [
+          "2026",
+          "Situation reports track funding and programme reach"
+        ]
+      ]
+    },
+    {
+      "id": "ukr26",
+      "name": "Ukraine HAC 2026",
+      "agency": "UNICEF",
+      "region": "Europe & Central Asia",
+      "geography": "Ukraine",
+      "type": "Country humanitarian appeal",
+      "status": "Active appeal",
+      "requirement": 350000000,
+      "target": 4300000,
+      "need": null,
+      "period": "2026",
+      "dataThrough": "10 Dec 2025",
+      "latestDate": "10 Dec 2025",
+      "latest": "UNICEF appealed for $350 million to provide life-saving humanitarian assistance to 4.3 million people in Ukraine, including 725,000 children.",
+      "brief": "The appeal combines emergency services and support to essential systems as the war continues. The published target is a programme planning figure and should be compared with subsequent service-level reach.",
+      "source": "https://www.unicef.org/eca/press-releases/unicef-calls-sustained-funding-meet-childrens-critical-humanitarian-needs-ukraine",
+      "sourceLabel": "UNICEF Europe & Central Asia",
+      "fundingNote": "Current coverage should be verified in UNICEF Ukraine situation reports.",
+      "sectors": [
+        "Health",
+        "WASH",
+        "Education",
+        "Child protection",
+        "Winterization",
+        "Social protection"
+      ],
+      "delivery": "UNICEF-supported national and local systems and partners",
+      "coordinator": "UNICEF Ukraine",
+      "indicators": [
+        [
+          "People targeted",
+          4300000,
+          "4.3M"
+        ],
+        [
+          "Children targeted",
+          725000,
+          "725K"
+        ]
+      ],
+      "milestones": [
+        [
+          "10 Dec 2025",
+          "2026 funding appeal announced"
+        ],
+        [
+          "2026",
+          "Implementation aligned with Ukraine response planning"
+        ]
+      ]
+    },
+    {
+      "id": "bfa26",
+      "name": "Burkina Faso HAC 2026",
+      "agency": "UNICEF",
+      "region": "West & Central Africa",
+      "geography": "Burkina Faso",
+      "type": "Country humanitarian appeal",
+      "status": "Active appeal",
+      "requirement": 168900000,
+      "target": 2900000,
+      "need": null,
+      "period": "2026",
+      "dataThrough": "Mar 2026",
+      "latestDate": "Mar 2026",
+      "latest": "UNICEF sought $168.9 million to deliver health, nutrition, WASH, education and child-protection interventions to 2.9 million people, including 2.5 million children.",
+      "brief": "Children constitute most of the published target population. Operational review should focus on access, nutrition treatment continuity and safe service delivery in conflict-affected areas.",
+      "source": "https://www.unicef.org/media/179271/file/2026-HAC-Burkina-Faso.pdf",
+      "sourceLabel": "UNICEF Burkina Faso",
+      "fundingNote": "The appeal PDF states the requirement and target; subsequent receipts require situation-report verification.",
+      "sectors": [
+        "Health",
+        "Nutrition",
+        "WASH",
+        "Education",
+        "Child protection"
+      ],
+      "delivery": "UNICEF with government, local and international partners",
+      "coordinator": "UNICEF Burkina Faso",
+      "indicators": [
+        [
+          "People targeted",
+          2900000,
+          "2.9M"
+        ],
+        [
+          "Children targeted",
+          2500000,
+          "2.5M"
+        ]
+      ],
+      "milestones": [
+        [
+          "Mar 2026",
+          "2026 HAC appeal published"
+        ],
+        [
+          "2026",
+          "Programme implementation and reporting"
+        ]
+      ]
+    },
+    {
+      "id": "lbn26",
+      "name": "Lebanon HAC 2026",
+      "agency": "UNICEF",
+      "region": "Middle East & North Africa",
+      "geography": "Lebanon",
+      "type": "Country humanitarian appeal",
+      "status": "Revised appeal",
+      "requirement": 388500000,
+      "target": 2000000,
+      "need": null,
+      "period": "2026",
+      "dataThrough": "Mar 2026",
+      "latestDate": "Mar 2026",
+      "latest": "UNICEF revised its 2026 appeal to $388.5 million to reach 2 million people, including 700,000 children, after renewed conflict escalation.",
+      "brief": "The revision expands beyond the original plan and includes displaced people, refugees, host communities and returnees. Monitor the revised requirement separately from funding received under the original appeal.",
+      "source": "https://www.unicef.org/appeals/lebanon",
+      "sourceLabel": "UNICEF Lebanon",
+      "fundingNote": "Current receipts should be reconciled against the revised appeal, not the original plan.",
+      "sectors": [
+        "Health",
+        "Nutrition",
+        "WASH",
+        "Education",
+        "Child protection",
+        "Social protection"
+      ],
+      "delivery": "UNICEF systems support and partner delivery to displaced and host communities",
+      "coordinator": "UNICEF Lebanon",
+      "indicators": [
+        [
+          "People targeted",
+          2000000,
+          "2M"
+        ],
+        [
+          "Children targeted",
+          700000,
+          "700K"
+        ]
+      ],
+      "milestones": [
+        [
+          "Dec 2025",
+          "Original 2026 appeal published"
+        ],
+        [
+          "Mar 2026",
+          "Appeal revised after renewed escalation"
+        ]
+      ]
+    }
+  ],
+  "wire": [
+    {
+      "date": "Aug 2026",
+      "title": "Sudan mid-year report records $351M mobilized and a 64% funding gap",
+      "source": "UNICEF Sudan",
+      "country": "Sudan",
+      "url": "https://www.unicef.org/sudan/reports/unicef-sudan-humanitarian-mid-year-situation-report-2026"
+    },
+    {
+      "date": "Jul 2026",
+      "title": "WFP mid-year outlook reports life-saving assistance sustained for 45M+ people",
+      "source": "WFP",
+      "country": "Global",
+      "url": "https://www.wfp.org/publications/wfp-global-outlook"
+    },
+    {
+      "date": "Jul 2026",
+      "title": "OECD final 2024 data puts DAC ODA at $214.6B, down 6% in real terms",
+      "source": "OECD",
+      "country": "Global",
+      "url": "https://www.oecd.org/en/data/insights/data-explainers/2025/12/final-oecd-statistics-on-oda-and-other-development-finance-flows-in-2024-key-figures-and-trends.html"
+    },
+    {
+      "date": "Mar 2026",
+      "title": "Lebanon appeal revised to $388.5M following renewed escalation",
+      "source": "UNICEF",
+      "country": "Lebanon",
+      "url": "https://www.unicef.org/appeals/lebanon"
+    },
+    {
+      "date": "Mar 2026",
+      "title": "Yemen HAC seeks $146.3M to reach 5.2M people",
+      "source": "UNICEF",
+      "country": "Yemen",
+      "url": "https://www.unicef.org/appeals/yemen"
+    },
+    {
+      "date": "Feb 2026",
+      "title": "State of Palestine appeal details multisector targets across Gaza and the West Bank",
+      "source": "UNICEF",
+      "country": "State of Palestine",
+      "url": "https://www.unicef.org/appeals/state-of-palestine"
+    },
+    {
+      "date": "Dec 2025",
+      "title": "UN launches $33B global humanitarian appeal for 2026",
+      "source": "United Nations",
+      "country": "Global",
+      "url": "https://www.un.org/sg/en/content/highlight/2025-12-08.html"
+    },
+    {
+      "date": "Dec 2025",
+      "title": "FAO seeks $2.5B to assist 100M+ people in 54 countries",
+      "source": "FAO",
+      "country": "Global",
+      "url": "https://www.fao.org/emergencies/appeals/global-appeal/en"
+    }
+  ],
+  "sources": {
+    "gho": "https://www.un.org/sg/en/content/highlight/2025-12-08.html",
+    "unicef": "https://www.unicef.org/appeals",
+    "fao": "https://www.fao.org/emergencies/appeals/global-appeal/en",
+    "who": "https://www.who.int/emergencies/funding/health-emergency-appeals",
+    "ida": "https://ida.worldbank.org/en/replenishments",
+    "unhcr": "https://www.unhcr.org/publications/global-appeal-2025",
+    "wfp": "https://executiveboard.wfp.org/document_download/WFP-0000169010",
+    "oecd": "https://www.oecd.org/en/data/insights/data-explainers/2025/12/final-oecd-statistics-on-oda-and-other-development-finance-flows-in-2024-key-figures-and-trends.html"
+  }
+}

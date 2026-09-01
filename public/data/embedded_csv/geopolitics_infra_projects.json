@@ -1,0 +1,82 @@
+[
+  {
+    "project_name": "Vadhavan Port",
+    "sector": "Major port",
+    "country_region": "Maharashtra, India",
+    "status": "under construction",
+    "expected_completion": "2030",
+    "detail": "India's deepest greenfield container port, being built at Dahanu at an estimated cost of roughly Rs 76,000 crore; planned to rank among the world's top-10 container ports."
+  },
+  {
+    "project_name": "Great Nicobar International Container Transshipment Terminal",
+    "sector": "Major port",
+    "country_region": "Andaman & Nicobar, India",
+    "status": "under construction",
+    "expected_completion": "2028",
+    "detail": "A strategic transshipment hub positioned near the Malacca Strait shipping lanes, part of the wider Great Nicobar Island development plan."
+  },
+  {
+    "project_name": "Chabahar Port (Shahid Beheshti Terminal)",
+    "sector": "Major port",
+    "country_region": "Sistan-Baluchestan, Iran",
+    "status": "operational",
+    "expected_completion": "ongoing operations",
+    "detail": "An India-operated terminal giving India overland access to Afghanistan and Central Asia that bypasses Pakistan, under a long-term operating pact with Iran."
+  },
+  {
+    "project_name": "Sittwe Port & Kaladan Multi-Modal Transit Corridor",
+    "sector": "Connectivity corridor",
+    "country_region": "Rakhine, Myanmar",
+    "status": "operational (partial)",
+    "expected_completion": "ongoing",
+    "detail": "An India-built port and transit corridor linking Kolkata to Mizoram via Myanmar, intended to ease Northeast India's connectivity."
+  },
+  {
+    "project_name": "Trincomalee/Colombo Port Strategic Stake",
+    "sector": "Port & energy infrastructure",
+    "country_region": "Sri Lanka",
+    "status": "under development",
+    "expected_completion": "ongoing",
+    "detail": "India-backed investment in Sri Lankan port and energy tank-farm infrastructure, amid competition with China-linked Hambantota and Colombo terminal projects."
+  },
+  {
+    "project_name": "Agalega Islands Airstrip & Jetty",
+    "sector": "Naval/air infrastructure",
+    "country_region": "Agalega, Mauritius",
+    "status": "implemented",
+    "expected_completion": "completed",
+    "detail": "An India-funded airstrip and jetty upgrade supporting Indian Ocean maritime-domain-awareness cooperation with Mauritius."
+  },
+  {
+    "project_name": "Sagarmala Port Modernization Programme",
+    "sector": "Port modernization",
+    "country_region": "Pan-India",
+    "status": "ongoing",
+    "expected_completion": "2035 (programme horizon)",
+    "detail": "A national umbrella programme to modernize ports, port connectivity, and coastal economic zones across India."
+  },
+  {
+    "project_name": "Mumbai Trans Harbour Link (Atal Setu)",
+    "sector": "Bridge & connectivity",
+    "country_region": "Maharashtra, India",
+    "status": "implemented",
+    "expected_completion": "completed 2024",
+    "detail": "India's longest sea bridge, linking Mumbai to Navi Mumbai and easing access to the JNPT container-port corridor."
+  },
+  {
+    "project_name": "INS Visakhapatnam-class Destroyers (Project 15B)",
+    "sector": "Naval shipbuilding",
+    "country_region": "India",
+    "status": "under construction",
+    "expected_completion": "ongoing through late 2020s",
+    "detail": "An indigenous guided-missile destroyer class built at Mazagon Dock; several units are commissioned with the remainder still in build."
+  },
+  {
+    "project_name": "P-75I Submarine Programme",
+    "sector": "Naval shipbuilding",
+    "country_region": "India",
+    "status": "under negotiation",
+    "expected_completion": "2030s",
+    "detail": "A follow-on conventional-submarine programme under India's Strategic Partnership model, involving technology transfer from a foreign OEM."
+  }
+]

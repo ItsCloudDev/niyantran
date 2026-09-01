@@ -1,0 +1,1938 @@
+[
+  {
+    "id": "1",
+    "jurisdiction": "Canada",
+    "year": "2007",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.09087743",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "2",
+    "jurisdiction": "Canada",
+    "year": "2008",
+    "weighted_price_usd": "0.40177962",
+    "ets_price_usd": "0.0785975",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "3",
+    "jurisdiction": "Canada",
+    "year": "2009",
+    "weighted_price_usd": "0.7791667",
+    "ets_price_usd": "0.08350868",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "4",
+    "jurisdiction": "Canada",
+    "year": "2010",
+    "weighted_price_usd": "0.9923067",
+    "ets_price_usd": "0.08904572",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "5",
+    "jurisdiction": "Canada",
+    "year": "2011",
+    "weighted_price_usd": "1.166267",
+    "ets_price_usd": "0.08703815",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "6",
+    "jurisdiction": "Canada",
+    "year": "2012",
+    "weighted_price_usd": "1.4391491",
+    "ets_price_usd": "0.06624113",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "7",
+    "jurisdiction": "Canada",
+    "year": "2013",
+    "weighted_price_usd": "1.4751041",
+    "ets_price_usd": "0.120092876",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "8",
+    "jurisdiction": "Canada",
+    "year": "2014",
+    "weighted_price_usd": "1.431151",
+    "ets_price_usd": "0.11720648",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "9",
+    "jurisdiction": "Canada",
+    "year": "2015",
+    "weighted_price_usd": "1.4325358",
+    "ets_price_usd": "0.9529501",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "10",
+    "jurisdiction": "Canada",
+    "year": "2016",
+    "weighted_price_usd": "1.5069586",
+    "ets_price_usd": "1.0060992",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "11",
+    "jurisdiction": "Canada",
+    "year": "2017",
+    "weighted_price_usd": "1.4538401",
+    "ets_price_usd": "1.1526003",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "12",
+    "jurisdiction": "Canada",
+    "year": "2018",
+    "weighted_price_usd": "1.5741391",
+    "ets_price_usd": "6.9476733",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "13",
+    "jurisdiction": "Canada",
+    "year": "2019",
+    "weighted_price_usd": "5.058047",
+    "ets_price_usd": "5.2008343",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "14",
+    "jurisdiction": "Canada",
+    "year": "2020",
+    "weighted_price_usd": "11.96862",
+    "ets_price_usd": "5.452343",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "15",
+    "jurisdiction": "Canada",
+    "year": "2021",
+    "weighted_price_usd": "14.331939",
+    "ets_price_usd": "6.8976183",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "16",
+    "jurisdiction": "Canada",
+    "year": "2022",
+    "weighted_price_usd": "16.574308",
+    "ets_price_usd": "7.9698234",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "17",
+    "jurisdiction": "Canada",
+    "year": "2023",
+    "weighted_price_usd": "21.917517",
+    "ets_price_usd": "2.7247603",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "18",
+    "jurisdiction": "Canada",
+    "year": "2024",
+    "weighted_price_usd": "26.34564",
+    "ets_price_usd": "3.7527807",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "19",
+    "jurisdiction": "Canada",
+    "year": "2025",
+    "weighted_price_usd": "7.99502",
+    "ets_price_usd": "2.007489",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "20",
+    "jurisdiction": "China",
+    "year": "2013",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.42537233",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "21",
+    "jurisdiction": "China",
+    "year": "2014",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.47397006",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "22",
+    "jurisdiction": "China",
+    "year": "2015",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.26168624",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "23",
+    "jurisdiction": "China",
+    "year": "2016",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.26876184",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "24",
+    "jurisdiction": "China",
+    "year": "2017",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.26569617",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "25",
+    "jurisdiction": "China",
+    "year": "2018",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.2698856",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "26",
+    "jurisdiction": "China",
+    "year": "2019",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.34274596",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "27",
+    "jurisdiction": "China",
+    "year": "2020",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.38712588",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "28",
+    "jurisdiction": "China",
+    "year": "2021",
+    "weighted_price_usd": "",
+    "ets_price_usd": "3.0316243",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "29",
+    "jurisdiction": "China",
+    "year": "2022",
+    "weighted_price_usd": "",
+    "ets_price_usd": "3.8190098",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "30",
+    "jurisdiction": "China",
+    "year": "2023",
+    "weighted_price_usd": "",
+    "ets_price_usd": "4.2212334",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "31",
+    "jurisdiction": "China",
+    "year": "2024",
+    "weighted_price_usd": "",
+    "ets_price_usd": "6.045161",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "32",
+    "jurisdiction": "China",
+    "year": "2025",
+    "weighted_price_usd": "",
+    "ets_price_usd": "4.7160783",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "33",
+    "jurisdiction": "France",
+    "year": "2005",
+    "weighted_price_usd": "",
+    "ets_price_usd": "10.506036",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "34",
+    "jurisdiction": "France",
+    "year": "2006",
+    "weighted_price_usd": "",
+    "ets_price_usd": "8.536835",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "35",
+    "jurisdiction": "France",
+    "year": "2007",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.33128244",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "36",
+    "jurisdiction": "France",
+    "year": "2008",
+    "weighted_price_usd": "",
+    "ets_price_usd": "8.745366",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "37",
+    "jurisdiction": "France",
+    "year": "2009",
+    "weighted_price_usd": "",
+    "ets_price_usd": "6.248841",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "38",
+    "jurisdiction": "France",
+    "year": "2010",
+    "weighted_price_usd": "",
+    "ets_price_usd": "6.835485",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "39",
+    "jurisdiction": "France",
+    "year": "2011",
+    "weighted_price_usd": "",
+    "ets_price_usd": "5.998073",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "40",
+    "jurisdiction": "France",
+    "year": "2012",
+    "weighted_price_usd": "",
+    "ets_price_usd": "3.3862147",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "41",
+    "jurisdiction": "France",
+    "year": "2013",
+    "weighted_price_usd": "",
+    "ets_price_usd": "2.0176103",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "42",
+    "jurisdiction": "France",
+    "year": "2014",
+    "weighted_price_usd": "2.3530607",
+    "ets_price_usd": "2.4614887",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "43",
+    "jurisdiction": "France",
+    "year": "2015",
+    "weighted_price_usd": "11.487121",
+    "ets_price_usd": "3.1416712",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "44",
+    "jurisdiction": "France",
+    "year": "2016",
+    "weighted_price_usd": "17.060143",
+    "ets_price_usd": "2.204674",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "45",
+    "jurisdiction": "France",
+    "year": "2017",
+    "weighted_price_usd": "24.263536",
+    "ets_price_usd": "2.5492954",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "46",
+    "jurisdiction": "France",
+    "year": "2018",
+    "weighted_price_usd": "37.395264",
+    "ets_price_usd": "6.954968",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "47",
+    "jurisdiction": "France",
+    "year": "2019",
+    "weighted_price_usd": "36.482838",
+    "ets_price_usd": "10.383493",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "48",
+    "jurisdiction": "France",
+    "year": "2020",
+    "weighted_price_usd": "34.444717",
+    "ets_price_usd": "9.600472",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "49",
+    "jurisdiction": "France",
+    "year": "2021",
+    "weighted_price_usd": "33.694138",
+    "ets_price_usd": "21.578089",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "50",
+    "jurisdiction": "France",
+    "year": "2022",
+    "weighted_price_usd": "32.459217",
+    "ets_price_usd": "32.526794",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "51",
+    "jurisdiction": "France",
+    "year": "2023",
+    "weighted_price_usd": "30.824423",
+    "ets_price_usd": "31.98767",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "52",
+    "jurisdiction": "France",
+    "year": "2024",
+    "weighted_price_usd": "30.824423",
+    "ets_price_usd": "25.105267",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "53",
+    "jurisdiction": "France",
+    "year": "2025",
+    "weighted_price_usd": "30.824423",
+    "ets_price_usd": "28.003069",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "54",
+    "jurisdiction": "Germany",
+    "year": "2005",
+    "weighted_price_usd": "",
+    "ets_price_usd": "16.998407",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "55",
+    "jurisdiction": "Germany",
+    "year": "2006",
+    "weighted_price_usd": "",
+    "ets_price_usd": "14.045098",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "56",
+    "jurisdiction": "Germany",
+    "year": "2007",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.5496018",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "57",
+    "jurisdiction": "Germany",
+    "year": "2008",
+    "weighted_price_usd": "",
+    "ets_price_usd": "13.740053",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "58",
+    "jurisdiction": "Germany",
+    "year": "2009",
+    "weighted_price_usd": "",
+    "ets_price_usd": "10.060499",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "59",
+    "jurisdiction": "Germany",
+    "year": "2010",
+    "weighted_price_usd": "",
+    "ets_price_usd": "10.84587",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "60",
+    "jurisdiction": "Germany",
+    "year": "2011",
+    "weighted_price_usd": "",
+    "ets_price_usd": "9.906787",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "61",
+    "jurisdiction": "Germany",
+    "year": "2012",
+    "weighted_price_usd": "",
+    "ets_price_usd": "5.652943",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "62",
+    "jurisdiction": "Germany",
+    "year": "2013",
+    "weighted_price_usd": "",
+    "ets_price_usd": "3.3060575",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "63",
+    "jurisdiction": "Germany",
+    "year": "2014",
+    "weighted_price_usd": "",
+    "ets_price_usd": "4.3082194",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "64",
+    "jurisdiction": "Germany",
+    "year": "2015",
+    "weighted_price_usd": "",
+    "ets_price_usd": "5.3552775",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "65",
+    "jurisdiction": "Germany",
+    "year": "2016",
+    "weighted_price_usd": "",
+    "ets_price_usd": "3.6109734",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "66",
+    "jurisdiction": "Germany",
+    "year": "2017",
+    "weighted_price_usd": "",
+    "ets_price_usd": "3.798954",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "67",
+    "jurisdiction": "Germany",
+    "year": "2018",
+    "weighted_price_usd": "",
+    "ets_price_usd": "10.199182",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "68",
+    "jurisdiction": "Germany",
+    "year": "2019",
+    "weighted_price_usd": "",
+    "ets_price_usd": "14.589463",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "69",
+    "jurisdiction": "Germany",
+    "year": "2020",
+    "weighted_price_usd": "",
+    "ets_price_usd": "13.9148855",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "70",
+    "jurisdiction": "Germany",
+    "year": "2021",
+    "weighted_price_usd": "",
+    "ets_price_usd": "41.713493",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "71",
+    "jurisdiction": "Germany",
+    "year": "2022",
+    "weighted_price_usd": "",
+    "ets_price_usd": "57.518547",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "72",
+    "jurisdiction": "Germany",
+    "year": "2023",
+    "weighted_price_usd": "",
+    "ets_price_usd": "55.692383",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "73",
+    "jurisdiction": "Germany",
+    "year": "2024",
+    "weighted_price_usd": "",
+    "ets_price_usd": "51.81695",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "74",
+    "jurisdiction": "Germany",
+    "year": "2025",
+    "weighted_price_usd": "",
+    "ets_price_usd": "59.708324",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "75",
+    "jurisdiction": "Japan",
+    "year": "2012",
+    "weighted_price_usd": "0.6263969",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "76",
+    "jurisdiction": "Japan",
+    "year": "2013",
+    "weighted_price_usd": "0.6228896",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "77",
+    "jurisdiction": "Japan",
+    "year": "2014",
+    "weighted_price_usd": "1.2156651",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "78",
+    "jurisdiction": "Japan",
+    "year": "2015",
+    "weighted_price_usd": "1.1820551",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "79",
+    "jurisdiction": "Japan",
+    "year": "2016",
+    "weighted_price_usd": "1.8417705",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "80",
+    "jurisdiction": "Japan",
+    "year": "2017",
+    "weighted_price_usd": "1.8344527",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "81",
+    "jurisdiction": "Japan",
+    "year": "2018",
+    "weighted_price_usd": "1.8078399",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "82",
+    "jurisdiction": "Japan",
+    "year": "2019",
+    "weighted_price_usd": "1.7847167",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "83",
+    "jurisdiction": "Japan",
+    "year": "2020",
+    "weighted_price_usd": "1.78248",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "84",
+    "jurisdiction": "Japan",
+    "year": "2021",
+    "weighted_price_usd": "1.7836218",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "85",
+    "jurisdiction": "Japan",
+    "year": "2022",
+    "weighted_price_usd": "1.7738208",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "86",
+    "jurisdiction": "Japan",
+    "year": "2023",
+    "weighted_price_usd": "1.7089982",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "87",
+    "jurisdiction": "Japan",
+    "year": "2024",
+    "weighted_price_usd": "1.7089982",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "88",
+    "jurisdiction": "Japan",
+    "year": "2025",
+    "weighted_price_usd": "1.7089982",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "89",
+    "jurisdiction": "New Zealand",
+    "year": "2010",
+    "weighted_price_usd": "",
+    "ets_price_usd": "14.68733",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "90",
+    "jurisdiction": "New Zealand",
+    "year": "2011",
+    "weighted_price_usd": "",
+    "ets_price_usd": "12.456217",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "91",
+    "jurisdiction": "New Zealand",
+    "year": "2012",
+    "weighted_price_usd": "",
+    "ets_price_usd": "3.9870117",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "92",
+    "jurisdiction": "New Zealand",
+    "year": "2013",
+    "weighted_price_usd": "",
+    "ets_price_usd": "1.9125354",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "93",
+    "jurisdiction": "New Zealand",
+    "year": "2014",
+    "weighted_price_usd": "",
+    "ets_price_usd": "2.7244956",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "94",
+    "jurisdiction": "New Zealand",
+    "year": "2015",
+    "weighted_price_usd": "",
+    "ets_price_usd": "4.571081",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "95",
+    "jurisdiction": "New Zealand",
+    "year": "2016",
+    "weighted_price_usd": "",
+    "ets_price_usd": "10.2097845",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "96",
+    "jurisdiction": "New Zealand",
+    "year": "2017",
+    "weighted_price_usd": "",
+    "ets_price_usd": "11.565415",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "97",
+    "jurisdiction": "New Zealand",
+    "year": "2018",
+    "weighted_price_usd": "",
+    "ets_price_usd": "14.183183",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "98",
+    "jurisdiction": "New Zealand",
+    "year": "2019",
+    "weighted_price_usd": "",
+    "ets_price_usd": "15.142195",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "99",
+    "jurisdiction": "New Zealand",
+    "year": "2020",
+    "weighted_price_usd": "",
+    "ets_price_usd": "18.807503",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "100",
+    "jurisdiction": "New Zealand",
+    "year": "2021",
+    "weighted_price_usd": "",
+    "ets_price_usd": "28.639833",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "101",
+    "jurisdiction": "New Zealand",
+    "year": "2022",
+    "weighted_price_usd": "",
+    "ets_price_usd": "43.20567",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "102",
+    "jurisdiction": "New Zealand",
+    "year": "2023",
+    "weighted_price_usd": "",
+    "ets_price_usd": "32.025158",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "103",
+    "jurisdiction": "New Zealand",
+    "year": "2024",
+    "weighted_price_usd": "",
+    "ets_price_usd": "30.975409",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "104",
+    "jurisdiction": "New Zealand",
+    "year": "2025",
+    "weighted_price_usd": "",
+    "ets_price_usd": "30.259909",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "105",
+    "jurisdiction": "South Korea",
+    "year": "2015",
+    "weighted_price_usd": "",
+    "ets_price_usd": "6.680904",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "106",
+    "jurisdiction": "South Korea",
+    "year": "2016",
+    "weighted_price_usd": "",
+    "ets_price_usd": "10.570079",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "107",
+    "jurisdiction": "South Korea",
+    "year": "2017",
+    "weighted_price_usd": "",
+    "ets_price_usd": "12.6991005",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "108",
+    "jurisdiction": "South Korea",
+    "year": "2018",
+    "weighted_price_usd": "",
+    "ets_price_usd": "14.254169",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "109",
+    "jurisdiction": "South Korea",
+    "year": "2019",
+    "weighted_price_usd": "",
+    "ets_price_usd": "18.256866",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "110",
+    "jurisdiction": "South Korea",
+    "year": "2020",
+    "weighted_price_usd": "",
+    "ets_price_usd": "17.496754",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "111",
+    "jurisdiction": "South Korea",
+    "year": "2021",
+    "weighted_price_usd": "",
+    "ets_price_usd": "15.991119",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "112",
+    "jurisdiction": "South Korea",
+    "year": "2022",
+    "weighted_price_usd": "",
+    "ets_price_usd": "16.503351",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "113",
+    "jurisdiction": "South Korea",
+    "year": "2023",
+    "weighted_price_usd": "",
+    "ets_price_usd": "7.764363",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "114",
+    "jurisdiction": "South Korea",
+    "year": "2024",
+    "weighted_price_usd": "",
+    "ets_price_usd": "6.4535985",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "115",
+    "jurisdiction": "South Korea",
+    "year": "2025",
+    "weighted_price_usd": "",
+    "ets_price_usd": "6.389424",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "116",
+    "jurisdiction": "Sweden",
+    "year": "1991",
+    "weighted_price_usd": "26.386272",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "117",
+    "jurisdiction": "Sweden",
+    "year": "1992",
+    "weighted_price_usd": "26.36417",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "118",
+    "jurisdiction": "Sweden",
+    "year": "1993",
+    "weighted_price_usd": "32.20208",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "119",
+    "jurisdiction": "Sweden",
+    "year": "1994",
+    "weighted_price_usd": "33.05931",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "120",
+    "jurisdiction": "Sweden",
+    "year": "1995",
+    "weighted_price_usd": "32.068783",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "121",
+    "jurisdiction": "Sweden",
+    "year": "1996",
+    "weighted_price_usd": "32.65169",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "122",
+    "jurisdiction": "Sweden",
+    "year": "1997",
+    "weighted_price_usd": "36.086227",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "123",
+    "jurisdiction": "Sweden",
+    "year": "1998",
+    "weighted_price_usd": "35.07161",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "124",
+    "jurisdiction": "Sweden",
+    "year": "1999",
+    "weighted_price_usd": "35.53074",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "125",
+    "jurisdiction": "Sweden",
+    "year": "2000",
+    "weighted_price_usd": "35.26139",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "126",
+    "jurisdiction": "Sweden",
+    "year": "2001",
+    "weighted_price_usd": "46.12199",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "127",
+    "jurisdiction": "Sweden",
+    "year": "2002",
+    "weighted_price_usd": "50.911175",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "128",
+    "jurisdiction": "Sweden",
+    "year": "2003",
+    "weighted_price_usd": "61.5565",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "129",
+    "jurisdiction": "Sweden",
+    "year": "2004",
+    "weighted_price_usd": "73.661514",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "130",
+    "jurisdiction": "Sweden",
+    "year": "2005",
+    "weighted_price_usd": "74.638855",
+    "ets_price_usd": "13.341598",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "131",
+    "jurisdiction": "Sweden",
+    "year": "2006",
+    "weighted_price_usd": "72.11849",
+    "ets_price_usd": "10.944239",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "132",
+    "jurisdiction": "Sweden",
+    "year": "2007",
+    "weighted_price_usd": "72.740715",
+    "ets_price_usd": "0.39543316",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "133",
+    "jurisdiction": "Sweden",
+    "year": "2008",
+    "weighted_price_usd": "76.00074",
+    "ets_price_usd": "10.342549",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "134",
+    "jurisdiction": "Sweden",
+    "year": "2009",
+    "weighted_price_usd": "82.6484",
+    "ets_price_usd": "7.7141795",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "135",
+    "jurisdiction": "Sweden",
+    "year": "2010",
+    "weighted_price_usd": "73.93511",
+    "ets_price_usd": "8.787163",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "136",
+    "jurisdiction": "Sweden",
+    "year": "2011",
+    "weighted_price_usd": "74.22283",
+    "ets_price_usd": "7.609053",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "137",
+    "jurisdiction": "Sweden",
+    "year": "2012",
+    "weighted_price_usd": "78.37167",
+    "ets_price_usd": "4.5108895",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "138",
+    "jurisdiction": "Sweden",
+    "year": "2013",
+    "weighted_price_usd": "75.97172",
+    "ets_price_usd": "2.6089456",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "139",
+    "jurisdiction": "Sweden",
+    "year": "2014",
+    "weighted_price_usd": "79.21644",
+    "ets_price_usd": "3.493776",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "140",
+    "jurisdiction": "Sweden",
+    "year": "2015",
+    "weighted_price_usd": "80.46855",
+    "ets_price_usd": "4.3691063",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "141",
+    "jurisdiction": "Sweden",
+    "year": "2016",
+    "weighted_price_usd": "75.98965",
+    "ets_price_usd": "3.0292997",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "142",
+    "jurisdiction": "Sweden",
+    "year": "2017",
+    "weighted_price_usd": "74.91821",
+    "ets_price_usd": "3.2213097",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "143",
+    "jurisdiction": "Sweden",
+    "year": "2018",
+    "weighted_price_usd": "64.8913",
+    "ets_price_usd": "7.636204",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "144",
+    "jurisdiction": "Sweden",
+    "year": "2019",
+    "weighted_price_usd": "66.25727",
+    "ets_price_usd": "10.884379",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "145",
+    "jurisdiction": "Sweden",
+    "year": "2020",
+    "weighted_price_usd": "71.22213",
+    "ets_price_usd": "11.147095",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "146",
+    "jurisdiction": "Sweden",
+    "year": "2021",
+    "weighted_price_usd": "76.368324",
+    "ets_price_usd": "28.09595",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "147",
+    "jurisdiction": "Sweden",
+    "year": "2022",
+    "weighted_price_usd": "71.57784",
+    "ets_price_usd": "40.98293",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "148",
+    "jurisdiction": "Sweden",
+    "year": "2023",
+    "weighted_price_usd": "73.29111",
+    "ets_price_usd": "39.98262",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "149",
+    "jurisdiction": "Sweden",
+    "year": "2024",
+    "weighted_price_usd": "80.10409",
+    "ets_price_usd": "31.695578",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "150",
+    "jurisdiction": "Sweden",
+    "year": "2025",
+    "weighted_price_usd": "83.43315",
+    "ets_price_usd": "35.354076",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "151",
+    "jurisdiction": "Switzerland",
+    "year": "2008",
+    "weighted_price_usd": "4.0222197",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "152",
+    "jurisdiction": "Switzerland",
+    "year": "2009",
+    "weighted_price_usd": "4.0123076",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "153",
+    "jurisdiction": "Switzerland",
+    "year": "2010",
+    "weighted_price_usd": "12.562802",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "154",
+    "jurisdiction": "Switzerland",
+    "year": "2011",
+    "weighted_price_usd": "10.976603",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "155",
+    "jurisdiction": "Switzerland",
+    "year": "2012",
+    "weighted_price_usd": "11.705032",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "156",
+    "jurisdiction": "Switzerland",
+    "year": "2013",
+    "weighted_price_usd": "12.175663",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "157",
+    "jurisdiction": "Switzerland",
+    "year": "2014",
+    "weighted_price_usd": "17.204697",
+    "ets_price_usd": "5.7801247",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "158",
+    "jurisdiction": "Switzerland",
+    "year": "2015",
+    "weighted_price_usd": "19.1617",
+    "ets_price_usd": "1.9643155",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "159",
+    "jurisdiction": "Switzerland",
+    "year": "2016",
+    "weighted_price_usd": "27.755129",
+    "ets_price_usd": "1.2726982",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "160",
+    "jurisdiction": "Switzerland",
+    "year": "2017",
+    "weighted_price_usd": "27.148293",
+    "ets_price_usd": "1.1881601",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "161",
+    "jurisdiction": "Switzerland",
+    "year": "2018",
+    "weighted_price_usd": "29.065357",
+    "ets_price_usd": "1.1020769",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "162",
+    "jurisdiction": "Switzerland",
+    "year": "2019",
+    "weighted_price_usd": "29.269466",
+    "ets_price_usd": "2.057242",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "163",
+    "jurisdiction": "Switzerland",
+    "year": "2020",
+    "weighted_price_usd": "29.254864",
+    "ets_price_usd": "4.289775",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "164",
+    "jurisdiction": "Switzerland",
+    "year": "2021",
+    "weighted_price_usd": "30.645332",
+    "ets_price_usd": "7.7519183",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "165",
+    "jurisdiction": "Switzerland",
+    "year": "2022",
+    "weighted_price_usd": "32.75565",
+    "ets_price_usd": "12.42436",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "166",
+    "jurisdiction": "Switzerland",
+    "year": "2023",
+    "weighted_price_usd": "32.42385",
+    "ets_price_usd": "13.036514",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "167",
+    "jurisdiction": "Switzerland",
+    "year": "2024",
+    "weighted_price_usd": "32.42385",
+    "ets_price_usd": "9.677698",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "168",
+    "jurisdiction": "Switzerland",
+    "year": "2025",
+    "weighted_price_usd": "32.42385",
+    "ets_price_usd": "13.474647",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "169",
+    "jurisdiction": "United Kingdom",
+    "year": "2005",
+    "weighted_price_usd": "",
+    "ets_price_usd": "18.170418",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "170",
+    "jurisdiction": "United Kingdom",
+    "year": "2006",
+    "weighted_price_usd": "",
+    "ets_price_usd": "14.904767",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "171",
+    "jurisdiction": "United Kingdom",
+    "year": "2007",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.5462385",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "172",
+    "jurisdiction": "United Kingdom",
+    "year": "2008",
+    "weighted_price_usd": "",
+    "ets_price_usd": "13.805649",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "173",
+    "jurisdiction": "United Kingdom",
+    "year": "2009",
+    "weighted_price_usd": "",
+    "ets_price_usd": "9.8502",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "174",
+    "jurisdiction": "United Kingdom",
+    "year": "2010",
+    "weighted_price_usd": "",
+    "ets_price_usd": "10.57153",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "175",
+    "jurisdiction": "United Kingdom",
+    "year": "2011",
+    "weighted_price_usd": "",
+    "ets_price_usd": "9.46519",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "176",
+    "jurisdiction": "United Kingdom",
+    "year": "2012",
+    "weighted_price_usd": "",
+    "ets_price_usd": "5.3580346",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "177",
+    "jurisdiction": "United Kingdom",
+    "year": "2013",
+    "weighted_price_usd": "2.2343535",
+    "ets_price_usd": "3.0906131",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "178",
+    "jurisdiction": "United Kingdom",
+    "year": "2014",
+    "weighted_price_usd": "3.4031",
+    "ets_price_usd": "3.9428813",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "179",
+    "jurisdiction": "United Kingdom",
+    "year": "2015",
+    "weighted_price_usd": "5.3835516",
+    "ets_price_usd": "4.729369",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "180",
+    "jurisdiction": "United Kingdom",
+    "year": "2016",
+    "weighted_price_usd": "5.0027165",
+    "ets_price_usd": "2.9408956",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "181",
+    "jurisdiction": "United Kingdom",
+    "year": "2017",
+    "weighted_price_usd": "4.359958",
+    "ets_price_usd": "3.0174751",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "182",
+    "jurisdiction": "United Kingdom",
+    "year": "2018",
+    "weighted_price_usd": "3.8783863",
+    "ets_price_usd": "7.801614",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "183",
+    "jurisdiction": "United Kingdom",
+    "year": "2019",
+    "weighted_price_usd": "3.3298092",
+    "ets_price_usd": "11.859605",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "184",
+    "jurisdiction": "United Kingdom",
+    "year": "2020",
+    "weighted_price_usd": "2.9813895",
+    "ets_price_usd": "11.1684265",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "185",
+    "jurisdiction": "United Kingdom",
+    "year": "2021",
+    "weighted_price_usd": "3.134658",
+    "ets_price_usd": "26.814255",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "186",
+    "jurisdiction": "United Kingdom",
+    "year": "2022",
+    "weighted_price_usd": "3.0693374",
+    "ets_price_usd": "37.64339",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "187",
+    "jurisdiction": "United Kingdom",
+    "year": "2023",
+    "weighted_price_usd": "2.860566",
+    "ets_price_usd": "24.60299",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "188",
+    "jurisdiction": "United Kingdom",
+    "year": "2024",
+    "weighted_price_usd": "2.860566",
+    "ets_price_usd": "17.299046",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "189",
+    "jurisdiction": "United Kingdom",
+    "year": "2025",
+    "weighted_price_usd": "2.860566",
+    "ets_price_usd": "20.261547",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "190",
+    "jurisdiction": "United States",
+    "year": "2009",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.09108353",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "191",
+    "jurisdiction": "United States",
+    "year": "2010",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.063003324",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "192",
+    "jurisdiction": "United States",
+    "year": "2011",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.04985041",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "193",
+    "jurisdiction": "United States",
+    "year": "2012",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.05210193",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "194",
+    "jurisdiction": "United States",
+    "year": "2013",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.4453286",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "195",
+    "jurisdiction": "United States",
+    "year": "2014",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.42043465",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "196",
+    "jurisdiction": "United States",
+    "year": "2015",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.9557034",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "197",
+    "jurisdiction": "United States",
+    "year": "2016",
+    "weighted_price_usd": "",
+    "ets_price_usd": "0.9324075",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "198",
+    "jurisdiction": "United States",
+    "year": "2017",
+    "weighted_price_usd": "",
+    "ets_price_usd": "1.0195929",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "199",
+    "jurisdiction": "United States",
+    "year": "2018",
+    "weighted_price_usd": "",
+    "ets_price_usd": "1.0454895",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "200",
+    "jurisdiction": "United States",
+    "year": "2019",
+    "weighted_price_usd": "",
+    "ets_price_usd": "1.1802412",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "201",
+    "jurisdiction": "United States",
+    "year": "2020",
+    "weighted_price_usd": "",
+    "ets_price_usd": "1.2255317",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "202",
+    "jurisdiction": "United States",
+    "year": "2021",
+    "weighted_price_usd": "",
+    "ets_price_usd": "1.546225",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "203",
+    "jurisdiction": "United States",
+    "year": "2022",
+    "weighted_price_usd": "",
+    "ets_price_usd": "1.8421516",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "204",
+    "jurisdiction": "United States",
+    "year": "2023",
+    "weighted_price_usd": "",
+    "ets_price_usd": "2.3281207",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "205",
+    "jurisdiction": "United States",
+    "year": "2024",
+    "weighted_price_usd": "",
+    "ets_price_usd": "2.4240627",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "206",
+    "jurisdiction": "United States",
+    "year": "2025",
+    "weighted_price_usd": "",
+    "ets_price_usd": "2.227107",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "207",
+    "jurisdiction": "World",
+    "year": "1990",
+    "weighted_price_usd": "0.0037275404",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "208",
+    "jurisdiction": "World",
+    "year": "1991",
+    "weighted_price_usd": "0.13917808",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "209",
+    "jurisdiction": "World",
+    "year": "1992",
+    "weighted_price_usd": "0.18951242",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "210",
+    "jurisdiction": "World",
+    "year": "1993",
+    "weighted_price_usd": "0.20827676",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "211",
+    "jurisdiction": "World",
+    "year": "1994",
+    "weighted_price_usd": "0.2230374",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "212",
+    "jurisdiction": "World",
+    "year": "1995",
+    "weighted_price_usd": "0.2160439",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "213",
+    "jurisdiction": "World",
+    "year": "1996",
+    "weighted_price_usd": "0.23619993",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "214",
+    "jurisdiction": "World",
+    "year": "1997",
+    "weighted_price_usd": "0.23834988",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "215",
+    "jurisdiction": "World",
+    "year": "1998",
+    "weighted_price_usd": "0.25475678",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "216",
+    "jurisdiction": "World",
+    "year": "1999",
+    "weighted_price_usd": "0.25150692",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "217",
+    "jurisdiction": "World",
+    "year": "2000",
+    "weighted_price_usd": "0.22825274",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "218",
+    "jurisdiction": "World",
+    "year": "2001",
+    "weighted_price_usd": "0.22836798",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "219",
+    "jurisdiction": "World",
+    "year": "2002",
+    "weighted_price_usd": "0.23752998",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "220",
+    "jurisdiction": "World",
+    "year": "2003",
+    "weighted_price_usd": "0.25590557",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "221",
+    "jurisdiction": "World",
+    "year": "2004",
+    "weighted_price_usd": "0.26087794",
+    "ets_price_usd": "",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "222",
+    "jurisdiction": "World",
+    "year": "2005",
+    "weighted_price_usd": "0.22024272",
+    "ets_price_usd": "2.2683115",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "223",
+    "jurisdiction": "World",
+    "year": "2006",
+    "weighted_price_usd": "0.20887364",
+    "ets_price_usd": "1.7958585",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "224",
+    "jurisdiction": "World",
+    "year": "2007",
+    "weighted_price_usd": "0.19624288",
+    "ets_price_usd": "0.07139241",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "225",
+    "jurisdiction": "World",
+    "year": "2008",
+    "weighted_price_usd": "0.20618474",
+    "ets_price_usd": "1.7157648",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "226",
+    "jurisdiction": "World",
+    "year": "2009",
+    "weighted_price_usd": "0.21231686",
+    "ets_price_usd": "1.1679509",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "227",
+    "jurisdiction": "World",
+    "year": "2010",
+    "weighted_price_usd": "0.23375238",
+    "ets_price_usd": "1.2334933",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "228",
+    "jurisdiction": "World",
+    "year": "2011",
+    "weighted_price_usd": "0.22032976",
+    "ets_price_usd": "1.0379581",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "229",
+    "jurisdiction": "World",
+    "year": "2012",
+    "weighted_price_usd": "0.27001733",
+    "ets_price_usd": "0.61139435",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "230",
+    "jurisdiction": "World",
+    "year": "2013",
+    "weighted_price_usd": "0.29091492",
+    "ets_price_usd": "0.5239604",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "231",
+    "jurisdiction": "World",
+    "year": "2014",
+    "weighted_price_usd": "0.37579602",
+    "ets_price_usd": "0.62495387",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "232",
+    "jurisdiction": "World",
+    "year": "2015",
+    "weighted_price_usd": "0.48935908",
+    "ets_price_usd": "0.88173354",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "233",
+    "jurisdiction": "World",
+    "year": "2016",
+    "weighted_price_usd": "0.56844175",
+    "ets_price_usd": "0.7739003",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "234",
+    "jurisdiction": "World",
+    "year": "2017",
+    "weighted_price_usd": "0.6218684",
+    "ets_price_usd": "0.8461475",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "235",
+    "jurisdiction": "World",
+    "year": "2018",
+    "weighted_price_usd": "0.7528986",
+    "ets_price_usd": "1.5402013",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "236",
+    "jurisdiction": "World",
+    "year": "2019",
+    "weighted_price_usd": "0.88816506",
+    "ets_price_usd": "2.003203",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "237",
+    "jurisdiction": "World",
+    "year": "2020",
+    "weighted_price_usd": "0.9446562",
+    "ets_price_usd": "1.8378735",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "238",
+    "jurisdiction": "World",
+    "year": "2021",
+    "weighted_price_usd": "0.9707474",
+    "ets_price_usd": "4.2834435",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "239",
+    "jurisdiction": "World",
+    "year": "2022",
+    "weighted_price_usd": "0.96830654",
+    "ets_price_usd": "5.644653",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "240",
+    "jurisdiction": "World",
+    "year": "2023",
+    "weighted_price_usd": "1.0469408",
+    "ets_price_usd": "5.404099",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "241",
+    "jurisdiction": "World",
+    "year": "2024",
+    "weighted_price_usd": "1.1935679",
+    "ets_price_usd": "5.5300326",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  },
+  {
+    "id": "242",
+    "jurisdiction": "World",
+    "year": "2025",
+    "weighted_price_usd": "1.0366626",
+    "ets_price_usd": "5.4267306",
+    "source_url": "https://ourworldindata.org/grapher/weighted-carbon-price-ets"
+  }
+]

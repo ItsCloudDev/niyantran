@@ -1,0 +1,1635 @@
+{
+  "asOf": "2026-07",
+  "stats": {
+    "programs": 18,
+    "entitiesListed": "12,000+",
+    "jurisdictions": 6,
+    "sectorsHit": 14,
+    "newDesignations30d": 240
+  },
+  "byTarget": [
+    {
+      "t": "Russia",
+      "n": 6300,
+      "i": 96
+    },
+    {
+      "t": "Iran",
+      "n": 2100,
+      "i": 88
+    },
+    {
+      "t": "North Korea",
+      "n": 620,
+      "i": 82
+    },
+    {
+      "t": "Syria",
+      "n": 410,
+      "i": 55
+    },
+    {
+      "t": "Venezuela",
+      "n": 360,
+      "i": 58
+    },
+    {
+      "t": "Myanmar",
+      "n": 290,
+      "i": 60
+    },
+    {
+      "t": "Belarus",
+      "n": 340,
+      "i": 64
+    },
+    {
+      "t": "China (entities)",
+      "n": 520,
+      "i": 71
+    }
+  ],
+  "timeline": [
+    {
+      "date": "2026-07-16",
+      "region": "OFAC",
+      "text": "New tranche targeting Russian shadow-fleet tankers & LNG project financiers.",
+      "sev": "high"
+    },
+    {
+      "date": "2026-07-11",
+      "region": "EU",
+      "text": "19th sanctions package: price-cap enforcement, more dual-use exporters listed.",
+      "sev": "high"
+    },
+    {
+      "date": "2026-07-03",
+      "region": "UK OFSI",
+      "text": "Designations against Iranian UAV supply-chain firms.",
+      "sev": "medium"
+    },
+    {
+      "date": "2026-06-27",
+      "region": "UN",
+      "text": "Panel of Experts flags DPRK sanctions evasion via crypto theft.",
+      "sev": "medium"
+    }
+  ],
+  "programs": [
+    {
+      "id": "ru",
+      "name": "Russia — Ukraine-related",
+      "region": "Eastern Europe",
+      "lat": 55.7,
+      "lon": 37.6,
+      "status": "active",
+      "intensity": 96,
+      "issuer": "US OFAC · EU · UK · Canada · Japan · Australia",
+      "target": "Russian Federation",
+      "reason": "Full-scale invasion of Ukraine (2022–)",
+      "sectors": [
+        "Energy & oil price cap",
+        "Finance (SWIFT cutoff)",
+        "Defence & dual-use",
+        "Shadow fleet"
+      ],
+      "entities": "6,300+ individuals & entities",
+      "impact": "Frozen ~$300B CBR reserves; oil redirected to India/China at discount.",
+      "sources": [
+        [
+          "OFAC SDN",
+          "https://sanctionssearch.ofac.treas.gov/"
+        ],
+        [
+          "EU sanctions map",
+          "https://www.sanctionsmap.eu/"
+        ]
+      ],
+      "type": "Multi-jurisdictional sectoral",
+      "basis": "Issuer-specific laws, executive orders and EU regulations",
+      "instruments": [
+        "Asset freezes and transaction bans",
+        "Export controls on defence and dual-use goods",
+        "Energy services restrictions and oil price cap",
+        "Transport and shadow-fleet designations"
+      ],
+      "exemptions": [
+        "Food, medicine and humanitarian licences",
+        "Issuer-specific wind-down and general licences"
+      ],
+      "watch": [
+        [
+          "Shadow-fleet shipping",
+          "Observed",
+          "Ownership opacity, reflagging and service access"
+        ],
+        [
+          "Third-country dual-use trade",
+          "Enforcement focus",
+          "Intermediary exports and end-user controls"
+        ],
+        [
+          "Energy-service compliance",
+          "Monitor",
+          "Insurance, broking and price-cap attestations"
+        ]
+      ],
+      "market": [
+        [
+          "Energy",
+          "Crude rerouting, discounts and shipping services"
+        ],
+        [
+          "Finance",
+          "Reserve immobilisation and payment-channel substitution"
+        ],
+        [
+          "Industry",
+          "Restricted technology and replacement supply chains"
+        ],
+        [
+          "Trade",
+          "Diversion through intermediary jurisdictions"
+        ]
+      ],
+      "trail": [
+        [
+          "2014",
+          "Ukraine-related programmes established and expanded"
+        ],
+        [
+          "2022",
+          "Measures broadened across finance, energy, technology and transport"
+        ],
+        [
+          "Current record",
+          "Enforcement concentrates on circumvention networks and maritime services"
+        ]
+      ]
+    },
+    {
+      "id": "ir",
+      "name": "Iran — Nuclear / IRGC / UAV",
+      "region": "Middle East",
+      "lat": 35.7,
+      "lon": 51.4,
+      "status": "active",
+      "intensity": 88,
+      "issuer": "US OFAC · EU · UK · UN (legacy)",
+      "target": "Iran (IRGC, oil, UAV supply chain)",
+      "reason": "Nuclear program, regional proxies, drone transfers to Russia",
+      "sectors": [
+        "Oil exports",
+        "Petrochemicals",
+        "Drones/missiles",
+        "Shipping"
+      ],
+      "entities": "2,100+",
+      "impact": "Oil exports constrained but flowing to China via \"teapot\" refiners.",
+      "sources": [
+        [
+          "OFAC Iran",
+          "https://ofac.treasury.gov/"
+        ],
+        [
+          "UN Panel",
+          "https://www.un.org/"
+        ]
+      ],
+      "type": "Sectoral and proliferation-related",
+      "basis": "Issuer-specific nuclear, terrorism and human-rights authorities",
+      "instruments": [
+        "Asset freezes and financial restrictions",
+        "Oil and petrochemical measures",
+        "Missile and UAV supply-chain designations",
+        "Shipping and aviation measures"
+      ],
+      "exemptions": [
+        "Humanitarian trade authorisations",
+        "Food, agricultural goods and medicine channels"
+      ],
+      "watch": [
+        [
+          "Oil export routing",
+          "Observed",
+          "Ship-to-ship transfers and intermediary buyers"
+        ],
+        [
+          "UAV procurement network",
+          "Enforcement focus",
+          "Components, logistics and front companies"
+        ],
+        [
+          "Financial access",
+          "Monitor",
+          "Alternative settlement and exchange houses"
+        ]
+      ],
+      "market": [
+        [
+          "Energy",
+          "Buyer concentration and tanker routing"
+        ],
+        [
+          "Shipping",
+          "Ownership, flag and insurance scrutiny"
+        ],
+        [
+          "Technology",
+          "Dual-use electronics and drone components"
+        ],
+        [
+          "Payments",
+          "Use of intermediaries outside direct banking channels"
+        ]
+      ],
+      "trail": [
+        [
+          "1979 onward",
+          "US programme developed through successive authorities"
+        ],
+        [
+          "2015–2018",
+          "Nuclear-agreement relief followed by US reimposition"
+        ],
+        [
+          "Current record",
+          "Nuclear, regional-network and UAV measures overlap"
+        ]
+      ]
+    },
+    {
+      "id": "kp",
+      "name": "North Korea (DPRK)",
+      "region": "East Asia",
+      "lat": 39,
+      "lon": 125.7,
+      "status": "active",
+      "intensity": 82,
+      "issuer": "UN Security Council · US · EU · Japan · S. Korea",
+      "target": "DPRK",
+      "reason": "Nuclear & ballistic-missile programs",
+      "sectors": [
+        "Arms",
+        "Coal/minerals",
+        "Financial",
+        "Crypto"
+      ],
+      "entities": "620+",
+      "impact": "Extensive evasion via ship-to-ship transfers & crypto theft; Russia veto ended UN panel.",
+      "sources": [
+        [
+          "UN 1718 Committee",
+          "https://www.un.org/"
+        ],
+        [
+          "OFAC",
+          "https://ofac.treasury.gov/"
+        ]
+      ],
+      "type": "UN-led comprehensive sectoral",
+      "basis": "UN Security Council resolutions plus autonomous national measures",
+      "instruments": [
+        "Asset freezes and travel bans",
+        "Arms and luxury-goods restrictions",
+        "Coal, minerals and fuel controls",
+        "Maritime and financial restrictions"
+      ],
+      "exemptions": [
+        "UN humanitarian exemption process",
+        "Case-specific approvals for relief activity"
+      ],
+      "watch": [
+        [
+          "Ship-to-ship transfers",
+          "Observed",
+          "Maritime concealment and identity manipulation"
+        ],
+        [
+          "Cyber-enabled revenue",
+          "Observed",
+          "Crypto theft and laundering networks"
+        ],
+        [
+          "Overseas procurement",
+          "Enforcement focus",
+          "Front companies and dual-use acquisition"
+        ]
+      ],
+      "market": [
+        [
+          "Maritime",
+          "Vessel identity, routing and ownership risk"
+        ],
+        [
+          "Digital assets",
+          "Wallet screening and laundering exposure"
+        ],
+        [
+          "Trade finance",
+          "Correspondent and beneficial-owner controls"
+        ],
+        [
+          "Commodities",
+          "Coal, fuel and mineral transaction restrictions"
+        ]
+      ],
+      "trail": [
+        [
+          "2006",
+          "UN Security Council established the 1718 regime"
+        ],
+        [
+          "2016–2017",
+          "Sectoral restrictions expanded after nuclear and missile tests"
+        ],
+        [
+          "Current record",
+          "Implementation continues through the 1718 Committee and national authorities"
+        ]
+      ]
+    },
+    {
+      "id": "mm",
+      "name": "Myanmar — Junta",
+      "region": "South-East Asia",
+      "lat": 19.7,
+      "lon": 96.1,
+      "status": "active",
+      "intensity": 60,
+      "issuer": "US · EU · UK · Canada",
+      "target": "State Administration Council & MOGE",
+      "reason": "2021 coup, atrocities",
+      "sectors": [
+        "Gas revenue (MOGE)",
+        "Arms",
+        "Aviation fuel"
+      ],
+      "entities": "290+",
+      "impact": "Targets junta forex via gas; aviation-fuel curbs to limit airstrikes.",
+      "sources": [
+        [
+          "OFAC Burma",
+          "https://ofac.treasury.gov/"
+        ],
+        [
+          "EU",
+          "https://www.sanctionsmap.eu/"
+        ]
+      ],
+      "type": "Targeted and sectoral",
+      "basis": "Autonomous US, EU, UK and Canadian authorities",
+      "instruments": [
+        "Asset freezes and travel bans",
+        "Military and dual-use export controls",
+        "State-enterprise and revenue designations",
+        "Aviation-fuel supply restrictions"
+      ],
+      "exemptions": [
+        "Humanitarian and civil-society authorisations",
+        "Food and medicine exemptions"
+      ],
+      "watch": [
+        [
+          "Aviation fuel",
+          "Enforcement focus",
+          "Trading, storage and delivery intermediaries"
+        ],
+        [
+          "State-enterprise revenue",
+          "Observed",
+          "Foreign-currency access and ownership links"
+        ],
+        [
+          "Arms procurement",
+          "Monitor",
+          "Regional brokers and transshipment"
+        ]
+      ],
+      "market": [
+        [
+          "Energy",
+          "State oil-and-gas revenue exposure"
+        ],
+        [
+          "Aviation",
+          "Fuel logistics and aircraft-support restrictions"
+        ],
+        [
+          "Finance",
+          "Military-linked ownership screening"
+        ],
+        [
+          "Trade",
+          "Export-control and end-use diligence"
+        ]
+      ],
+      "trail": [
+        [
+          "2021",
+          "Measures expanded after the military coup"
+        ],
+        [
+          "Subsequent packages",
+          "Military-linked people, entities and revenue channels added"
+        ],
+        [
+          "Current record",
+          "Aviation fuel and procurement networks remain central"
+        ]
+      ]
+    },
+    {
+      "id": "ve",
+      "name": "Venezuela",
+      "region": "Americas",
+      "lat": 10.5,
+      "lon": -66.9,
+      "status": "active",
+      "intensity": 58,
+      "issuer": "US OFAC · EU · Canada",
+      "target": "PDVSA & govt officials",
+      "reason": "Democratic backsliding, disputed elections",
+      "sectors": [
+        "Oil (PDVSA)",
+        "Gold",
+        "Financial"
+      ],
+      "entities": "360+",
+      "impact": "Licences eased then re-tightened around election conduct.",
+      "sources": [
+        [
+          "OFAC Venezuela",
+          "https://ofac.treasury.gov/"
+        ]
+      ],
+      "type": "Targeted with sectoral measures",
+      "basis": "US programme plus EU and Canadian targeted measures",
+      "instruments": [
+        "Asset freezes and visa measures",
+        "Financial and debt restrictions",
+        "Oil-sector measures and licences",
+        "Gold-sector restrictions"
+      ],
+      "exemptions": [
+        "Humanitarian and communications authorisations",
+        "Time-limited oil-sector licences where issued"
+      ],
+      "watch": [
+        [
+          "Oil licences",
+          "Monitor",
+          "Conditions, counterparties and renewal dates"
+        ],
+        [
+          "Gold trading",
+          "Enforcement focus",
+          "State-linked intermediaries and logistics"
+        ],
+        [
+          "Election-linked measures",
+          "Monitor",
+          "Official policy changes and designation updates"
+        ]
+      ],
+      "market": [
+        [
+          "Oil",
+          "Licence scope and permitted counterparties"
+        ],
+        [
+          "Gold",
+          "Trading and state-revenue exposure"
+        ],
+        [
+          "Debt",
+          "Restricted securities and financing"
+        ],
+        [
+          "Services",
+          "Contract and payment permissions"
+        ]
+      ],
+      "trail": [
+        [
+          "2015",
+          "US Venezuela programme established"
+        ],
+        [
+          "2017–2019",
+          "Financial and oil-sector restrictions expanded"
+        ],
+        [
+          "Current record",
+          "Licence conditions remain the key compliance variable"
+        ]
+      ]
+    },
+    {
+      "id": "by",
+      "name": "Belarus",
+      "region": "Eastern Europe",
+      "lat": 53.9,
+      "lon": 27.6,
+      "status": "active",
+      "intensity": 64,
+      "issuer": "EU · US · UK",
+      "target": "Lukashenko regime",
+      "reason": "Election fraud, migration weaponisation, war support",
+      "sectors": [
+        "Potash",
+        "Finance",
+        "Dual-use transit"
+      ],
+      "entities": "340+",
+      "impact": "Sanctioned as Russia’s co-belligerent conduit.",
+      "sources": [
+        [
+          "EU",
+          "https://www.sanctionsmap.eu/"
+        ]
+      ],
+      "type": "Targeted and sectoral",
+      "basis": "US, EU and UK autonomous sanctions authorities",
+      "instruments": [
+        "Asset freezes and travel bans",
+        "Potash and petroleum restrictions",
+        "Financial and transport measures",
+        "Dual-use and technology export controls"
+      ],
+      "exemptions": [
+        "Humanitarian and agricultural carve-outs",
+        "Issuer-specific licences"
+      ],
+      "watch": [
+        [
+          "Russia-linked transit",
+          "Observed",
+          "Goods, finance and logistics connectivity"
+        ],
+        [
+          "Potash channels",
+          "Enforcement focus",
+          "Trading routes and beneficial ownership"
+        ],
+        [
+          "Dual-use exports",
+          "Monitor",
+          "Re-export and end-use risk"
+        ]
+      ],
+      "market": [
+        [
+          "Fertiliser",
+          "Potash trade and logistics"
+        ],
+        [
+          "Finance",
+          "Bank and sovereign-linked restrictions"
+        ],
+        [
+          "Transport",
+          "Aviation and road-freight measures"
+        ],
+        [
+          "Technology",
+          "Dual-use export controls"
+        ]
+      ],
+      "trail": [
+        [
+          "2004 onward",
+          "Targeted programmes developed around rights and governance"
+        ],
+        [
+          "2020",
+          "Measures expanded after the presidential election"
+        ],
+        [
+          "2022 onward",
+          "War-support and circumvention measures broadened"
+        ]
+      ]
+    },
+    {
+      "id": "cu",
+      "name": "Cuba embargo",
+      "region": "Americas",
+      "lat": 23.1,
+      "lon": -82.4,
+      "status": "active",
+      "intensity": 40,
+      "issuer": "US (OFAC)",
+      "target": "Cuba",
+      "reason": "Cold-war-era comprehensive embargo",
+      "sectors": [
+        "Trade",
+        "Finance",
+        "Travel"
+      ],
+      "entities": "comprehensive",
+      "impact": "Chronic FX shortage; UN votes near-unanimously to end it.",
+      "sources": [
+        [
+          "OFAC Cuba",
+          "https://ofac.treasury.gov/"
+        ]
+      ],
+      "type": "Comprehensive country programme",
+      "basis": "US statutes, executive orders and OFAC Cuban Assets Control Regulations",
+      "instruments": [
+        "Broad transaction restrictions",
+        "Trade and financing controls",
+        "Travel-related rules",
+        "Entity and vessel restrictions"
+      ],
+      "exemptions": [
+        "Food, medicine and humanitarian authorisations",
+        "Telecommunications and remittance permissions where licensed"
+      ],
+      "watch": [
+        [
+          "Payment routing",
+          "Monitor",
+          "Bank screening and licence reliance"
+        ],
+        [
+          "Travel services",
+          "Monitor",
+          "Permitted categories and recordkeeping"
+        ],
+        [
+          "Controlled entities",
+          "Enforcement focus",
+          "Restricted-party and ownership checks"
+        ]
+      ],
+      "market": [
+        [
+          "Trade",
+          "Licence-dependent goods and services"
+        ],
+        [
+          "Payments",
+          "US nexus and correspondent-bank screening"
+        ],
+        [
+          "Travel",
+          "Permitted categories and service providers"
+        ],
+        [
+          "Telecoms",
+          "Specific authorisations and controlled counterparties"
+        ]
+      ],
+      "trail": [
+        [
+          "1962",
+          "US embargo framework established"
+        ],
+        [
+          "1990s",
+          "Statutory restrictions broadened"
+        ],
+        [
+          "Current record",
+          "Programme remains licence-intensive and transaction-specific"
+        ]
+      ]
+    },
+    {
+      "id": "zw",
+      "name": "Zimbabwe",
+      "region": "Sub-Saharan Africa",
+      "lat": -17.8,
+      "lon": 31,
+      "status": "active",
+      "intensity": 32,
+      "issuer": "US · EU · UK",
+      "target": "ZANU-PF elite",
+      "reason": "Human rights, corruption",
+      "sectors": [
+        "Targeted (individuals)"
+      ],
+      "entities": "dozens",
+      "impact": "Reoriented to \"look east\" (China).",
+      "sources": [
+        [
+          "OFAC",
+          "https://ofac.treasury.gov/"
+        ]
+      ],
+      "type": "Targeted human-rights and corruption",
+      "basis": "Global Magnitsky and other autonomous targeted authorities",
+      "instruments": [
+        "Asset freezes",
+        "Visa measures",
+        "Entity ownership restrictions",
+        "Anti-corruption designations"
+      ],
+      "exemptions": [
+        "Ordinary trade outside listed-party restrictions",
+        "Humanitarian activity subject to applicable rules"
+      ],
+      "watch": [
+        [
+          "Ownership links",
+          "Enforcement focus",
+          "Control by designated persons"
+        ],
+        [
+          "State-linked procurement",
+          "Monitor",
+          "Beneficial ownership and payment path"
+        ],
+        [
+          "Programme changes",
+          "Monitor",
+          "Targeted recalibration and delistings"
+        ]
+      ],
+      "market": [
+        [
+          "Finance",
+          "Listed-party and ownership screening"
+        ],
+        [
+          "Mining",
+          "State-linked counterparty diligence"
+        ],
+        [
+          "Public procurement",
+          "Official and entity exposure"
+        ],
+        [
+          "Trade",
+          "Targeted rather than economy-wide restrictions"
+        ]
+      ],
+      "trail": [
+        [
+          "2003 onward",
+          "US and European targeted measures developed"
+        ],
+        [
+          "2024",
+          "US approach recalibrated toward targeted Global Magnitsky designations"
+        ],
+        [
+          "Current record",
+          "Compliance turns on named-party and ownership checks"
+        ]
+      ]
+    },
+    {
+      "id": "ni",
+      "name": "Nicaragua",
+      "region": "Americas",
+      "lat": 12.1,
+      "lon": -86.3,
+      "status": "active",
+      "intensity": 38,
+      "issuer": "US · EU · Canada",
+      "target": "Ortega govt",
+      "reason": "Democratic backsliding, repression",
+      "sectors": [
+        "Gold",
+        "Officials"
+      ],
+      "entities": "dozens",
+      "impact": "Pivot to Russia/China; migration outflow.",
+      "sources": [
+        [
+          "OFAC",
+          "https://ofac.treasury.gov/"
+        ]
+      ],
+      "type": "Targeted governance and sectoral",
+      "basis": "US, EU and Canadian autonomous authorities",
+      "instruments": [
+        "Asset freezes and visa measures",
+        "Government-linked entity designations",
+        "Gold-sector restrictions",
+        "Financing and procurement controls"
+      ],
+      "exemptions": [
+        "Humanitarian and civil-society permissions",
+        "Ordinary trade outside listed restrictions"
+      ],
+      "watch": [
+        [
+          "Gold revenue",
+          "Enforcement focus",
+          "State-linked mining and trading"
+        ],
+        [
+          "Public finance",
+          "Monitor",
+          "Government procurement and lending"
+        ],
+        [
+          "Ownership networks",
+          "Observed",
+          "Officials, relatives and controlled entities"
+        ]
+      ],
+      "market": [
+        [
+          "Gold",
+          "Trading and state-revenue exposure"
+        ],
+        [
+          "Finance",
+          "Government and listed-party transactions"
+        ],
+        [
+          "Public sector",
+          "Procurement and ownership diligence"
+        ],
+        [
+          "Trade",
+          "Targeted counterparty restrictions"
+        ]
+      ],
+      "trail": [
+        [
+          "2018",
+          "Targeted measures expanded amid political repression"
+        ],
+        [
+          "Subsequent actions",
+          "Officials, entities and state-revenue channels added"
+        ],
+        [
+          "Current record",
+          "Gold and public-finance exposure remain key"
+        ]
+      ]
+    },
+    {
+      "id": "wagner",
+      "name": "Wagner / Africa Corps",
+      "region": "Transnational",
+      "lat": 15,
+      "lon": 20,
+      "status": "active",
+      "intensity": 68,
+      "issuer": "US · EU · UK",
+      "target": "Russian PMC network",
+      "reason": "Atrocities, resource extraction, war support",
+      "sectors": [
+        "Mercenaries",
+        "Gold",
+        "Mining"
+      ],
+      "entities": "100+",
+      "impact": "Sanctioned across Sahel/CAR/Libya operations.",
+      "sources": [
+        [
+          "OFAC",
+          "https://ofac.treasury.gov/"
+        ]
+      ],
+      "type": "Transnational network sanctions",
+      "basis": "Terrorism, transnational crime, human-rights and Russia-related authorities",
+      "instruments": [
+        "Asset freezes",
+        "Network and facilitator designations",
+        "Mining and resource-company restrictions",
+        "Transport and aviation designations"
+      ],
+      "exemptions": [
+        "Humanitarian activity in affected countries",
+        "Case-specific licences where applicable"
+      ],
+      "watch": [
+        [
+          "Gold and mining",
+          "Observed",
+          "Concession, trading and logistics networks"
+        ],
+        [
+          "Corporate renaming",
+          "Enforcement focus",
+          "Successor entities and ownership continuity"
+        ],
+        [
+          "Aviation logistics",
+          "Monitor",
+          "Aircraft, operators and brokers"
+        ]
+      ],
+      "market": [
+        [
+          "Mining",
+          "Concession and beneficial-owner exposure"
+        ],
+        [
+          "Logistics",
+          "Aviation and cross-border transport"
+        ],
+        [
+          "Finance",
+          "Front companies and payment intermediaries"
+        ],
+        [
+          "Security services",
+          "Contracts with state and non-state clients"
+        ]
+      ],
+      "trail": [
+        [
+          "2017 onward",
+          "Wagner-linked entities designated under multiple authorities"
+        ],
+        [
+          "2023",
+          "US designated Wagner as a significant transnational criminal organization"
+        ],
+        [
+          "Current record",
+          "Successor networks and Africa operations require entity-resolution"
+        ]
+      ]
+    },
+    {
+      "id": "houthi",
+      "name": "Houthis (Ansar Allah)",
+      "region": "Middle East",
+      "lat": 15.4,
+      "lon": 44.2,
+      "status": "escalating",
+      "intensity": 74,
+      "issuer": "US (FTO/SDGT)",
+      "target": "Houthi movement & financiers",
+      "reason": "Red Sea attacks, Iran ties",
+      "sectors": [
+        "Shipping networks",
+        "Finance"
+      ],
+      "entities": "growing",
+      "impact": "Re-designated FTO amid Red Sea crisis.",
+      "sources": [
+        [
+          "OFAC",
+          "https://ofac.treasury.gov/"
+        ]
+      ],
+      "type": "Counter-terrorism network",
+      "basis": "US terrorism authorities and related national measures",
+      "instruments": [
+        "Asset freezes",
+        "Financier and facilitator designations",
+        "Shipping-network measures",
+        "Trade and procurement restrictions"
+      ],
+      "exemptions": [
+        "Humanitarian licences and Yemen relief channels",
+        "Food, medicine and remittance permissions where authorised"
+      ],
+      "watch": [
+        [
+          "Shipping networks",
+          "Observed",
+          "Vessels, brokers and commodity flows"
+        ],
+        [
+          "Iran-linked support",
+          "Enforcement focus",
+          "Procurement, funding and logistics"
+        ],
+        [
+          "Humanitarian access",
+          "Monitor",
+          "De-risking and permitted relief payments"
+        ]
+      ],
+      "market": [
+        [
+          "Shipping",
+          "Red Sea routing and counterparty screening"
+        ],
+        [
+          "Insurance",
+          "War-risk and sanctioned-party exposure"
+        ],
+        [
+          "Trade finance",
+          "Payment and beneficial-owner controls"
+        ],
+        [
+          "Humanitarian supply",
+          "Licence and de-risking constraints"
+        ]
+      ],
+      "trail": [
+        [
+          "Programme basis",
+          "Counter-terrorism authorities applied to the network"
+        ],
+        [
+          "Recent actions",
+          "Financiers, procurement and shipping facilitators targeted"
+        ],
+        [
+          "Current record",
+          "Maritime networks and humanitarian safeguards must be assessed together"
+        ]
+      ]
+    },
+    {
+      "id": "hamas",
+      "name": "Hamas / PIJ / Hezbollah",
+      "region": "Middle East",
+      "lat": 33.9,
+      "lon": 35.5,
+      "status": "active",
+      "intensity": 70,
+      "issuer": "US · EU · UK",
+      "target": "Designated terror orgs & financiers",
+      "reason": "Terrorism",
+      "sectors": [
+        "Finance",
+        "Crypto"
+      ],
+      "entities": "100s",
+      "impact": "Financial network disruption; enforcement on facilitators.",
+      "sources": [
+        [
+          "OFAC",
+          "https://ofac.treasury.gov/"
+        ]
+      ],
+      "type": "Counter-terrorism network",
+      "basis": "US, EU, UK and other terrorism authorities",
+      "instruments": [
+        "Asset freezes",
+        "Fundraiser and facilitator designations",
+        "Financial-sector notices",
+        "Crypto-address and exchange actions"
+      ],
+      "exemptions": [
+        "Humanitarian assistance not involving designated parties",
+        "Licensed relief and remittance channels"
+      ],
+      "watch": [
+        [
+          "Fundraising networks",
+          "Observed",
+          "Charities, intermediaries and payment chains"
+        ],
+        [
+          "Digital assets",
+          "Enforcement focus",
+          "Wallets, exchanges and conversion points"
+        ],
+        [
+          "Regional facilitators",
+          "Monitor",
+          "Ownership, agency and control relationships"
+        ]
+      ],
+      "market": [
+        [
+          "Payments",
+          "Listed-party and intermediary exposure"
+        ],
+        [
+          "Digital assets",
+          "Wallet and exchange screening"
+        ],
+        [
+          "Non-profits",
+          "Governance and beneficiary diligence"
+        ],
+        [
+          "Trade",
+          "Controlled-party and diversion risk"
+        ]
+      ],
+      "trail": [
+        [
+          "Long-running regime",
+          "Terrorism designations maintained across several jurisdictions"
+        ],
+        [
+          "Recent packages",
+          "Financial and digital-asset facilitators added"
+        ],
+        [
+          "Current record",
+          "Network analysis is more important than country-level screening"
+        ]
+      ]
+    },
+    {
+      "id": "cyber",
+      "name": "Cyber / Ransomware actors",
+      "region": "Transnational",
+      "lat": 55.7,
+      "lon": 37.6,
+      "status": "escalating",
+      "intensity": 66,
+      "issuer": "US · EU · UK · AUS",
+      "target": "Ransomware crews, crypto mixers",
+      "reason": "Cybercrime, critical-infra attacks",
+      "sectors": [
+        "Crypto",
+        "IT"
+      ],
+      "entities": "growing",
+      "impact": "Mixers (Tornado Cash) & DPRK/Russia-linked crews sanctioned.",
+      "sources": [
+        [
+          "OFAC Cyber",
+          "https://ofac.treasury.gov/"
+        ]
+      ],
+      "type": "Cyber and illicit-finance network",
+      "basis": "Cyber, terrorism and transnational-crime authorities",
+      "instruments": [
+        "Asset freezes",
+        "Digital-wallet identifiers",
+        "Exchange and mixer designations",
+        "Technology and service restrictions"
+      ],
+      "exemptions": [
+        "Cybersecurity research and incident-response permissions where issued",
+        "Case-specific wind-down licences"
+      ],
+      "watch": [
+        [
+          "Wallet migration",
+          "Observed",
+          "Rapid movement after designation"
+        ],
+        [
+          "Service substitution",
+          "Enforcement focus",
+          "New exchanges, mixers and infrastructure"
+        ],
+        [
+          "Ransom payments",
+          "Monitor",
+          "Sanctions nexus and reporting duties"
+        ]
+      ],
+      "market": [
+        [
+          "Digital assets",
+          "Wallet, exchange and mixer exposure"
+        ],
+        [
+          "Cyber insurance",
+          "Ransomware response constraints"
+        ],
+        [
+          "Cloud services",
+          "Account and infrastructure controls"
+        ],
+        [
+          "Payments",
+          "Attribution and sanctions-screening risk"
+        ]
+      ],
+      "trail": [
+        [
+          "2015 onward",
+          "Dedicated cyber sanctions authorities developed"
+        ],
+        [
+          "Subsequent actions",
+          "Ransomware, crypto and state-linked actors targeted"
+        ],
+        [
+          "Current record",
+          "Identifiers and network infrastructure change faster than entity names"
+        ]
+      ]
+    },
+    {
+      "id": "xinjiang",
+      "name": "China — Xinjiang / UFLPA",
+      "region": "East Asia",
+      "lat": 41.1,
+      "lon": 85.3,
+      "status": "active",
+      "intensity": 60,
+      "issuer": "US (UFLPA) · EU · UK",
+      "target": "Xinjiang entities & officials",
+      "reason": "Forced labour, human rights",
+      "sectors": [
+        "Cotton",
+        "Polysilicon",
+        "Tomatoes"
+      ],
+      "entities": "entity list",
+      "impact": "Import bans rewiring solar & apparel supply chains.",
+      "sources": [
+        [
+          "CBP UFLPA",
+          "https://www.cbp.gov/"
+        ]
+      ],
+      "type": "Import control and targeted measures",
+      "basis": "UFLPA import presumption plus autonomous human-rights measures",
+      "instruments": [
+        "Import detention and rebuttable presumption",
+        "Entity-list controls",
+        "Asset freezes and visa measures",
+        "Supply-chain documentation requirements"
+      ],
+      "exemptions": [
+        "Rebuttal process with evidentiary requirements",
+        "No general humanitarian issue for most commercial imports"
+      ],
+      "watch": [
+        [
+          "Tier-two suppliers",
+          "Enforcement focus",
+          "Raw material and component traceability"
+        ],
+        [
+          "Polysilicon sourcing",
+          "Observed",
+          "Origin documentation and commingling"
+        ],
+        [
+          "Entity-list updates",
+          "Monitor",
+          "New upstream and logistics entities"
+        ]
+      ],
+      "market": [
+        [
+          "Solar",
+          "Polysilicon origin and traceability"
+        ],
+        [
+          "Apparel",
+          "Cotton supply-chain documentation"
+        ],
+        [
+          "Agriculture",
+          "Tomato and downstream food inputs"
+        ],
+        [
+          "Customs",
+          "Detention, release and re-export decisions"
+        ]
+      ],
+      "trail": [
+        [
+          "2021",
+          "Uyghur Forced Labor Prevention Act enacted"
+        ],
+        [
+          "2022",
+          "Rebuttable import presumption took effect"
+        ],
+        [
+          "Current record",
+          "Entity lists and traceability evidence continue to expand"
+        ]
+      ]
+    },
+    {
+      "id": "cartels",
+      "name": "Drug cartels (fentanyl)",
+      "region": "Americas",
+      "lat": 23.6,
+      "lon": -102.5,
+      "status": "escalating",
+      "intensity": 62,
+      "issuer": "US (OFAC/FTO)",
+      "target": "Sinaloa, CJNG & chemical suppliers",
+      "reason": "Fentanyl trafficking",
+      "sectors": [
+        "Narcotics",
+        "Precursors (China)"
+      ],
+      "entities": "growing",
+      "impact": "FTO designations; secondary pressure on Chinese precursor firms.",
+      "sources": [
+        [
+          "OFAC",
+          "https://ofac.treasury.gov/"
+        ]
+      ],
+      "type": "Narcotics and counter-terrorism network",
+      "basis": "US narcotics, counter-terrorism and transnational-crime authorities",
+      "instruments": [
+        "Asset freezes",
+        "Entity and facilitator designations",
+        "Chemical-supplier actions",
+        "Trade and payment restrictions"
+      ],
+      "exemptions": [
+        "Ordinary lawful trade outside designated networks",
+        "Case-specific licences where applicable"
+      ],
+      "watch": [
+        [
+          "Precursor chemicals",
+          "Enforcement focus",
+          "Suppliers, brokers and transshipment"
+        ],
+        [
+          "Money laundering",
+          "Observed",
+          "Cash, trade-based finance and digital assets"
+        ],
+        [
+          "Front companies",
+          "Monitor",
+          "Ownership and commercial cover"
+        ]
+      ],
+      "market": [
+        [
+          "Chemicals",
+          "Supplier and end-user diligence"
+        ],
+        [
+          "Payments",
+          "Beneficial-owner and transaction monitoring"
+        ],
+        [
+          "Logistics",
+          "Cross-border broker and freight exposure"
+        ],
+        [
+          "Retail trade",
+          "Front-company detection"
+        ]
+      ],
+      "trail": [
+        [
+          "Long-running basis",
+          "Narcotics kingpin and related authorities used against cartels"
+        ],
+        [
+          "Recent actions",
+          "Fentanyl suppliers and financial facilitators prioritised"
+        ],
+        [
+          "Current record",
+          "Entity resolution spans manufacturers, brokers and payment networks"
+        ]
+      ]
+    },
+    {
+      "id": "mali-aes",
+      "name": "Mali / AES actors",
+      "region": "Sub-Saharan Africa",
+      "lat": 12.6,
+      "lon": -8,
+      "status": "active",
+      "intensity": 44,
+      "issuer": "US · EU · UN (legacy)",
+      "target": "Junta-linked & armed actors",
+      "reason": "Coups, Wagner ties, abuses",
+      "sectors": [
+        "Targeted"
+      ],
+      "entities": "dozens",
+      "impact": "AES bloc (Mali/Niger/Burkina) pivots to Russia.",
+      "sources": [
+        [
+          "OFAC",
+          "https://ofac.treasury.gov/"
+        ]
+      ],
+      "type": "Targeted peace-and-security measures",
+      "basis": "Issuer-specific peace, security and human-rights authorities",
+      "instruments": [
+        "Asset freezes and travel bans",
+        "Armed-group designations",
+        "Human-rights measures",
+        "Military-related restrictions"
+      ],
+      "exemptions": [
+        "Humanitarian operations and relief payments",
+        "Case-specific mission permissions"
+      ],
+      "watch": [
+        [
+          "Armed-group finance",
+          "Observed",
+          "Gold, taxation and cross-border trade"
+        ],
+        [
+          "Security partnerships",
+          "Monitor",
+          "Successor entities and foreign support"
+        ],
+        [
+          "Humanitarian access",
+          "Enforcement focus",
+          "De-risking and payment continuity"
+        ]
+      ],
+      "market": [
+        [
+          "Mining",
+          "Gold and concession exposure"
+        ],
+        [
+          "Finance",
+          "Listed-party and ownership screening"
+        ],
+        [
+          "Security",
+          "Contracting and equipment supply"
+        ],
+        [
+          "Humanitarian",
+          "Payments and operational access"
+        ]
+      ],
+      "trail": [
+        [
+          "Legacy framework",
+          "UN and autonomous targeted measures developed"
+        ],
+        [
+          "Political transition",
+          "Coups and regional realignment changed the operating context"
+        ],
+        [
+          "Current record",
+          "Issuer coverage and successor-network identity require review"
+        ]
+      ]
+    },
+    {
+      "id": "magnitsky",
+      "name": "Global Magnitsky (human rights)",
+      "region": "Transnational",
+      "lat": 20,
+      "lon": 0,
+      "status": "active",
+      "intensity": 50,
+      "issuer": "US · EU · UK · Canada",
+      "target": "Rights abusers & corrupt officials worldwide",
+      "reason": "Human rights, corruption",
+      "sectors": [
+        "Targeted individuals"
+      ],
+      "entities": "100s",
+      "impact": "Cross-cutting tool used from Myanmar to Nicaragua.",
+      "sources": [
+        [
+          "OFAC Magnitsky",
+          "https://ofac.treasury.gov/"
+        ]
+      ],
+      "type": "Global thematic targeted",
+      "basis": "Global Magnitsky-style human-rights and anti-corruption laws",
+      "instruments": [
+        "Asset freezes",
+        "Visa restrictions",
+        "Controlled-entity restrictions",
+        "Anti-corruption designations"
+      ],
+      "exemptions": [
+        "Ordinary country trade remains outside programme scope",
+        "Humanitarian and journalistic activity generally unaffected absent listed-party nexus"
+      ],
+      "watch": [
+        [
+          "Controlled entities",
+          "Enforcement focus",
+          "Ownership and control tests differ by issuer"
+        ],
+        [
+          "Cross-border assets",
+          "Observed",
+          "Property, companies and financial accounts"
+        ],
+        [
+          "Multilateral alignment",
+          "Monitor",
+          "Parallel designations and evidentiary bases"
+        ]
+      ],
+      "market": [
+        [
+          "Finance",
+          "Listed-party and ownership screening"
+        ],
+        [
+          "Luxury assets",
+          "Asset tracing and service-provider exposure"
+        ],
+        [
+          "Public contracts",
+          "Corruption and politically exposed persons"
+        ],
+        [
+          "Professional services",
+          "Legal, trust and company-service diligence"
+        ]
+      ],
+      "trail": [
+        [
+          "2016",
+          "US Global Magnitsky framework enacted"
+        ],
+        [
+          "Subsequent years",
+          "Comparable thematic regimes adopted by partner jurisdictions"
+        ],
+        [
+          "Current record",
+          "Parallel listings require issuer-by-issuer legal analysis"
+        ]
+      ]
+    },
+    {
+      "id": "syria2",
+      "name": "Syria (post-Assad review)",
+      "region": "Middle East",
+      "lat": 34.8,
+      "lon": 38.9,
+      "status": "under-review",
+      "intensity": 42,
+      "issuer": "US · EU · UK",
+      "target": "Legacy Assad-era regime",
+      "reason": "War crimes (legacy); sanctions relief debated",
+      "sectors": [
+        "Energy",
+        "Finance"
+      ],
+      "entities": "under review",
+      "impact": "Interim govt seeks relief; phased easing debated.",
+      "sources": [
+        [
+          "OFAC Syria",
+          "https://ofac.treasury.gov/"
+        ]
+      ],
+      "type": "Legacy comprehensive and targeted review",
+      "basis": "US, EU and UK Syria authorities",
+      "instruments": [
+        "Asset freezes and sectoral restrictions",
+        "Oil and financial measures",
+        "Export controls",
+        "Targeted human-rights designations"
+      ],
+      "exemptions": [
+        "Humanitarian general licences",
+        "Food, medicine, reconstruction and NGO permissions where authorised"
+      ],
+      "watch": [
+        [
+          "Relief and reconstruction",
+          "Monitor",
+          "Licence scope and counterparty eligibility"
+        ],
+        [
+          "Legacy ownership",
+          "Enforcement focus",
+          "Control by previously designated actors"
+        ],
+        [
+          "Policy transition",
+          "Monitor",
+          "Suspensions, waivers, easing and snapback terms"
+        ]
+      ],
+      "market": [
+        [
+          "Finance",
+          "Permitted counterparties and payment channels"
+        ],
+        [
+          "Energy",
+          "Legacy oil-sector restrictions"
+        ],
+        [
+          "Reconstruction",
+          "Licences, procurement and ownership checks"
+        ],
+        [
+          "Humanitarian",
+          "Bank de-risking and operational permissions"
+        ]
+      ],
+      "trail": [
+        [
+          "2011 onward",
+          "Syria measures expanded during the civil war"
+        ],
+        [
+          "Humanitarian adjustments",
+          "Licences broadened in response to relief needs"
+        ],
+        [
+          "Current record",
+          "Legacy measures are under active policy review"
+        ]
+      ]
+    }
+  ]
+}

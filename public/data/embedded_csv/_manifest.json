@@ -1,0 +1,146 @@
+[
+  {
+    "key": "geopolitics_war_tracker.csv",
+    "file": "geopolitics_war_tracker.json"
+  },
+  {
+    "key": "geopolitics_infra_projects.csv",
+    "file": "geopolitics_infra_projects.json"
+  },
+  {
+    "key": "geopolitics_defense_procurement.csv",
+    "file": "geopolitics_defense_procurement.json"
+  },
+  {
+    "key": "national_bill_tracker.csv",
+    "file": "national_bill_tracker.json"
+  },
+  {
+    "key": "national_mp_report_card.csv",
+    "file": "national_mp_report_card.json"
+  },
+  {
+    "key": "national_question_database.csv",
+    "file": "national_question_database.json"
+  },
+  {
+    "key": "national_tender_aggregator.csv",
+    "file": "national_tender_aggregator.json"
+  },
+  {
+    "key": "national_regulatory_watch.csv",
+    "file": "national_regulatory_watch.json"
+  },
+  {
+    "key": "national_candidate_affidavit.csv",
+    "file": "national_candidate_affidavit.json"
+  },
+  {
+    "key": "national_agmut_transfers.csv",
+    "file": "national_agmut_transfers.json"
+  },
+  {
+    "key": "national_policy_pipeline.csv",
+    "file": "national_policy_pipeline.json"
+  },
+  {
+    "key": "up_bill_tracker.csv",
+    "file": "up_bill_tracker.json"
+  },
+  {
+    "key": "up_bureaucrat_transfers.csv",
+    "file": "up_bureaucrat_transfers.json"
+  },
+  {
+    "key": "up_mla_report_card.csv",
+    "file": "up_mla_report_card.json"
+  },
+  {
+    "key": "bijnor_tender_aggregator.csv",
+    "file": "bijnor_tender_aggregator.json"
+  },
+  {
+    "key": "nagina_booth_results.csv",
+    "file": "nagina_booth_results.json"
+  },
+  {
+    "key": "nagina_swing_analysis.csv",
+    "file": "nagina_swing_analysis.json"
+  },
+  {
+    "key": "judiciary_sc_orders.csv",
+    "file": "judiciary_sc_orders.json"
+  },
+  {
+    "key": "finance_market_feed.csv",
+    "file": "finance_market_feed.json"
+  },
+  {
+    "key": "finance_manifold_markets.csv",
+    "file": "finance_manifold_markets.json"
+  },
+  {
+    "key": "national_cabinet_decisions.csv",
+    "file": "national_cabinet_decisions.json"
+  },
+  {
+    "key": "up_cabinet_decisions.csv",
+    "file": "up_cabinet_decisions.json"
+  },
+  {
+    "key": "climate_carbon_pricing.csv",
+    "file": "climate_carbon_pricing.json"
+  },
+  {
+    "key": "climate_price_series.csv",
+    "file": "climate_price_series.json"
+  },
+  {
+    "key": "climate_ets_timeline.csv",
+    "file": "climate_ets_timeline.json"
+  },
+  {
+    "key": "climate_cbam_watch.csv",
+    "file": "climate_cbam_watch.json"
+  },
+  {
+    "key": "climate_india_ccts.csv",
+    "file": "climate_india_ccts.json"
+  },
+  {
+    "key": "climate_registry_wire.csv",
+    "file": "climate_registry_wire.json"
+  },
+  {
+    "key": "climate_news.csv",
+    "file": "climate_news.json"
+  },
+  {
+    "key": "national_sebi_orders.csv",
+    "file": "national_sebi_orders.json"
+  },
+  {
+    "key": "geopolitics_fda_actions.csv",
+    "file": "geopolitics_fda_actions.json"
+  },
+  {
+    "key": "national_dgft_notifications.csv",
+    "file": "national_dgft_notifications.json"
+  },
+  {
+    "key": "national_ibbi_announcements.csv",
+    "file": "national_ibbi_announcements.json"
+  },
+  {
+    "key": "geopolitics_fda_import_alerts.csv",
+    "file": "geopolitics_fda_import_alerts.json"
+  },
+  {
+    "key": "finance_macro_indicators.csv",
+    "file": "finance_macro_indicators.json"
+  },
+  {
+    "key": "judiciary_nclt_orders.csv",
+    "file": "judiciary_nclt_orders.json"
+  }
+]

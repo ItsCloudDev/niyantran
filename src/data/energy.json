@@ -1,0 +1,325 @@
+{
+  "meta": {
+    "asOf": "2026-07"
+  },
+  "stats": {
+    "brent": "$90.4",
+    "wti": "$86.2",
+    "ttfGas": "€34/MWh",
+    "note": "Illustrative levels — swaps to EIA/Trading Economics live."
+  },
+  "commodities": [
+    {
+      "k": "Brent crude",
+      "v": "$90.4",
+      "chg": "+4.1%",
+      "pct": 82
+    },
+    {
+      "k": "WTI crude",
+      "v": "$86.2",
+      "chg": "+3.8%",
+      "pct": 78
+    },
+    {
+      "k": "TTF nat gas",
+      "v": "€34/MWh",
+      "chg": "+6.2%",
+      "pct": 61
+    },
+    {
+      "k": "Thermal coal",
+      "v": "$142/t",
+      "chg": "+1.1%",
+      "pct": 44
+    },
+    {
+      "k": "Uranium U3O8",
+      "v": "$88/lb",
+      "chg": "+2.4%",
+      "pct": 66
+    },
+    {
+      "k": "Copper",
+      "v": "$9,850/t",
+      "chg": "+1.9%",
+      "pct": 72
+    }
+  ],
+  "minerals": [
+    {
+      "id": "li",
+      "name": "Lithium",
+      "region": "Battery metals",
+      "lat": -23.5,
+      "lon": -67,
+      "status": "active",
+      "intensity": 74,
+      "use": "EV & grid batteries",
+      "topProducers": "Australia, Chile, China",
+      "chinaShare": "~60% refining",
+      "note": "Price recovering after 2024 glut; refining concentration is the choke.",
+      "sources": [
+        [
+          "USGS",
+          "https://www.usgs.gov/"
+        ],
+        [
+          "IEA",
+          "https://www.iea.org/"
+        ]
+      ]
+    },
+    {
+      "id": "co",
+      "name": "Cobalt",
+      "region": "Battery metals",
+      "lat": -10.7,
+      "lon": 25.5,
+      "status": "active",
+      "intensity": 70,
+      "use": "Battery cathodes, superalloys",
+      "topProducers": "DR Congo (~70%)",
+      "chinaShare": "~75% refining",
+      "note": "DRC supply + Chinese refining = high concentration risk.",
+      "sources": [
+        [
+          "USGS",
+          "https://www.usgs.gov/"
+        ]
+      ]
+    },
+    {
+      "id": "ni",
+      "name": "Nickel",
+      "region": "Battery metals",
+      "lat": -2.5,
+      "lon": 121,
+      "status": "active",
+      "intensity": 63,
+      "use": "Stainless steel, batteries",
+      "topProducers": "Indonesia (~50%), Philippines",
+      "chinaShare": "heavy Indonesian JV",
+      "note": "Indonesia flooded market; class-1 battery-grade still tight.",
+      "sources": [
+        [
+          "IEA",
+          "https://www.iea.org/"
+        ]
+      ]
+    },
+    {
+      "id": "ree",
+      "name": "Rare earths (REEs)",
+      "region": "Strategic",
+      "lat": 41.8,
+      "lon": 109.9,
+      "status": "escalating",
+      "intensity": 86,
+      "use": "Magnets, defence, EVs, wind",
+      "topProducers": "China (~60% mine, ~90% refine)",
+      "chinaShare": "~90% processing",
+      "note": "China export-control lever on Nd/Dy/Ga/Ge; West racing to build capacity.",
+      "sources": [
+        [
+          "USGS",
+          "https://www.usgs.gov/"
+        ],
+        [
+          "IEA",
+          "https://www.iea.org/"
+        ]
+      ]
+    },
+    {
+      "id": "u",
+      "name": "Uranium",
+      "region": "Nuclear fuel",
+      "lat": 47,
+      "lon": 68,
+      "status": "active",
+      "intensity": 66,
+      "use": "Nuclear power",
+      "topProducers": "Kazakhstan (~40%), Canada, Namibia",
+      "chinaShare": "growing enrichment",
+      "note": "Nuclear revival + Russia enrichment reliance drove prices up.",
+      "sources": [
+        [
+          "World Nuclear Assoc.",
+          "https://world-nuclear.org/"
+        ]
+      ]
+    },
+    {
+      "id": "ga",
+      "name": "Gallium & Germanium",
+      "region": "Semiconductor",
+      "lat": 34.3,
+      "lon": 108.9,
+      "status": "escalating",
+      "intensity": 80,
+      "use": "Chips, optics, defence",
+      "topProducers": "China (~80–98%)",
+      "chinaShare": "near-monopoly",
+      "note": "China imposed export licensing in 2023–24; direct chip-war lever.",
+      "sources": [
+        [
+          "USGS",
+          "https://www.usgs.gov/"
+        ]
+      ]
+    },
+    {
+      "id": "cu",
+      "name": "Copper",
+      "region": "Base / energy-transition",
+      "lat": -24,
+      "lon": -69,
+      "status": "active",
+      "intensity": 68,
+      "use": "Grid, EVs, everything electric",
+      "topProducers": "Chile, Peru, DR Congo",
+      "chinaShare": "~40% smelting",
+      "note": "Structural deficit looming as electrification demand outpaces supply.",
+      "sources": [
+        [
+          "USGS",
+          "https://www.usgs.gov/"
+        ]
+      ]
+    },
+    {
+      "id": "graphite",
+      "name": "Graphite",
+      "region": "Battery anodes",
+      "lat": 34.3,
+      "lon": 108.9,
+      "status": "escalating",
+      "intensity": 72,
+      "use": "Battery anodes",
+      "topProducers": "China (~65% mine, ~90% anode)",
+      "chinaShare": "~90% processing",
+      "note": "China imposed export licensing; anode chokehold on batteries.",
+      "sources": [
+        [
+          "USGS",
+          "https://www.usgs.gov/"
+        ]
+      ]
+    },
+    {
+      "id": "mn",
+      "name": "Manganese",
+      "region": "Steel / batteries",
+      "lat": -26,
+      "lon": 24,
+      "status": "active",
+      "intensity": 52,
+      "use": "Steel, battery cathodes",
+      "topProducers": "South Africa, Gabon, Australia",
+      "chinaShare": "dominant processing",
+      "note": "High-purity battery grade concentrated in China.",
+      "sources": [
+        [
+          "USGS",
+          "https://www.usgs.gov/"
+        ]
+      ]
+    },
+    {
+      "id": "pgm",
+      "name": "Platinum-group (PGMs)",
+      "region": "Catalysts / H2",
+      "lat": -25.7,
+      "lon": 27.2,
+      "status": "active",
+      "intensity": 58,
+      "use": "Catalysts, hydrogen electrolysers",
+      "topProducers": "South Africa, Russia",
+      "chinaShare": "low",
+      "note": "SA + Russia = ~80%; hydrogen economy demand driver.",
+      "sources": [
+        [
+          "USGS",
+          "https://www.usgs.gov/"
+        ]
+      ]
+    },
+    {
+      "id": "sb",
+      "name": "Antimony",
+      "region": "Defence / flame-retardant",
+      "lat": 27,
+      "lon": 111,
+      "status": "escalating",
+      "intensity": 74,
+      "use": "Munitions, semiconductors, flame retardants",
+      "topProducers": "China (~50%+)",
+      "chinaShare": "dominant + export curbs",
+      "note": "China restricted exports 2024; defence-critical squeeze.",
+      "sources": [
+        [
+          "USGS",
+          "https://www.usgs.gov/"
+        ]
+      ]
+    },
+    {
+      "id": "sn",
+      "name": "Tin",
+      "region": "Electronics solder",
+      "lat": -2.5,
+      "lon": 106,
+      "status": "active",
+      "intensity": 50,
+      "use": "Solder (all electronics)",
+      "topProducers": "China, Indonesia, Myanmar",
+      "chinaShare": "high",
+      "note": "Myanmar Wa-region mine suspensions tightened the market.",
+      "sources": [
+        [
+          "USGS",
+          "https://www.usgs.gov/"
+        ]
+      ]
+    },
+    {
+      "id": "w",
+      "name": "Tungsten",
+      "region": "Defence / tooling",
+      "lat": 30,
+      "lon": 110,
+      "status": "escalating",
+      "intensity": 66,
+      "use": "Armour-piercing, cutting tools, chips",
+      "topProducers": "China (~80%)",
+      "chinaShare": "dominant + curbs",
+      "note": "China added to export-control list; defence supply risk.",
+      "sources": [
+        [
+          "USGS",
+          "https://www.usgs.gov/"
+        ]
+      ]
+    },
+    {
+      "id": "phosphate",
+      "name": "Phosphate",
+      "region": "Food security",
+      "lat": 32,
+      "lon": -6,
+      "status": "active",
+      "intensity": 48,
+      "use": "Fertiliser (food supply)",
+      "topProducers": "Morocco (~70% reserves), China",
+      "chinaShare": "export limits",
+      "note": "Morocco holds most reserves; China curbed exports (food-security lever).",
+      "sources": [
+        [
+          "USGS",
+          "https://www.usgs.gov/"
+        ]
+      ]
+    }
+  ]
+}
