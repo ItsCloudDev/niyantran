@@ -1,0 +1,2779 @@
+[
+  {
+    "htmlTier": "sports",
+    "bucket": "Scores & Fixtures",
+    "htmlFeature": "Cricket Wire",
+    "dataset": "sports_cricket_wire.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "sports-cricket-wire"
+    ],
+    "workbookFunctions": "CRICKET WIRE",
+    "adapters": "news-search",
+    "backendRoute": "/api/feature-feed?tier=sports&feature=Cricket%20Wire",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://www.espncricinfo.com/rss/content/story/feeds/0.xml",
+    "developerNote": "ESPNcricinfo RSS · GET · RSS · auth: none"
+  },
+  {
+    "htmlTier": "sports",
+    "bucket": "Scores & Fixtures",
+    "htmlFeature": "Fixtures & Results — World Leagues",
+    "dataset": "sports_fixtures.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "sports-fixtures-and-results-world-leagues"
+    ],
+    "workbookFunctions": "FIXTURES & RESULTS — WORLD LEAGUES",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=sports&feature=Fixtures%20%26%20Results%20%E2%80%94%20World%20Leagues",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=4328",
+    "developerNote": "TheSportsDB — Premier League · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "sports",
+    "bucket": "Football Desk",
+    "htmlFeature": "Football Wire",
+    "dataset": "sports_football_wire.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "sports-football-wire"
+    ],
+    "workbookFunctions": "FOOTBALL WIRE",
+    "adapters": "news-search",
+    "backendRoute": "/api/feature-feed?tier=sports&feature=Football%20Wire",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://feeds.bbci.co.uk/sport/football/rss.xml",
+    "developerNote": "BBC Sport Football RSS · GET · RSS · auth: none"
+  },
+  {
+    "htmlTier": "sports",
+    "bucket": "Football Desk",
+    "htmlFeature": "ISL Tracker",
+    "dataset": "sports_isl.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "sports-isl-tracker"
+    ],
+    "workbookFunctions": "ISL TRACKER",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=sports&feature=ISL%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://site.api.espn.com/apis/site/v2/sports/soccer/ind.1/scoreboard",
+    "developerNote": "ESPN ISL Scoreboard API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "sports",
+    "bucket": "India Sports Desk",
+    "htmlFeature": "Indian Sports Wire",
+    "dataset": "sports_india_wire.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "sports-indian-sports-wire"
+    ],
+    "workbookFunctions": "INDIAN SPORTS WIRE",
+    "adapters": "news-search",
+    "backendRoute": "/api/feature-feed?tier=sports&feature=Indian%20Sports%20Wire",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://news.google.com/rss/search?q=India+hockey+OR+badminton+OR+kabaddi+OR+athletics+OR+chess+when:7d&hl=en-IN&gl=IN&ceid=IN:en",
+    "developerNote": "Google News RSS — Indian sports · GET · RSS · auth: none"
+  },
+  {
+    "htmlTier": "sports",
+    "bucket": "India Sports Desk",
+    "htmlFeature": "Sports Governance & Policy",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "sports-sports-governance-and-policy"
+    ],
+    "workbookFunctions": "SPORTS GOVERNANCE & POLICY",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=sports&feature=Sports%20Governance%20%26%20Policy",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Sports+Governance+and+Policy%22+sports+India&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "sports",
+    "bucket": "Sports Business",
+    "htmlFeature": "Sports Business & Media Rights",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "sports-sports-business-and-media-rights"
+    ],
+    "workbookFunctions": "SPORTS BUSINESS & MEDIA RIGHTS",
+    "adapters": "news-search",
+    "backendRoute": "/api/feature-feed?tier=sports&feature=Sports%20Business%20%26%20Media%20Rights",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://query.wikidata.org/sparql?format=json&query=SELECT+%3Fleague+%3FleagueLabel+%3Fowner+%3FownerLabel+WHERE+%7B+%3Fleague+wdt%3AP31%2Fwdt%3AP279*+wd%3AQ623109%3B+wdt%3AP17+wd%3AQ668.+OPTIONAL+%7B+%3Fleague+wdt%3AP127+%3Fowner.+%7D+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+LIMIT+500",
+    "developerNote": "Wikidata Query Service · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "sports",
+    "bucket": "Sports Business",
+    "htmlFeature": "Athlete Index",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "sports-athlete-index"
+    ],
+    "workbookFunctions": "ATHLETE INDEX",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=sports&feature=Athlete%20Index",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://query.wikidata.org/sparql?format=json&query=SELECT+%3Fperson+%3FpersonLabel+%3FsportLabel+WHERE+%7B+%3Fperson+wdt%3AP31+wd%3AQ5%3B+wdt%3AP106+wd%3AQ2066131%3B+wdt%3AP27+wd%3AQ668.+OPTIONAL+%7B+%3Fperson+wdt%3AP641+%3Fsport.+%7D+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+LIMIT+500",
+    "developerNote": "Wikidata Query Service · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "entertainment",
+    "bucket": "Screens & Streaming",
+    "htmlFeature": "TV & Streaming Tonight",
+    "dataset": "ent_tv_tonight.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "entertainment-tv-and-streaming-tonight"
+    ],
+    "workbookFunctions": "TV & STREAMING TONIGHT",
+    "adapters": "news-search",
+    "backendRoute": "/api/feature-feed?tier=entertainment&feature=TV%20%26%20Streaming%20Tonight",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.tvmaze.com/schedule?country=IN",
+    "developerNote": "TVmaze Schedule API — India · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "entertainment",
+    "bucket": "Screens & Streaming",
+    "htmlFeature": "Box Office Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "entertainment-box-office-tracker"
+    ],
+    "workbookFunctions": "BOX OFFICE TRACKER",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=entertainment&feature=Box%20Office%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://query.wikidata.org/sparql?format=json&query=SELECT+%3Ffilm+%3FfilmLabel+%3FreleaseDate+%3FboxOffice+WHERE+%7B+%3Ffilm+wdt%3AP31+wd%3AQ11424%3B+wdt%3AP495+wd%3AQ668%3B+wdt%3AP577+%3FreleaseDate.+OPTIONAL+%7B+%3Ffilm+wdt%3AP2142+%3FboxOffice.+%7D+FILTER%28%3FreleaseDate+%3E+%222024-01-01T00%3A00%3A00Z%22%5E%5Exsd%3AdateTime%29+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+ORDER+BY+DESC%28%3FreleaseDate%29+LIMIT+250",
+    "developerNote": "Wikidata Query Service · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "entertainment",
+    "bucket": "Industry Wire",
+    "htmlFeature": "Entertainment News Wire",
+    "dataset": "ent_news_wire.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "entertainment-entertainment-news-wire"
+    ],
+    "workbookFunctions": "ENTERTAINMENT NEWS WIRE",
+    "adapters": "news-search",
+    "backendRoute": "/api/feature-feed?tier=entertainment&feature=Entertainment%20News%20Wire",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Entertainment+News+Wire%22+entertainment+India&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "entertainment",
+    "bucket": "Industry Wire",
+    "htmlFeature": "Bollywood & Film Wire",
+    "dataset": "ent_bolly_wire.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "entertainment-bollywood-and-film-wire"
+    ],
+    "workbookFunctions": "BOLLYWOOD & FILM WIRE",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=entertainment&feature=Bollywood%20%26%20Film%20Wire",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Bollywood+and+Film+Wire%22+entertainment+India&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "entertainment",
+    "bucket": "Music",
+    "htmlFeature": "Music Charts — India Top 25",
+    "dataset": "ent_music_in.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "entertainment-music-charts-india-top-25"
+    ],
+    "workbookFunctions": "MUSIC CHARTS — INDIA TOP 25",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=entertainment&feature=Music%20Charts%20%E2%80%94%20India%20Top%2025",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://rss.marketingtools.apple.com/api/v2/in/music/most-played/25/songs.json",
+    "developerNote": "Apple Music RSS — India · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "entertainment",
+    "bucket": "Music",
+    "htmlFeature": "Music Charts — Global Top 25",
+    "dataset": "ent_music_us.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "entertainment-music-charts-global-top-25"
+    ],
+    "workbookFunctions": "MUSIC CHARTS — GLOBAL TOP 25",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=entertainment&feature=Music%20Charts%20%E2%80%94%20Global%20Top%2025",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://rss.marketingtools.apple.com/api/v2/us/music/most-played/25/songs.json",
+    "developerNote": "Apple Music RSS — Global/US · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "entertainment",
+    "bucket": "Screen Intelligence",
+    "htmlFeature": "OTT & Studio Intelligence",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "entertainment-ott-and-studio-intelligence"
+    ],
+    "workbookFunctions": "OTT & STUDIO INTELLIGENCE",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=entertainment&feature=OTT%20%26%20Studio%20Intelligence",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://query.wikidata.org/sparql?format=json&query=SELECT+%3Fservice+%3FserviceLabel+%3Fowner+%3FownerLabel+WHERE+%7B+%3Fservice+wdt%3AP31%2Fwdt%3AP279*+wd%3AQ159688%3B+OPTIONAL+%7B+%3Fservice+wdt%3AP127+%3Fowner.+%7D+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+LIMIT+500",
+    "developerNote": "Wikidata Query Service · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "entertainment",
+    "bucket": "Screen Intelligence",
+    "htmlFeature": "Celebrity Influence Index",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "entertainment-celebrity-influence-index"
+    ],
+    "workbookFunctions": "CELEBRITY INFLUENCE INDEX",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=entertainment&feature=Celebrity%20Influence%20Index",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://query.wikidata.org/sparql?format=json&query=SELECT+%3Fperson+%3FpersonLabel+%3Ffollowers+WHERE+%7B+%3Fperson+wdt%3AP31+wd%3AQ5%3B+wdt%3AP27+wd%3AQ668.+OPTIONAL+%7B+%3Fperson+wdt%3AP8687+%3Ffollowers.+%7D+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+ORDER+BY+DESC%28%3Ffollowers%29+LIMIT+250",
+    "developerNote": "Wikidata Query Service · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Conflict Intelligence",
+    "htmlFeature": "Open Fronts",
+    "dataset": "geopolitics_war_tracker.csv",
+    "embeddedRows": "88.0",
+    "registryKeys": [
+      "global-open-fronts"
+    ],
+    "workbookFunctions": "OPEN FRONTS",
+    "adapters": "embedded",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Open%20Fronts",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Open+Fronts%22+global&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "News & Media Monitoring",
+    "htmlFeature": "Geopolitics News Wire",
+    "dataset": "geo_news_wire.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-geopolitics-news-wire"
+    ],
+    "workbookFunctions": "GEOPOLITICS NEWS WIRE",
+    "adapters": "news-search",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Geopolitics%20News%20Wire",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Geopolitics+News+Wire%22+global&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Infra",
+    "htmlFeature": "Infra",
+    "dataset": "geopolitics_infra_projects.csv",
+    "embeddedRows": "10.0",
+    "registryKeys": [
+      "global-infra"
+    ],
+    "workbookFunctions": "INFRA",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Infra",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://search.worldbank.org/api/v2/projects?format=json&rows=500&fl=id,project_name,countryname,status,boardapprovaldate,totalamt,url",
+    "developerNote": "World Bank Projects API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Defense Intelligence",
+    "htmlFeature": "Global Intelligence",
+    "dataset": "geopolitics_defense_procurement.csv",
+    "embeddedRows": "10.0",
+    "registryKeys": [
+      "global-global-intelligence"
+    ],
+    "workbookFunctions": "GLOBAL INTELLIGENCE",
+    "adapters": "embedded",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Global%20Intelligence",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Global+Intelligence%22+global&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Diplomacy & Alliances",
+    "htmlFeature": "Alliances",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-alliances"
+    ],
+    "workbookFunctions": "ALLIANCES",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Alliances",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Alliances%22+global&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Comparative Governance",
+    "htmlFeature": "World Constitutions",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-world-constitutions"
+    ],
+    "workbookFunctions": "WORLD CONSTITUTIONS",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=World%20Constitutions",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://query.wikidata.org/sparql?format=json&query=SELECT+%3Fcountry+%3FcountryLabel+%3Fconstitution+%3FconstitutionLabel+WHERE+%7B+%3Fcountry+wdt%3AP31+wd%3AQ6256.+OPTIONAL+%7B+%3Fcountry+wdt%3AP1343+%3Fconstitution.+%7D+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+LIMIT+500",
+    "developerNote": "Wikidata Query Service · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Comparative Governance",
+    "htmlFeature": "Growth Indicators",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-growth-indicators"
+    ],
+    "workbookFunctions": "GROWTH INDICATORS",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Growth%20Indicators",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.worldbank.org/v2/country/all/indicator/NY.GDP.MKTP.KD.ZG?format=json&mrnev=1&per_page=500",
+    "developerNote": "World Bank Indicators API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Maritime & Border Security",
+    "htmlFeature": "Transit",
+    "dataset": "seaborne_ais",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-transit"
+    ],
+    "workbookFunctions": "TRANSIT",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Transit",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://opensky-network.org/api/states/all",
+    "developerNote": "OpenSky Network · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Conflict Intelligence",
+    "htmlFeature": "Conflicts",
+    "dataset": "geo_conflicts",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-conflicts"
+    ],
+    "workbookFunctions": "CONFLICTS",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Conflicts",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.reliefweb.int/v2/reports?appname=niyantran-terminal&query%5Bvalue%5D=armed%20conflict&limit=250&preset=latest",
+    "developerNote": "UN OCHA ReliefWeb API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Diplomacy",
+    "htmlFeature": "Sanctions",
+    "dataset": "geo_sanctions",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-sanctions"
+    ],
+    "workbookFunctions": "SANCTIONS",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Sanctions",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://sanctionslistservice.ofac.treas.gov/api/PublicationPreview/exports/SDN.XML",
+    "developerNote": "US Treasury OFAC Sanctions List Service · GET · XML · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Intelligence",
+    "htmlFeature": "Heads of State",
+    "dataset": "geo_leaders",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-heads-of-state"
+    ],
+    "workbookFunctions": "HEADS OF STATE",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Heads%20of%20State",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://query.wikidata.org/sparql?format=json&query=SELECT+%3Fcountry+%3FcountryLabel+%3Fhead+%3FheadLabel+WHERE+%7B+%3Fcountry+wdt%3AP31+wd%3AQ6256%3B+wdt%3AP35+%3Fhead.+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+LIMIT+500",
+    "developerNote": "Wikidata Query Service · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Diplomacy",
+    "htmlFeature": "Global Aid",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-global-aid"
+    ],
+    "workbookFunctions": "GLOBAL AID",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Global%20Aid",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.reliefweb.int/v2/reports?appname=niyantran-terminal&query%5Bvalue%5D=humanitarian%20aid&limit=250&preset=latest",
+    "developerNote": "UN OCHA ReliefWeb API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Strategic Assets",
+    "htmlFeature": "Nuclear Watch",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-nuclear-watch"
+    ],
+    "workbookFunctions": "NUCLEAR WATCH",
+    "adapters": "news-search",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Nuclear%20Watch",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Nuclear+Watch%22+global&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Geoeconomics",
+    "htmlFeature": "Global Trade",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-global-trade"
+    ],
+    "workbookFunctions": "GLOBAL TRADE",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Global%20Trade",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.worldbank.org/v2/country/all/indicator/NE.TRD.GNFS.ZS?format=json&mrnev=1&per_page=500",
+    "developerNote": "World Bank Indicators API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Geoeconomics",
+    "htmlFeature": "Critical Minerals",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-critical-minerals"
+    ],
+    "workbookFunctions": "CRITICAL MINERALS",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Critical%20Minerals",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Critical+Minerals%22+global&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Strategic Assets",
+    "htmlFeature": "Satellite Infrastructure",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-satellite-infrastructure"
+    ],
+    "workbookFunctions": "SATELLITE INFRASTRUCTURE",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Satellite%20Infrastructure",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://celestrak.org/NORAD/elements/gp.php?GROUP=active&FORMAT=JSON",
+    "developerNote": "CelesTrak GP Data · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Strategic Assets",
+    "htmlFeature": "Maritime Choke-Points",
+    "dataset": "geo_chokepoints",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-maritime-choke-points"
+    ],
+    "workbookFunctions": "MARITIME CHOKE-POINTS",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Maritime%20Choke-Points",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Maritime+Choke-Points%22+global&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Geoeconomics",
+    "htmlFeature": "Energy",
+    "dataset": "geo_energy",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-energy"
+    ],
+    "workbookFunctions": "ENERGY",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Energy",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.worldbank.org/v2/country/all/indicator/EG.USE.PCAP.KG.OE?format=json&mrnev=1&per_page=500",
+    "developerNote": "World Bank Indicators API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "geopolitics",
+    "bucket": "Intelligence",
+    "htmlFeature": "Global Commodities",
+    "dataset": "geo_commodities",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "global-global-commodities"
+    ],
+    "workbookFunctions": "GLOBAL COMMODITIES",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=geopolitics&feature=Global%20Commodities",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://thedocs.worldbank.org/en/doc/18675f1d1639c7a34d463f59263ba0a2-0050012025/related/CMO-Historical-Data-Monthly.xlsx",
+    "developerNote": "World Bank Pink Sheet · GET · XLSX · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Legislative & Policy Intelligence",
+    "htmlFeature": "Bill Passage Probability Index",
+    "dataset": "national_bill_tracker.csv",
+    "embeddedRows": "4576.0",
+    "registryKeys": [
+      "national-bill-passage-index"
+    ],
+    "workbookFunctions": "BILL PASSAGE INDEX",
+    "adapters": "bill-history",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Bill%20Passage%20Probability%20Index",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://sansad.in/api_rs/legislation/getBills?page=1&size=100&sortOn=billIntroducedDate&sortBy=desc",
+    "developerNote": "Sansad Legislation API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Legislative & Policy Intelligence",
+    "htmlFeature": "Policy Intelligence Graph",
+    "dataset": "national_bill_tracker.csv",
+    "embeddedRows": "4576.0",
+    "registryKeys": [
+      "national-policy-intelligence-graph"
+    ],
+    "workbookFunctions": "POLICY INTELLIGENCE GRAPH",
+    "adapters": "download-or-html",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Policy%20Intelligence%20Graph",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://sansad.in/api_rs/legislation/getBills?page=1&size=100&sortOn=billIntroducedDate&sortBy=desc",
+    "developerNote": "Sansad Legislation API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Regulatory & Judicial",
+    "htmlFeature": "Regulatory Body Watch (RBI/SEBI/TRAI/CCI)",
+    "dataset": "national_regulatory_watch.csv",
+    "embeddedRows": "101.0",
+    "registryKeys": [
+      "national-regulatory-watch"
+    ],
+    "workbookFunctions": "REGULATORY WATCH",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Regulatory%20Body%20Watch%20(RBI%2FSEBI%2FTRAI%2FCCI)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://www.rbi.org.in/notifications_rss.xml",
+    "developerNote": "Reserve Bank of India Notifications RSS · GET · RSS · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Government Operations",
+    "htmlFeature": "Central Tender Aggregator + Constituency Filter",
+    "dataset": "national_tender_aggregator.csv",
+    "embeddedRows": "10.0",
+    "registryKeys": [
+      "national-central-tenders"
+    ],
+    "workbookFunctions": "CENTRAL TENDERS",
+    "adapters": "embedded",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Central%20Tender%20Aggregator%20%2B%20Constituency%20Filter",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://eprocure.gov.in/epublish/app?page=FrontEndTendersByOrganisation&service=page",
+    "developerNote": "Central Public Procurement Portal · GET · HTML · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Representative Intelligence",
+    "htmlFeature": "Statement & Quote Tracker with Contradiction Detection",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "national-statements-and-contradictions"
+    ],
+    "workbookFunctions": "STATEMENTS & CONTRADICTIONS",
+    "adapters": "licensed",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Statement%20%26%20Quote%20Tracker%20with%20Contradiction%20Detection",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Statement+and+Quote+Tracker+with+Contradiction+Detection%22+India+government+parliament+policy&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "News & Media Monitoring",
+    "htmlFeature": "National Morning Brief (Auto-digest)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "national-morning-brief"
+    ],
+    "workbookFunctions": "MORNING BRIEF",
+    "adapters": "licensed",
+    "backendRoute": "/api/feature-feed?tier=national&feature=National%20Morning%20Brief%20(Auto-digest)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22National+Morning+Brief+%28Auto-digest%29%22+India+government+parliament+policy&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Electoral Data & Analytics",
+    "htmlFeature": "Candidate Affidavit Database (Structured + API)",
+    "dataset": "national_candidate_affidavit.csv",
+    "embeddedRows": "483.0",
+    "registryKeys": [
+      "national-candidate-affidavits"
+    ],
+    "workbookFunctions": "CANDIDATE AFFIDAVITS",
+    "adapters": "embedded",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Candidate%20Affidavit%20Database%20(Structured%20%2B%20API)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://dataverse.harvard.edu/api/datasets/:persistentId/?persistentId=doi:10.7910/DVN/26863",
+    "developerNote": "Harvard Dataverse API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Legislative & Policy Intelligence",
+    "htmlFeature": "Policy Pipeline Tracker (Draft-to-Gazette)",
+    "dataset": "national_policy_pipeline.csv",
+    "embeddedRows": "8.0",
+    "registryKeys": [
+      "national-policy-pipeline"
+    ],
+    "workbookFunctions": "POLICY PIPELINE",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Policy%20Pipeline%20Tracker%20(Draft-to-Gazette)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://www.pib.gov.in/ViewRss.aspx?reg=3&lang=1",
+    "developerNote": "Press Information Bureau RSS · GET · RSS · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Legislative & Policy Intelligence",
+    "htmlFeature": "Parliamentary Question Database",
+    "dataset": "national_question_database.csv",
+    "embeddedRows": "8000.0",
+    "registryKeys": [
+      "national-parliamentary-questions"
+    ],
+    "workbookFunctions": "PARLIAMENTARY QUESTIONS",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Parliamentary%20Question%20Database",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://elibrary.sansad.in/server/api/discover/search/objects?query=question&size=100&page=0",
+    "developerNote": "Sansad Digital Library Search API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Electoral Data & Analytics",
+    "htmlFeature": "Delimitation Impact Simulator",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "national-delimitation-simulator"
+    ],
+    "workbookFunctions": "DELIMITATION SIMULATOR",
+    "adapters": "internal",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Delimitation%20Impact%20Simulator",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Delimitation+Impact+Simulator%22+India+government+parliament+policy&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Government Operations",
+    "htmlFeature": "Bureaucratic Transfers — AGMUT Cadre",
+    "dataset": "national_agmut_transfers.csv",
+    "embeddedRows": "29.0",
+    "registryKeys": [
+      "national-ias-ips-transfers-agmut"
+    ],
+    "workbookFunctions": "IAS/IPS TRANSFERS (AGMUT)",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Bureaucratic%20Transfers%20%E2%80%94%20AGMUT%20Cadre",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Bureaucratic+Transfers+AGMUT+Cadre%22+India+government+parliament+policy&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Government Operations",
+    "htmlFeature": "Cabinet Decisions",
+    "dataset": "national_cabinet_decisions.csv",
+    "embeddedRows": "6.0",
+    "registryKeys": [
+      "national-cabinet-decisions"
+    ],
+    "workbookFunctions": "CABINET DECISIONS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Cabinet%20Decisions",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://www.pib.gov.in/ViewRss.aspx?reg=3&lang=1",
+    "developerNote": "Press Information Bureau RSS · GET · RSS · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Sector & Industry Intelligence",
+    "htmlFeature": "Industry Updates (Ministry Data)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "national-industry-updates"
+    ],
+    "workbookFunctions": "INDUSTRY UPDATES",
+    "adapters": "news-search",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Industry%20Updates%20(Ministry%20Data)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.worldbank.org/v2/country/IND/indicator/NV.IND.TOTL.ZS?format=json&date=2000:2030&per_page=100",
+    "developerNote": "World Bank Indicators API — India Industry · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Public Finance",
+    "htmlFeature": "Budget Utilisation & Schemes",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "national-budget-and-schemes"
+    ],
+    "workbookFunctions": "BUDGET & SCHEMES",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Budget%20Utilisation%20%26%20Schemes",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://www.indiabudget.gov.in/doc/Budget_at_Glance/budget_at_a_glance.xlsx",
+    "developerNote": "Union Budget — Budget at a Glance · GET · XLSX · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Representative Intelligence",
+    "htmlFeature": "MP Profiles & Performance (MPLAD, attendance, debates)",
+    "dataset": "national_mp_report_card.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "national-mp-report-cards"
+    ],
+    "workbookFunctions": "MP REPORT CARDS",
+    "adapters": "download-or-html",
+    "backendRoute": "/api/feature-feed?tier=national&feature=MP%20Profiles%20%26%20Performance%20(MPLAD%2C%20attendance%2C%20debates)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://sansad.in/api_ls/member?page=1&size=100",
+    "developerNote": "Sansad Members API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Government Operations",
+    "htmlFeature": "Centre-sanctioned Projects & Completion Rate",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "national-central-projects"
+    ],
+    "workbookFunctions": "CENTRAL PROJECTS",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=national&feature=Centre-sanctioned%20Projects%20%26%20Completion%20Rate",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://search.worldbank.org/api/v2/projects?format=json&rows=500&countrycode_exact=IN&fl=id,project_name,status,boardapprovaldate,totalamt,url",
+    "developerNote": "World Bank Projects API — India · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "national",
+    "bucket": "Electoral Data & Analytics",
+    "htmlFeature": "LS Manifestos & Promises Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "national-manifestos-and-promises"
+    ],
+    "workbookFunctions": "MANIFESTOS & PROMISES",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=national&feature=LS%20Manifestos%20%26%20Promises%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22LS+Manifestos+and+Promises+Tracker%22+India+government+parliament+policy&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Electoral Roll",
+    "htmlFeature": "Constituency Register",
+    "dataset": "geo_state_seats",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-constituency-register"
+    ],
+    "workbookFunctions": "CONSTITUENCY REGISTER",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=state&feature=Constituency%20Register",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.github.com/repos/thecont1/india-votes-data/contents/data/csv",
+    "developerNote": "Open Indian Election Data — GitHub API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Electoral Roll",
+    "htmlFeature": "Roll Demography",
+    "dataset": "geo_state_demog",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-roll-demography"
+    ],
+    "workbookFunctions": "ROLL DEMOGRAPHY",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=state&feature=Roll%20Demography",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.github.com/repos/raphael-susewind/india-religion-politics/contents",
+    "developerNote": "Open India Religion and Politics Data — GitHub API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Community & Society",
+    "htmlFeature": "Community Bloc Matrix",
+    "dataset": "geo_state_blocs",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-community-bloc-matrix"
+    ],
+    "workbookFunctions": "COMMUNITY BLOC MATRIX",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=state&feature=Community%20Bloc%20Matrix",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.github.com/repos/raphael-susewind/india-religion-politics/contents",
+    "developerNote": "Open India Religion and Politics Data — GitHub API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Elections",
+    "htmlFeature": "Election Results 2017–2024",
+    "dataset": "geo_state_results",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-election-results-2017-2024"
+    ],
+    "workbookFunctions": "ELECTION RESULTS 2017–2024",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=state&feature=Election%20Results%202017%E2%80%932024",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://raw.githubusercontent.com/thecont1/india-votes-data/main/data/csv/2024%20Parliamentary%20Elections%20India.csv",
+    "developerNote": "Open Indian Election Data — 2024 CSV · GET · CSV · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Elections",
+    "htmlFeature": "Split-Ticket & Competitiveness",
+    "dataset": "geo_state_split",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-split-ticket-and-competitiveness"
+    ],
+    "workbookFunctions": "SPLIT-TICKET & COMPETITIVENESS",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=state&feature=Split-Ticket%20%26%20Competitiveness",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.github.com/repos/thecont1/india-votes-data/contents/data/csv",
+    "developerNote": "Open Indian Election Data — GitHub API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Elections",
+    "htmlFeature": "MLA Directory",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-mla-directory"
+    ],
+    "workbookFunctions": "MLA DIRECTORY",
+    "adapters": "download-or-html",
+    "backendRoute": "/api/feature-feed?tier=state&feature=MLA%20Directory",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://query.wikidata.org/sparql?format=json&query=SELECT+%3Fperson+%3FpersonLabel+%3FpositionLabel+%3FstateLabel+WHERE+%7B+%3Fperson+wdt%3AP39+%3Fposition.+%3Fposition+wdt%3AP279*+wd%3AQ13218630.+OPTIONAL+%7B+%3Fposition+wdt%3AP1001+%3Fstate.+%7D+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+LIMIT+500",
+    "developerNote": "Wikidata Query Service · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Roll Integrity",
+    "htmlFeature": "SIR Roll Churn",
+    "dataset": "geo_state_churn",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-sir-roll-churn"
+    ],
+    "workbookFunctions": "SIR ROLL CHURN",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=state&feature=SIR%20Roll%20Churn",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22SIR+Roll+Churn%22+India+state+government+assembly+election&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Roll Integrity",
+    "htmlFeature": "Registration Gap",
+    "dataset": "geo_state_gap",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-registration-gap"
+    ],
+    "workbookFunctions": "REGISTRATION GAP",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=state&feature=Registration%20Gap",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.github.com/repos/thecont1/india-votes-data/contents/data/csv",
+    "developerNote": "Open Indian Election Data — GitHub API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Governance",
+    "htmlFeature": "State Governance Brief",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-state-governance-brief"
+    ],
+    "workbookFunctions": "STATE GOVERNANCE BRIEF",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=state&feature=State%20Governance%20Brief",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22State+Governance+Brief%22+India+state+government+assembly+election&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Government Operations",
+    "htmlFeature": "Bureaucrat Transfer & Posting Tracker (State Cadre)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-state-cadre-transfers"
+    ],
+    "workbookFunctions": "STATE CADRE TRANSFERS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=state&feature=Bureaucrat%20Transfer%20%26%20Posting%20Tracker%20(State%20Cadre)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Bureaucrat+Transfer+and+Posting+Tracker+%28State+Cadre%29%22+India+state+government+assembly+election&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Electoral Data & Analytics",
+    "htmlFeature": "Booth-level Results Database",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-booth-level-results"
+    ],
+    "workbookFunctions": "BOOTH-LEVEL RESULTS",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=state&feature=Booth-level%20Results%20Database",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.github.com/repos/joyboseroy/india-electoral-data-commons/contents/data/processed",
+    "developerNote": "India Electoral Data Commons — processed data · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Legislative & Policy Intelligence",
+    "htmlFeature": "Governor Assent Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-governor-and-assent"
+    ],
+    "workbookFunctions": "GOVERNOR & ASSENT",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=state&feature=Governor%20Assent%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Governor+Assent+Tracker%22+India+state+government+assembly+election&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Government Operations",
+    "htmlFeature": "State Tender Aggregator (State e-Procurement)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-state-tenders"
+    ],
+    "workbookFunctions": "STATE TENDERS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=state&feature=State%20Tender%20Aggregator%20(State%20e-Procurement)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://eprocure.gov.in/epublish/app?page=FrontEndTendersByOrganisation&service=page",
+    "developerNote": "Central Public Procurement Portal · GET · HTML · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Legislative & Policy Intelligence",
+    "htmlFeature": "Assembly Proceedings Digest (Vernacular, Translated)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-assembly-proceedings"
+    ],
+    "workbookFunctions": "ASSEMBLY PROCEEDINGS",
+    "adapters": "licensed",
+    "backendRoute": "/api/feature-feed?tier=state&feature=Assembly%20Proceedings%20Digest%20(Vernacular%2C%20Translated)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Assembly+Proceedings+Digest+%28Vernacular%2C+Translated%29%22+India+state+government+assembly+election&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Representative Intelligence",
+    "htmlFeature": "MLA Report Card + Statement Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-mla-performanc-meter"
+    ],
+    "workbookFunctions": "MLA PERFORMANCE METER",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=state&feature=MLA%20Report%20Card%20%2B%20Statement%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22MLA+Report+Card+%2B+Statement+Tracker%22+India+state+government+assembly+election&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Political Operations Intelligence",
+    "htmlFeature": "Party Organisation Map",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3AParty%2520Organisation%2520Map",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Party+Organisation+Map%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Government Operations",
+    "htmlFeature": "Centre-State Fund Flow Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-centre-state-fund-flows"
+    ],
+    "workbookFunctions": "CENTRE–STATE FUND FLOWS",
+    "adapters": "download-or-html",
+    "backendRoute": "/api/feature-feed?tier=state&feature=Centre-State%20Fund%20Flow%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://www.indiabudget.gov.in/doc/eb/stat1.xlsx",
+    "developerNote": "Union Budget — Expenditure Statement · GET · XLSX · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Electoral Data & Analytics",
+    "htmlFeature": "MLA Defection & Anti-defection Case Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3AMLA%2520Defection%2520%2526%2520Anti-defection%2520Case%2520Tracker",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22MLA+Defection++and++Anti-defection+Case+Tracker%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "News & Media Monitoring",
+    "htmlFeature": "District Media Monitor (Vernacular District Editions)",
+    "dataset": "up_district_media.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-district-media-monitor"
+    ],
+    "workbookFunctions": "DISTRICT MEDIA MONITOR",
+    "adapters": "licensed",
+    "backendRoute": "/api/feature-feed?tier=state&feature=District%20Media%20Monitor%20(Vernacular%20District%20Editions)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22District+Media+Monitor+%28Vernacular+District+Editions%29%22+India+state+government+assembly+election&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Government Operations",
+    "htmlFeature": "Cabinet Decisions",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-cabinet-decisions"
+    ],
+    "workbookFunctions": "CABINET DECISIONS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=state&feature=Cabinet%20Decisions",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Cabinet+Decisions%22+India+state+government+assembly+election&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Public Finance",
+    "htmlFeature": "State Economic Data (GSDP, sectors)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3AState%2520Economic%2520Data%2520(GSDP%252C%2520sectors)",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22State+Economic+Data+%28GSDP%2C+sectors%29%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Comparative Analytics",
+    "htmlFeature": "Cross-State Comparison Engine",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3ACross-State%2520Comparison%2520Engine",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Cross-State+Comparison+Engine%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Public Finance",
+    "htmlFeature": "State Fiscal Deep-Dive",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-state-finances"
+    ],
+    "workbookFunctions": "STATE FINANCES",
+    "adapters": "download-or-html",
+    "backendRoute": "/api/feature-feed?tier=state&feature=State%20Fiscal%20Deep-Dive",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://www.rbi.org.in/pressreleases_rss.xml",
+    "developerNote": "Reserve Bank of India Press Releases RSS · GET · RSS · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Public Finance",
+    "htmlFeature": "SDL Auction & Borrowing Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3ASDL%2520Auction%2520%2526%2520Borrowing%2520Tracker",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22SDL+Auction++and++Borrowing+Tracker%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Audit & Oversight",
+    "htmlFeature": "CAG Audit Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-cag-audit-tracker"
+    ],
+    "workbookFunctions": "CAG AUDIT TRACKER",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=state&feature=CAG%20Audit%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22CAG+Audit+Tracker%22+India+state+government+assembly+election&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Legislative & Policy Intelligence",
+    "htmlFeature": "Legislative Productivity Comparison",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3ALegislative%2520Productivity%2520Comparison",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Legislative+Productivity+Comparison%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Legislative & Policy Intelligence",
+    "htmlFeature": "Governor Friction & President's Rule Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3AGovernor%2520Friction%2520%2526%2520President's%2520Rule%2520Tracker",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Governor+Friction++and++President%27s+Rule+Tracker%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Development Indicators",
+    "htmlFeature": "NITI Aayog State Indices",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3ANITI%2520Aayog%2520State%2520Indices",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22NITI+Aayog+State+Indices%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Development Indicators",
+    "htmlFeature": "District Performance Tracker (Composite)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "state-district-profiles"
+    ],
+    "workbookFunctions": "DISTRICT PROFILES",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=state&feature=District%20Performance%20Tracker%20(Composite)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://query.wikidata.org/sparql?format=json&query=SELECT+%3Fdistrict+%3FdistrictLabel+%3Fpopulation+%3Farea+WHERE+%7B+%3Fdistrict+wdt%3AP31%2Fwdt%3AP279*+wd%3AQ1149652%3B+wdt%3AP17+wd%3AQ668.+OPTIONAL+%7B+%3Fdistrict+wdt%3AP1082+%3Fpopulation.+%7D+OPTIONAL+%7B+%3Fdistrict+wdt%3AP2046+%3Farea.+%7D+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+LIMIT+1000",
+    "developerNote": "Open India District Data — Wikidata Query Service · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Development Indicators",
+    "htmlFeature": "District Health & Nutrition Indicators",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3ADistrict%2520Health%2520%2526%2520Nutrition%2520Indicators",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22District+Health++and++Nutrition+Indicators%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Development Indicators",
+    "htmlFeature": "District Education Indicators",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3ADistrict%2520Education%2520Indicators",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22District+Education+Indicators%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Development Indicators",
+    "htmlFeature": "District Economic & Livelihood Indicators",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3ADistrict%2520Economic%2520%2526%2520Livelihood%2520Indicators",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22District+Economic++and++Livelihood+Indicators%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Development Indicators",
+    "htmlFeature": "District Agriculture & Rural Indicators",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3ADistrict%2520Agriculture%2520%2526%2520Rural%2520Indicators",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22District+Agriculture++and++Rural+Indicators%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Development Indicators",
+    "htmlFeature": "District Infrastructure & Connectivity",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3ADistrict%2520Infrastructure%2520%2526%2520Connectivity",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22District+Infrastructure++and++Connectivity%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Development Indicators",
+    "htmlFeature": "District Governance & Grievance Indicators",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3ADistrict%2520Governance%2520%2526%2520Grievance%2520Indicators",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22District+Governance++and++Grievance+Indicators%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "state",
+    "bucket": "Development Indicators",
+    "htmlFeature": "District Crime & Safety Indicators",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Astate%3A%3ADistrict%2520Crime%2520%2526%2520Safety%2520Indicators",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22District+Crime++and++Safety+Indicators%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Booth Intelligence",
+    "htmlFeature": "Booth Register",
+    "dataset": "geo_local_booths",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-booth-register"
+    ],
+    "workbookFunctions": "BOOTH REGISTER",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Booth%20Register",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.github.com/repos/joyboseroy/india-electoral-data-commons/contents/docs/data_sources.md",
+    "developerNote": "India Electoral Data Commons — source index · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Booth Intelligence",
+    "htmlFeature": "Booth Demography",
+    "dataset": "geo_local_demog",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-booth-demography"
+    ],
+    "workbookFunctions": "BOOTH DEMOGRAPHY",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Booth%20Demography",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.github.com/repos/raphael-susewind/india-religion-politics/contents",
+    "developerNote": "Open India Religion and Politics Data — GitHub API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Booth Intelligence",
+    "htmlFeature": "Booth Bloc Composition",
+    "dataset": "geo_local_blocs",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-booth-bloc-composition"
+    ],
+    "workbookFunctions": "BOOTH BLOC COMPOSITION",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Booth%20Bloc%20Composition",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.github.com/repos/raphael-susewind/india-religion-politics/contents",
+    "developerNote": "Open India Religion and Politics Data — GitHub API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Contest Analysis",
+    "htmlFeature": "Booth Political History",
+    "dataset": "geo_local_history",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-booth-political-history"
+    ],
+    "workbookFunctions": "BOOTH POLITICAL HISTORY",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Booth%20Political%20History",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.github.com/repos/thecont1/india-votes-data/contents/data/csv",
+    "developerNote": "Open Indian Election Data — GitHub API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Contest Analysis",
+    "htmlFeature": "Swing Booths",
+    "dataset": "geo_local_swing",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-swing-booths"
+    ],
+    "workbookFunctions": "SWING BOOTHS",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Swing%20Booths",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.github.com/repos/joyboseroy/india-electoral-data-commons/contents/data/processed",
+    "developerNote": "India Electoral Data Commons — processed data · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Contest Analysis",
+    "htmlFeature": "Anchor Booths",
+    "dataset": "geo_local_anchor",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-anchor-booths"
+    ],
+    "workbookFunctions": "ANCHOR BOOTHS",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Anchor%20Booths",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.github.com/repos/joyboseroy/india-electoral-data-commons/contents/data/processed",
+    "developerNote": "India Electoral Data Commons — processed data · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Roll Integrity",
+    "htmlFeature": "Booth-level Roll Churn",
+    "dataset": "geo_local_churn",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-booth-level-roll-churn"
+    ],
+    "workbookFunctions": "BOOTH-LEVEL ROLL CHURN",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Booth-level%20Roll%20Churn",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.github.com/repos/joyboseroy/india-electoral-data-commons/contents/data/processed",
+    "developerNote": "India Electoral Data Commons — processed data · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Local Governance",
+    "htmlFeature": "Local Governance Brief",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-local-governance-brief"
+    ],
+    "workbookFunctions": "LOCAL GOVERNANCE BRIEF",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Local%20Governance%20Brief",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Local+Governance+Brief%22+India+district+municipal+panchayat+local+government&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Electoral Data & Analytics",
+    "htmlFeature": "Panchayat Seat Reservation Rotation Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3APanchayat%2520Seat%2520Reservation%2520Rotation%2520Tracker",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Panchayat+Seat+Reservation+Rotation+Tracker%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Government Operations",
+    "htmlFeature": "Municipal & Panchayat Tender Aggregator",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-municipal-tenders"
+    ],
+    "workbookFunctions": "MUNICIPAL TENDERS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Municipal%20%26%20Panchayat%20Tender%20Aggregator",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://eprocure.gov.in/epublish/app?page=FrontEndTendersByOrganisation&service=page",
+    "developerNote": "Central Public Procurement Portal · GET · HTML · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Hyperlocal Intelligence",
+    "htmlFeature": "Urban Master Plan & Land Use Change Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3AUrban%2520Master%2520Plan%2520%2526%2520Land%2520Use%2520Change%2520Tracker",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Urban+Master+Plan++and++Land+Use+Change+Tracker%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Government Operations",
+    "htmlFeature": "MGNREGA Works & Muster Roll Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-mgnrega-works"
+    ],
+    "workbookFunctions": "MGNREGA WORKS",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=local&feature=MGNREGA%20Works%20%26%20Muster%20Roll%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22MGNREGA+Works+and+Muster+Roll+Tracker%22+India+district+municipal+panchayat+local+government&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Electoral Data & Analytics",
+    "htmlFeature": "Ward/Panchayat Results Database",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3AWard%252FPanchayat%2520Results%2520Database",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Ward%2FPanchayat+Results+Database%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Hyperlocal Intelligence",
+    "htmlFeature": "Building Permission & Plan Sanction Monitor",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3ABuilding%2520Permission%2520%2526%2520Plan%2520Sanction%2520Monitor",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Building+Permission++and++Plan+Sanction+Monitor%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Government Operations",
+    "htmlFeature": "Local Officer Directory + Transfer Tracker (BDO/SDO/EO)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-local-officer-directory"
+    ],
+    "workbookFunctions": "LOCAL OFFICER DIRECTORY",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Local%20Officer%20Directory%20%2B%20Transfer%20Tracker%20(BDO%2FSDO%2FEO)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Local+Officer+Directory+%2B+Transfer+Tracker+%28BDO%2FSDO%2FEO%29%22+India+district+municipal+panchayat+local+government&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Representative Intelligence",
+    "htmlFeature": "Councillor & Pradhan Profiles + Report Cards",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-councillor-and-pradhan-cards"
+    ],
+    "workbookFunctions": "COUNCILLOR & PRADHAN CARDS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Councillor%20%26%20Pradhan%20Profiles%20%2B%20Report%20Cards",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Councillor+and+Pradhan+Profiles+%2B+Report+Cards%22+India+district+municipal+panchayat+local+government&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Government Operations",
+    "htmlFeature": "Gram Panchayat Development Plan (GPDP) Fund Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-gpdp-fund-tracker"
+    ],
+    "workbookFunctions": "GPDP FUND TRACKER",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Gram%20Panchayat%20Development%20Plan%20(GPDP)%20Fund%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Gram+Panchayat+Development+Plan+%28GPDP%29+Fund+Tracker%22+India+district+municipal+panchayat+local+government&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "News & Media Monitoring",
+    "htmlFeature": "Hyperlocal News Aggregator",
+    "dataset": "local_hyper_news.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-hyperlocal-news"
+    ],
+    "workbookFunctions": "HYPERLOCAL NEWS",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Hyperlocal%20News%20Aggregator",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Hyperlocal+News+Aggregator%22+India+district+municipal+panchayat+local+government&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Audit & Oversight",
+    "htmlFeature": "MGNREGA Anomaly & Delay Analytics",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3AMGNREGA%2520Anomaly%2520%2526%2520Delay%2520Analytics",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22MGNREGA+Anomaly++and++Delay+Analytics%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Public Finance",
+    "htmlFeature": "Local Body Finance Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3ALocal%2520Body%2520Finance%2520Tracker",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Local+Body+Finance+Tracker%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Public Finance",
+    "htmlFeature": "Municipal Own-Revenue & Solvency Health",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3AMunicipal%2520Own-Revenue%2520%2526%2520Solvency%2520Health",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Municipal+Own-Revenue++and++Solvency+Health%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Service Delivery",
+    "htmlFeature": "Service-Delivery Scorecards",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3AService-Delivery%2520Scorecards",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Service-Delivery+Scorecards%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Hyperlocal Intelligence",
+    "htmlFeature": "Flagship-City Deep Dashboard",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3AFlagship-City%2520Deep%2520Dashboard",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Flagship-City+Deep+Dashboard%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Development Indicators",
+    "htmlFeature": "ULB/GP Performance Tracker (Composite)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3AULB%252FGP%2520Performance%2520Tracker%2520(Composite)",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22ULB%2FGP+Performance+Tracker+%28Composite%29%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Public Finance",
+    "htmlFeature": "GP Finance & GPDP Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3AGP%2520Finance%2520%2526%2520GPDP%2520Tracker",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22GP+Finance++and++GPDP+Tracker%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Public Finance",
+    "htmlFeature": "Municipal Finance & Solvency",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "local-municipal-finance"
+    ],
+    "workbookFunctions": "MUNICIPAL FINANCE",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=local&feature=Municipal%20Finance%20%26%20Solvency",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Municipal+Finance+and+Solvency%22+India+district+municipal+panchayat+local+government&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Public Finance",
+    "htmlFeature": "Property Tax & Own-Revenue Efficiency",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3AProperty%2520Tax%2520%2526%2520Own-Revenue%2520Efficiency",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Property+Tax++and++Own-Revenue+Efficiency%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Service Delivery",
+    "htmlFeature": "Service Delivery Scorecards (Urban)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3AService%2520Delivery%2520Scorecards%2520(Urban)",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Service+Delivery+Scorecards+%28Urban%29%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Service Delivery",
+    "htmlFeature": "GP Service & Asset Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3AGP%2520Service%2520%2526%2520Asset%2520Tracker",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22GP+Service++and++Asset+Tracker%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Electoral Data & Analytics",
+    "htmlFeature": "Local Body Election & Incumbency",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3ALocal%2520Body%2520Election%2520%2526%2520Incumbency",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Local+Body+Election++and++Incumbency%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "local",
+    "bucket": "Representative Intelligence",
+    "htmlFeature": "Elected Rep Profiles & Report Cards",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [],
+    "workbookFunctions": "",
+    "adapters": "",
+    "backendRoute": "/api/feature-feed?key=html-only%3A%3Alocal%3A%3AElected%2520Rep%2520Profiles%2520%2526%2520Report%2520Cards",
+    "mapping": "HTML-ONLY",
+    "feedGuarantee": "Feature-specific GDELT JSON feed; no homepage link, fabricated record or historical-completeness claim.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Elected+Rep+Profiles++and++Report+Cards%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Intelligence",
+    "htmlFeature": "Supreme Court Order & Judgment Feed",
+    "dataset": "judiciary_sc_orders.csv",
+    "embeddedRows": "220.0",
+    "registryKeys": [
+      "law-supreme-court-feed"
+    ],
+    "workbookFunctions": "SUPREME COURT FEED",
+    "adapters": "licensed",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Supreme%20Court%20Order%20%26%20Judgment%20Feed",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Supreme+Court+Order+and+Judgment+Feed%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Intelligence",
+    "htmlFeature": "Order Archive by Topic (Cross-Court)",
+    "dataset": "judiciary_sc_orders.csv",
+    "embeddedRows": "220.0",
+    "registryKeys": [
+      "law-order-archive"
+    ],
+    "workbookFunctions": "ORDER ARCHIVE",
+    "adapters": "download-or-html",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Order%20Archive%20by%20Topic%20(Cross-Court)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Order+Archive+by+Topic+%28Cross-Court%29%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Intelligence",
+    "htmlFeature": "District Court Case Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-district-court-case-tracker"
+    ],
+    "workbookFunctions": "DISTRICT COURT CASE TRACKER",
+    "adapters": "download-or-html",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=District%20Court%20Case%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22District+Court+Case+Tracker%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Intelligence",
+    "htmlFeature": "UP High Court (Allahabad) Order Feed",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-allahabad-hc-feed"
+    ],
+    "workbookFunctions": "ALLAHABAD HC FEED",
+    "adapters": "licensed",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=UP%20High%20Court%20(Allahabad)%20Order%20Feed",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22UP+High+Court+%28Allahabad%29+Order+Feed%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Intelligence",
+    "htmlFeature": "NGT Environmental Litigation Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-ngt-litigation"
+    ],
+    "workbookFunctions": "NGT LITIGATION",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=NGT%20Environmental%20Litigation%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22NGT+Environmental+Litigation+Tracker%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Intelligence",
+    "htmlFeature": "CAT & Consumer Disputes (NCDRC) Watch",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-cat-and-ncdrc-watch"
+    ],
+    "workbookFunctions": "CAT & NCDRC WATCH",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=CAT%20%26%20Consumer%20Disputes%20(NCDRC)%20Watch",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22CAT+and+Consumer+Disputes+%28NCDRC%29+Watch%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "International Courts",
+    "htmlFeature": "ICC Proceedings",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-icc-proceedings"
+    ],
+    "workbookFunctions": "ICC PROCEEDINGS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=ICC%20Proceedings",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=domain%3Aicc-cpi.int&mode=artlist&format=json&sort=datedesc&timespan=30d&maxrecords=250",
+    "developerNote": "GDELT DOC API — ICC · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "International Courts",
+    "htmlFeature": "ICJ Proceedings",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-icj-proceedings"
+    ],
+    "workbookFunctions": "ICJ PROCEEDINGS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=ICJ%20Proceedings",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=domain%3Aicj-cij.org&mode=artlist&format=json&sort=datedesc&timespan=30d&maxrecords=250",
+    "developerNote": "GDELT DOC API — ICJ · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Comparative Jurisprudence",
+    "htmlFeature": "Supreme Courts & precedent — United States",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-us-supreme-court"
+    ],
+    "workbookFunctions": "US SUPREME COURT",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Supreme%20Courts%20%26%20precedent%20%E2%80%94%20United%20States",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://www.courtlistener.com/api/rest/v3/search/?type=o&court=scotus&order_by=dateFiled%20desc",
+    "developerNote": "CourtListener Search API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Comparative Jurisprudence",
+    "htmlFeature": "Supreme Courts & precedent — other common-law jurisdictions",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-commonwealth-courts"
+    ],
+    "workbookFunctions": "COMMONWEALTH COURTS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Supreme%20Courts%20%26%20precedent%20%E2%80%94%20other%20common-law%20jurisdictions",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Supreme+Courts+and+precedent+other+common-law+jurisdictions%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "International Courts",
+    "htmlFeature": "WTO Dispute Settlement",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-wto-dispute-settlement"
+    ],
+    "workbookFunctions": "WTO DISPUTE SETTLEMENT",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=WTO%20Dispute%20Settlement",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=domain%3Awto.org%20dispute&mode=artlist&format=json&sort=datedesc&timespan=30d&maxrecords=250",
+    "developerNote": "GDELT DOC API — WTO disputes · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "International Courts",
+    "htmlFeature": "Regional Int'l Courts (ECtHR / CJEU / ITLOS)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-regional-courts"
+    ],
+    "workbookFunctions": "REGIONAL COURTS",
+    "adapters": "download-or-html",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Regional%20Int'l%20Courts%20(ECtHR%20%2F%20CJEU%20%2F%20ITLOS)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Regional+Int%27l+Courts+%28ECtHR+%2F+CJEU+%2F+ITLOS%29%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Analytics",
+    "htmlFeature": "Judge Analytics (Ruling Patterns)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-judge-analytics"
+    ],
+    "workbookFunctions": "JUDGE ANALYTICS",
+    "adapters": "internal",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Judge%20Analytics%20(Ruling%20Patterns)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Judge+Analytics+%28Ruling+Patterns%29%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Analytics",
+    "htmlFeature": "Case Pendency & Disposal Analytics",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-pendency-and-disposal"
+    ],
+    "workbookFunctions": "PENDENCY & DISPOSAL",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Case%20Pendency%20%26%20Disposal%20Analytics",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Case+Pendency+and+Disposal+Analytics%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Analytics",
+    "htmlFeature": "Precedent / Citation Network",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-citation-network"
+    ],
+    "workbookFunctions": "CITATION NETWORK",
+    "adapters": "internal",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Precedent%20%2F%20Citation%20Network",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Precedent+%2F+Citation+Network%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Intelligence",
+    "htmlFeature": "Constitutional Bench Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-constitution-benches"
+    ],
+    "workbookFunctions": "CONSTITUTION BENCHES",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Constitutional%20Bench%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Constitutional+Bench+Tracker%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Court Operations",
+    "htmlFeature": "Cause-List / Hearing Scheduler",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-hearing-scheduler"
+    ],
+    "workbookFunctions": "HEARING SCHEDULER",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Cause-List%20%2F%20Hearing%20Scheduler",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Cause-List+%2F+Hearing+Scheduler%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Tribunals",
+    "htmlFeature": "NCLT / NCLAT (Insolvency)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-insolvency-courts"
+    ],
+    "workbookFunctions": "INSOLVENCY COURTS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=NCLT%20%2F%20NCLAT%20(Insolvency)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22NCLT+%2F+NCLAT+%28Insolvency%29%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Tribunals",
+    "htmlFeature": "Sector Tribunals (ITAT / TDSAT / SAT / DRT)",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-sector-tribunals"
+    ],
+    "workbookFunctions": "SECTOR TRIBUNALS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Sector%20Tribunals%20(ITAT%20%2F%20TDSAT%20%2F%20SAT%20%2F%20DRT)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Sector+Tribunals+%28ITAT+%2F+TDSAT+%2F+SAT+%2F+DRT%29%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Legal Research",
+    "htmlFeature": "Professional Case-Law Database",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-case-law-library"
+    ],
+    "workbookFunctions": "CASE-LAW LIBRARY",
+    "adapters": "licensed",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Professional%20Case-Law%20Database",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Professional+Case-Law+Database%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Court Operations",
+    "htmlFeature": "HC Case Status & Cause Lists",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-hc-cause-lists"
+    ],
+    "workbookFunctions": "HC CAUSE LISTS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=HC%20Case%20Status%20%26%20Cause%20Lists",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22HC+Case+Status+and+Cause+Lists%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Analytics",
+    "htmlFeature": "HC Pendency & Disposal Analytics",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-hc-pendency"
+    ],
+    "workbookFunctions": "HC PENDENCY",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=HC%20Pendency%20%26%20Disposal%20Analytics",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22HC+Pendency+and+Disposal+Analytics%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Analytics",
+    "htmlFeature": "HC Judge Profiles & Bench Analytics",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-hc-bench-analytics"
+    ],
+    "workbookFunctions": "HC BENCH ANALYTICS",
+    "adapters": "internal",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=HC%20Judge%20Profiles%20%26%20Bench%20Analytics",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22HC+Judge+Profiles+and+Bench+Analytics%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Intelligence",
+    "htmlFeature": "HC Constitutional & PIL Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-hc-pil-tracker"
+    ],
+    "workbookFunctions": "HC PIL TRACKER",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=HC%20Constitutional%20%26%20PIL%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22HC+Constitutional+and+PIL+Tracker%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Intelligence",
+    "htmlFeature": "HC vs State Government Litigation",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-hc-vs-state"
+    ],
+    "workbookFunctions": "HC VS STATE",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=HC%20vs%20State%20Government%20Litigation",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22HC+vs+State+Government+Litigation%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Court Operations",
+    "htmlFeature": "District Court Cause Lists",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-district-court-cause-lists"
+    ],
+    "workbookFunctions": "DISTRICT COURT CAUSE LISTS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=District%20Court%20Cause%20Lists",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22District+Court+Cause+Lists%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Judicial Analytics",
+    "htmlFeature": "District Court Pendency & Disposal",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-district-pendency"
+    ],
+    "workbookFunctions": "DISTRICT PENDENCY",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=District%20Court%20Pendency%20%26%20Disposal",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22District+Court+Pendency+and+Disposal%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Justice System Data",
+    "htmlFeature": "Undertrial & Prison Data",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-prisons-and-undertrials"
+    ],
+    "workbookFunctions": "PRISONS & UNDERTRIALS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Undertrial%20%26%20Prison%20Data",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Undertrial+and+Prison+Data%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Justice System Data",
+    "htmlFeature": "Legal Aid & Lok Adalat Tracker",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-legal-aid-and-lok-adalats"
+    ],
+    "workbookFunctions": "LEGAL AID & LOK ADALATS",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Legal%20Aid%20%26%20Lok%20Adalat%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Legal+Aid+and+Lok+Adalat+Tracker%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "judiciary",
+    "bucket": "Court Operations",
+    "htmlFeature": "Local Judge & Court Directory",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "law-court-directory"
+    ],
+    "workbookFunctions": "COURT DIRECTORY",
+    "adapters": "scrape",
+    "backendRoute": "/api/feature-feed?tier=judiciary&feature=Local%20Judge%20%26%20Court%20Directory",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Local+Judge+and+Court+Directory%22+court+judgment+law+legal&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "finance",
+    "bucket": "Market Intelligence",
+    "htmlFeature": "NSE/BSE Delayed Market Feed",
+    "dataset": "finance_market_feed.csv",
+    "embeddedRows": "144.0",
+    "registryKeys": [
+      "economics-equity-market-feed"
+    ],
+    "workbookFunctions": "EQUITY MARKET FEED",
+    "adapters": "licensed",
+    "backendRoute": "/api/feature-feed?tier=finance&feature=NSE%2FBSE%20Delayed%20Market%20Feed",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://www.nseindia.com/api/allIndices",
+    "developerNote": "NSE India All Indices API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "finance",
+    "bucket": "Prediction Markets",
+    "htmlFeature": "Prediction Market Political Odds",
+    "dataset": "finance_manifold_markets.csv",
+    "embeddedRows": "500.0",
+    "registryKeys": [
+      "economics-political-prediction-markets"
+    ],
+    "workbookFunctions": "POLITICAL PREDICTION MARKETS",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=finance&feature=Prediction%20Market%20Political%20Odds",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.manifold.markets/v0/markets?limit=1000",
+    "developerNote": "Manifold Markets API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "finance",
+    "bucket": "Prediction Markets",
+    "htmlFeature": "Election Forecast Aggregator",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "economics-election-forecasts"
+    ],
+    "workbookFunctions": "ELECTION FORECASTS",
+    "adapters": "licensed",
+    "backendRoute": "/api/feature-feed?tier=finance&feature=Election%20Forecast%20Aggregator",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Election+Forecast+Aggregator%22+economy+market+policy&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "finance",
+    "bucket": "Market Intelligence",
+    "htmlFeature": "Live Global Stock Exchanges",
+    "dataset": "finance_world_exchanges.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "economics-world-exchanges"
+    ],
+    "workbookFunctions": "WORLD EXCHANGES",
+    "adapters": "licensed",
+    "backendRoute": "/api/feature-feed?tier=finance&feature=Live%20Global%20Stock%20Exchanges",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://stooq.com/q/d/l/?s=%5Espx&i=d",
+    "developerNote": "Stooq S&P 500 Daily CSV · GET · CSV · auth: none"
+  },
+  {
+    "htmlTier": "finance",
+    "bucket": "Macro & Economic Indicators",
+    "htmlFeature": "Economic Overview of All Countries",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "economics-country-economies"
+    ],
+    "workbookFunctions": "COUNTRY ECONOMIES",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=finance&feature=Economic%20Overview%20of%20All%20Countries",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.worldbank.org/v2/country/all/indicator/NY.GDP.MKTP.CD?format=json&mrnev=1&per_page=500",
+    "developerNote": "World Bank Indicators API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "finance",
+    "bucket": "Macro & Economic Indicators",
+    "htmlFeature": "Key Financial Indicators (GDP, CPI, PMI, Emp-to-Pop)",
+    "dataset": "finance_world_indicators.csv",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "economics-key-indicators"
+    ],
+    "workbookFunctions": "KEY INDICATORS",
+    "adapters": "api",
+    "backendRoute": "/api/feature-feed?tier=finance&feature=Key%20Financial%20Indicators%20(GDP%2C%20CPI%2C%20PMI%2C%20Emp-to-Pop)",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.worldbank.org/v2/country/all/indicator/NY.GDP.MKTP.KD.ZG?format=json&mrnev=1&per_page=500",
+    "developerNote": "World Bank Indicators API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "finance",
+    "bucket": "Sector & Industry Intelligence",
+    "htmlFeature": "Sector Policy — Power/Energy/Green/Critical Minerals",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "economics-sector-policy"
+    ],
+    "workbookFunctions": "SECTOR POLICY",
+    "adapters": "licensed",
+    "backendRoute": "/api/feature-feed?tier=finance&feature=Sector%20Policy%20%E2%80%94%20Power%2FEnergy%2FGreen%2FCritical%20Minerals",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.worldbank.org/v2/country/IND/indicator/EG.ELC.ACCS.ZS?format=json&date=2000:2030&per_page=100",
+    "developerNote": "World Bank Indicators API — India Energy · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "finance",
+    "bucket": "Trade & Sanctions",
+    "htmlFeature": "Trade Agreements & Economic Sanctions",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "economics-trade-and-sanctions"
+    ],
+    "workbookFunctions": "TRADE & SANCTIONS",
+    "adapters": "source-library",
+    "backendRoute": "/api/feature-feed?tier=finance&feature=Trade%20Agreements%20%26%20Economic%20Sanctions",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://comtradeapi.un.org/public/v1/preview/C/A/HS?period=2025&reporterCode=699&cmdCode=TOTAL&flowCode=M&partnerCode=0&partner2Code=0&customsCode=C00&motCode=0&maxRecords=500&typeCode=C&freqCode=A&clCode=HS",
+    "developerNote": "UN Comtrade Public API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "finance",
+    "bucket": "Sector & Industry Intelligence",
+    "htmlFeature": "Top Financial & Business Players",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "economics-business-leaders"
+    ],
+    "workbookFunctions": "BUSINESS LEADERS",
+    "adapters": "licensed",
+    "backendRoute": "/api/feature-feed?tier=finance&feature=Top%20Financial%20%26%20Business%20Players",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://query.wikidata.org/sparql?format=json&query=SELECT+%3Fperson+%3FpersonLabel+%3Fcompany+%3FcompanyLabel+WHERE+%7B+%3Fcompany+wdt%3AP31%2Fwdt%3AP279*+wd%3AQ4830453%3B+wdt%3AP17+wd%3AQ668%3B+wdt%3AP169+%3Fperson.+SERVICE+wikibase%3Alabel+%7B+bd%3AserviceParam+wikibase%3Alanguage+%22en%22.+%7D+%7D+LIMIT+500",
+    "developerNote": "Wikidata Query Service · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "finance",
+    "bucket": "Analytical Tools",
+    "htmlFeature": "Economic Simulator",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "economics-economic-simulator"
+    ],
+    "workbookFunctions": "ECONOMIC SIMULATOR",
+    "adapters": "internal",
+    "backendRoute": "/api/feature-feed?tier=finance&feature=Economic%20Simulator",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.worldbank.org/v2/country/IND/indicator/NY.GDP.MKTP.KD.ZG?format=json&date=1990:2030&per_page=100",
+    "developerNote": "World Bank Indicators API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "finance",
+    "bucket": "Sector & Industry Intelligence",
+    "htmlFeature": "AI & the Tech Industry",
+    "dataset": "",
+    "embeddedRows": "0.0",
+    "registryKeys": [
+      "economics-ai-and-tech"
+    ],
+    "workbookFunctions": "AI & TECH",
+    "adapters": "licensed",
+    "backendRoute": "/api/feature-feed?tier=finance&feature=AI%20%26%20the%20Tech%20Industry",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3",
+    "developerNote": "Press Information Bureau Technology RSS · GET · RSS · auth: none"
+  },
+  {
+    "htmlTier": "climate",
+    "bucket": "Carbon Markets",
+    "htmlFeature": "Global Carbon Pricing Tracker",
+    "dataset": "climate_carbon_pricing.csv",
+    "embeddedRows": "52.0",
+    "registryKeys": [
+      "carbon-global-carbon-pricing-tracker"
+    ],
+    "workbookFunctions": "GLOBAL CARBON PRICING TRACKER",
+    "adapters": "embedded",
+    "backendRoute": "/api/feature-feed?tier=climate&feature=Global%20Carbon%20Pricing%20Tracker",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.worldbank.org/v2/country/all/indicator/EN.GHG.CO2.MT.CE.AR5?format=json&mrnev=1&per_page=500",
+    "developerNote": "World Bank Indicators API — CO2 emissions · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "climate",
+    "bucket": "Carbon Markets",
+    "htmlFeature": "Carbon Price Monitor",
+    "dataset": "climate_price_series.csv",
+    "embeddedRows": "242.0",
+    "registryKeys": [
+      "carbon-carbon-price-monitor"
+    ],
+    "workbookFunctions": "CARBON PRICE MONITOR",
+    "adapters": "news-search",
+    "backendRoute": "/api/feature-feed?tier=climate&feature=Carbon%20Price%20Monitor",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Carbon+Price+Monitor%22+carbon+climate+emissions&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "climate",
+    "bucket": "Carbon Markets",
+    "htmlFeature": "ETS & Tax Adoption Timeline",
+    "dataset": "climate_ets_timeline.csv",
+    "embeddedRows": "52.0",
+    "registryKeys": [
+      "carbon-ets-and-tax-adoption-timeline"
+    ],
+    "workbookFunctions": "ETS & TAX ADOPTION TIMELINE",
+    "adapters": "embedded",
+    "backendRoute": "/api/feature-feed?tier=climate&feature=ETS%20%26%20Tax%20Adoption%20Timeline",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22carbon%20tax%22%20OR%20%22emissions%20trading%20system%22&mode=artlist&format=json&sort=datedesc&timespan=30d&maxrecords=250",
+    "developerNote": "GDELT DOC API — carbon pricing · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "climate",
+    "bucket": "Border Mechanisms",
+    "htmlFeature": "Carbon Border (CBAM) Watch",
+    "dataset": "climate_cbam_watch.csv",
+    "embeddedRows": "7.0",
+    "registryKeys": [
+      "carbon-carbon-border-cbam-watch"
+    ],
+    "workbookFunctions": "CARBON BORDER (CBAM) WATCH",
+    "adapters": "news-search",
+    "backendRoute": "/api/feature-feed?tier=climate&feature=Carbon%20Border%20(CBAM)%20Watch",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Carbon+Border+%28CBAM%29+Watch%22+carbon+climate+emissions&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC 2.0 API · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "climate",
+    "bucket": "India Carbon Market",
+    "htmlFeature": "India CCTS & Green Credits",
+    "dataset": "climate_india_ccts.csv",
+    "embeddedRows": "6.0",
+    "registryKeys": [
+      "carbon-india-ccts-and-green-credits"
+    ],
+    "workbookFunctions": "INDIA CCTS & GREEN CREDITS",
+    "adapters": "embedded",
+    "backendRoute": "/api/feature-feed?tier=climate&feature=India%20CCTS%20%26%20Green%20Credits",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22Carbon%20Credit%20Trading%20Scheme%22%20India&mode=artlist&format=json&sort=datedesc&timespan=30d&maxrecords=250",
+    "developerNote": "GDELT DOC API — India CCTS · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "climate",
+    "bucket": "Registries & Wire",
+    "htmlFeature": "Carbon Registry Wire",
+    "dataset": "climate_registry_wire.csv",
+    "embeddedRows": "24.0",
+    "registryKeys": [
+      "carbon-carbon-registry-wire"
+    ],
+    "workbookFunctions": "CARBON REGISTRY WIRE",
+    "adapters": "embedded",
+    "backendRoute": "/api/feature-feed?tier=climate&feature=Carbon%20Registry%20Wire",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%28Verra%20OR%20Puro.earth%20OR%20Isometric%29%20carbon%20registry&mode=artlist&format=json&sort=datedesc&timespan=30d&maxrecords=250",
+    "developerNote": "GDELT DOC API — carbon registries · GET · JSON · auth: none"
+  },
+  {
+    "htmlTier": "climate",
+    "bucket": "Registries & Wire",
+    "htmlFeature": "Climate Newswire",
+    "dataset": "climate_news.csv",
+    "embeddedRows": "38.0",
+    "registryKeys": [
+      "carbon-climate-newswire"
+    ],
+    "workbookFunctions": "CLIMATE NEWSWIRE",
+    "adapters": "news-search",
+    "backendRoute": "/api/feature-feed?tier=climate&feature=Climate%20Newswire",
+    "mapping": "WORKBOOK-MAPPED",
+    "feedGuarantee": "Direct government/open-data feed; then last-known-good archive or labelled direct-endpoint status. No homepage links.",
+    "source": "https://api.gdeltproject.org/api/v2/doc/doc?query=%22climate%20change%22&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=250",
+    "developerNote": "GDELT DOC API — climate · GET · JSON · auth: none"
+  }
+]

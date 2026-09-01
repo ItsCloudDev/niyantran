@@ -1,0 +1,470 @@
+[
+  {
+    "id": "1",
+    "jurisdiction": "Finland",
+    "first_instrument_year": "1990",
+    "ets_since": "2005",
+    "carbon_tax_since": "1990",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "2",
+    "jurisdiction": "Poland",
+    "first_instrument_year": "1990",
+    "ets_since": "2005",
+    "carbon_tax_since": "1990",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "3",
+    "jurisdiction": "Sweden",
+    "first_instrument_year": "1991",
+    "ets_since": "2005",
+    "carbon_tax_since": "1991",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "4",
+    "jurisdiction": "Norway",
+    "first_instrument_year": "1991",
+    "ets_since": "2008",
+    "carbon_tax_since": "1991",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "5",
+    "jurisdiction": "Denmark",
+    "first_instrument_year": "1992",
+    "ets_since": "2005",
+    "carbon_tax_since": "1992",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "6",
+    "jurisdiction": "Slovenia",
+    "first_instrument_year": "1996",
+    "ets_since": "2005",
+    "carbon_tax_since": "1996",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "7",
+    "jurisdiction": "Estonia",
+    "first_instrument_year": "2000",
+    "ets_since": "2005",
+    "carbon_tax_since": "2000",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "8",
+    "jurisdiction": "Latvia",
+    "first_instrument_year": "2004",
+    "ets_since": "2005",
+    "carbon_tax_since": "2004",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "9",
+    "jurisdiction": "Ireland",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "2010",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "10",
+    "jurisdiction": "Lithuania",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "11",
+    "jurisdiction": "Slovakia",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "12",
+    "jurisdiction": "Malta",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "13",
+    "jurisdiction": "Luxembourg",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "2021",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "14",
+    "jurisdiction": "Greece",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "15",
+    "jurisdiction": "Czechia",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "16",
+    "jurisdiction": "Hungary",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "2023",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "17",
+    "jurisdiction": "Cyprus",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "18",
+    "jurisdiction": "Italy",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "19",
+    "jurisdiction": "United Kingdom",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "2013",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "20",
+    "jurisdiction": "Netherlands",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "2021",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "21",
+    "jurisdiction": "Portugal",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "2015",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "22",
+    "jurisdiction": "Austria",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "23",
+    "jurisdiction": "France",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "2014",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "24",
+    "jurisdiction": "Spain",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "25",
+    "jurisdiction": "Germany",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "26",
+    "jurisdiction": "Belgium",
+    "first_instrument_year": "2005",
+    "ets_since": "2005",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "27",
+    "jurisdiction": "Romania",
+    "first_instrument_year": "2007",
+    "ets_since": "2007",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "28",
+    "jurisdiction": "Bulgaria",
+    "first_instrument_year": "2007",
+    "ets_since": "2007",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "29",
+    "jurisdiction": "Canada",
+    "first_instrument_year": "2007",
+    "ets_since": "2007",
+    "carbon_tax_since": "2008",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "30",
+    "jurisdiction": "New Zealand",
+    "first_instrument_year": "2008",
+    "ets_since": "2008",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "31",
+    "jurisdiction": "Liechtenstein",
+    "first_instrument_year": "2008",
+    "ets_since": "2008",
+    "carbon_tax_since": "2008",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "32",
+    "jurisdiction": "Iceland",
+    "first_instrument_year": "2008",
+    "ets_since": "2008",
+    "carbon_tax_since": "2010",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "33",
+    "jurisdiction": "Switzerland",
+    "first_instrument_year": "2008",
+    "ets_since": "2008",
+    "carbon_tax_since": "2008",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "34",
+    "jurisdiction": "United States",
+    "first_instrument_year": "2009",
+    "ets_since": "2009",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "35",
+    "jurisdiction": "Ukraine",
+    "first_instrument_year": "2011",
+    "ets_since": "",
+    "carbon_tax_since": "2011",
+    "instruments": "Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "36",
+    "jurisdiction": "Japan",
+    "first_instrument_year": "2012",
+    "ets_since": "",
+    "carbon_tax_since": "2012",
+    "instruments": "Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "37",
+    "jurisdiction": "Croatia",
+    "first_instrument_year": "2013",
+    "ets_since": "2013",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "38",
+    "jurisdiction": "China",
+    "first_instrument_year": "2013",
+    "ets_since": "2013",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "39",
+    "jurisdiction": "Kazakhstan",
+    "first_instrument_year": "2013",
+    "ets_since": "2013",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "40",
+    "jurisdiction": "Albania",
+    "first_instrument_year": "2014",
+    "ets_since": "",
+    "carbon_tax_since": "2014",
+    "instruments": "Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "41",
+    "jurisdiction": "Mexico",
+    "first_instrument_year": "2014",
+    "ets_since": "2021",
+    "carbon_tax_since": "2014",
+    "instruments": "ETS+Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "42",
+    "jurisdiction": "South Korea",
+    "first_instrument_year": "2015",
+    "ets_since": "2015",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "43",
+    "jurisdiction": "Chile",
+    "first_instrument_year": "2017",
+    "ets_since": "",
+    "carbon_tax_since": "2017",
+    "instruments": "Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "44",
+    "jurisdiction": "Colombia",
+    "first_instrument_year": "2017",
+    "ets_since": "",
+    "carbon_tax_since": "2017",
+    "instruments": "Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "45",
+    "jurisdiction": "Argentina",
+    "first_instrument_year": "2018",
+    "ets_since": "",
+    "carbon_tax_since": "2018",
+    "instruments": "Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "46",
+    "jurisdiction": "Singapore",
+    "first_instrument_year": "2019",
+    "ets_since": "",
+    "carbon_tax_since": "2019",
+    "instruments": "Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "47",
+    "jurisdiction": "South Africa",
+    "first_instrument_year": "2019",
+    "ets_since": "",
+    "carbon_tax_since": "2019",
+    "instruments": "Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "48",
+    "jurisdiction": "Montenegro",
+    "first_instrument_year": "2020",
+    "ets_since": "2020",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "49",
+    "jurisdiction": "Uruguay",
+    "first_instrument_year": "2022",
+    "ets_since": "",
+    "carbon_tax_since": "2022",
+    "instruments": "Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "50",
+    "jurisdiction": "Indonesia",
+    "first_instrument_year": "2023",
+    "ets_since": "2023",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "51",
+    "jurisdiction": "Australia",
+    "first_instrument_year": "2024",
+    "ets_since": "2024",
+    "carbon_tax_since": "",
+    "instruments": "ETS",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  },
+  {
+    "id": "52",
+    "jurisdiction": "Andorra",
+    "first_instrument_year": "2025",
+    "ets_since": "",
+    "carbon_tax_since": "2025",
+    "instruments": "Carbon tax",
+    "source_url": "https://ourworldindata.org/grapher/carbon-emissions-trading-system"
+  }
+]

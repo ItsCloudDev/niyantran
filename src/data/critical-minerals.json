@@ -1,0 +1,16 @@
+{
+  "asOf": "2025",
+  "note": "USGS Mineral Commodity Summaries basis",
+  "minerals": [
+    { "name": "Lithium", "producers": "Australia · Chile · China", "note": "Batteries; brine + hard-rock supply" },
+    { "name": "Cobalt", "producers": "DR Congo (~70%) · Indonesia · Russia", "note": "Cathodes; DRC concentration risk" },
+    { "name": "Nickel (class 1)", "producers": "Indonesia · Philippines · Russia", "note": "Batteries + stainless; Indonesian HPAL build-out" },
+    { "name": "Rare earths", "producers": "China · United States · Myanmar", "note": "Magnets; China dominates refining (~90%)" },
+    { "name": "Copper", "producers": "Chile · Peru · DR Congo", "note": "Grid + EV wiring; structural deficit projected" },
+    { "name": "Graphite (natural)", "producers": "China · Mozambique · Madagascar", "note": "Anodes; China export permits since 2023" },
+    { "name": "Gallium / Germanium", "producers": "China (dominant)", "note": "Semiconductors; Chinese export controls since 2023" },
+    { "name": "Manganese", "producers": "South Africa · Gabon · Australia", "note": "Steel + LMFP cathodes" },
+    { "name": "Platinum group", "producers": "South Africa · Russia · Zimbabwe", "note": "Catalysis + hydrogen electrolysers" },
+    { "name": "Uranium", "producers": "Kazakhstan · Canada · Namibia", "note": "Fuel cycle; conversion/enrichment bottlenecks" }
+  ]
+}

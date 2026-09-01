@@ -1,0 +1,22 @@
+[
+  {
+    "id": "cyber",
+    "type": "INVESTIGATION",
+    "interactive": true,
+    "title": "India's Cyber-Crime Map Just Crossed a Line",
+    "dek": "NCRB's 2024 numbers put registered cyber-crime past one lakh cases for the first time. Where it is concentrated, and what it actually is.",
+    "date": "July 2026",
+    "read": 9,
+    "thumb": "/home/zine-cyber.jpg"
+  },
+  {
+    "id": "shield",
+    "type": "INVESTIGATION",
+    "interactive": true,
+    "title": "The Architecture of Ambition: Inside India's $5 Trillion Financial Shield",
+    "dek": "How capital flight, weaponized short-sellers and South Asian crypto arbitrage forced New Delhi to rewrite the rulebook of Indian capitalism.",
+    "date": "July 2026",
+    "read": 8,
+    "thumb": "/home/zine-shield.jpg"
+  }
+]

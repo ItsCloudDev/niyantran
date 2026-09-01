@@ -1,0 +1,145 @@
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { TABS, bucketContaining, bucketsFor, modulesForTier } from '../desks/catalog.js';
+import { featureMenuLabel } from '../lib/national.js';
+import { Icon, TAB_ICON } from './Icons.jsx';
+import DeskSidebar from './DeskSidebar.jsx';
+
+function Menu({ items, active, onPick, anchor }) {
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  useLayoutEffect(() => {
+    if (!anchor) return;
+    const r = anchor.getBoundingClientRect();
+    const width = 240;
+    const left = Math.min(r.left, window.innerWidth - width - 12);
+    setPos({ top: r.bottom + 6, left: Math.max(12, left) });
+  }, [anchor]);
+  if (!anchor) return null;
+  return createPortal(
+    <ul className="drop-menu portal" role="menu" style={{ top: pos.top, left: pos.left }}>
+      {items.map((it) => (
+        <li key={it.id}>
+          <button type="button" role="menuitem" className={it.id === active ? 'on' : ''} onClick={() => onPick(it)}>
+            {it.label}
+          </button>
+        </li>
+      ))}
+    </ul>,
+    document.body,
+  );
+}
+
+export default function DeskNav({ tab, featureName, lang, onDesk, onFeature }) {
+  const [open, setOpen] = useState(null);
+  const [sideOpen, setSideOpen] = useState(false);
+  const btnRefs = useRef({});
+  const hi = lang === 'hi';
+  const active = TABS.find((t) => t.id === tab) || TABS[0];
+  const buckets = tab === 'home' ? [] : bucketsFor(modulesForTier(active.tier), active.tier);
+  const currentBucket = bucketContaining(buckets, featureName);
+  const homeTabs = TABS;
+  const onDeskPage = tab !== 'home';
+
+  useEffect(() => {
+    setSideOpen(false);
+  }, [tab]);
+
+  useEffect(() => {
+    function onDoc(e) {
+      if (e.target.closest('.desktabs') || e.target.closest('.drop-menu')) return;
+      setOpen(null);
+    }
+    document.addEventListener('mousedown', onDoc);
+    return () => document.removeEventListener('mousedown', onDoc);
+  }, []);
+
+  function labelOf(t) {
+    if (hi) return t.labelHi;
+    return t.label.charAt(0) + t.label.slice(1).toLowerCase();
+  }
+
+  return (
+    <nav className={`desktabs${tab === 'home' ? ' home-nav' : ''}`}>
+      {tab === 'home' && (
+        <button type="button" className="on" onClick={() => onDesk('home')}>
+          <Icon name="home" size={15} />
+          {hi ? 'मुखपृष्ठ' : 'Home'}
+        </button>
+      )}
+
+      {tab === 'home' &&
+        homeTabs.filter((t) => t.id !== 'home').map((t) => (
+          <button key={t.id} type="button" onClick={() => onDesk(t.id)}>
+            <Icon name={TAB_ICON[t.id] || 'globe'} size={15} />
+            {labelOf(t)}
+          </button>
+        ))}
+
+      {onDeskPage && (
+        <button
+          type="button"
+          className={`desk-menu-btn${sideOpen ? ' open' : ''}`}
+          aria-expanded={sideOpen}
+          aria-controls="desk-side-title"
+          onClick={() => setSideOpen((v) => !v)}
+        >
+          <Icon name="menu" size={16} />
+          {hi ? 'डेस्क' : 'Desks'}
+        </button>
+      )}
+
+      {onDeskPage && (
+        <button
+          type="button"
+          className="desk-current"
+          onClick={() => {
+            onDesk(tab);
+            setOpen(null);
+          }}
+        >
+          <Icon name={TAB_ICON[tab] || 'globe'} size={14} />
+          {labelOf(active)}
+          <i className="live-dot" />
+        </button>
+      )}
+
+      {buckets.map((b) => {
+        const isOn = currentBucket?.label === b.label;
+        const isOpen = open === b.label;
+        return (
+          <div key={b.label} className="drop">
+            <button
+              type="button"
+              className={isOn ? 'on' : ''}
+              aria-expanded={isOpen}
+              title={b.label}
+              ref={(el) => {
+                btnRefs.current[b.label] = el;
+              }}
+              onClick={() => {
+                if (!isOn) onFeature(b.items[0]?.htmlFeature || '');
+                setOpen(isOpen ? null : b.label);
+              }}
+            >
+              <span className="desk-pill-label">{b.label}</span>
+              <Icon name="chevron" size={12} />
+            </button>
+            {isOpen && (
+              <Menu
+                anchor={btnRefs.current[b.label]}
+                active={featureName}
+                items={b.items.map((m) => ({ id: m.htmlFeature, label: featureMenuLabel(m) }))}
+                onPick={(it) => {
+                  onFeature(it.id);
+                  setOpen(null);
+                }}
+              />
+            )}
+          </div>
+        );
+      })}
+
+      {sideOpen && <DeskSidebar tab={tab} lang={lang} onDesk={onDesk} onClose={() => setSideOpen(false)} />}
+    </nav>
+  );
+}

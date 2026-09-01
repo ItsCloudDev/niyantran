@@ -1,0 +1,44 @@
+[
+  {
+    "id": "1",
+    "milestone": "Energy Conservation (Amendment) Act enables carbon market",
+    "date": "2022-12-19",
+    "detail": "Legal basis for an Indian carbon credit trading scheme created.",
+    "source_url": "https://powermin.gov.in/"
+  },
+  {
+    "id": "2",
+    "milestone": "Carbon Credit Trading Scheme (CCTS) notified",
+    "date": "2023-06-28",
+    "detail": "MoP/BEE notify CCTS 2023; compliance + offset mechanisms; NSCICM constituted.",
+    "source_url": "https://beeindia.gov.in/en/programmes/carbon-market"
+  },
+  {
+    "id": "3",
+    "milestone": "Green Credit Programme notified",
+    "date": "2023-10-13",
+    "detail": "MoEFCC market-based incentive for environmental actions (distinct from CCTS).",
+    "source_url": "https://moefcc.gov.in/"
+  },
+  {
+    "id": "4",
+    "milestone": "CCTS amendment adds offset mechanism",
+    "date": "2024-03-01",
+    "detail": "Voluntary (offset) mechanism detailed for non-obligated entities.",
+    "source_url": "https://beeindia.gov.in/en/programmes/carbon-market"
+  },
+  {
+    "id": "5",
+    "milestone": "Compliance targets for first sectors",
+    "date": "2025-04-01",
+    "detail": "GHG-intensity targets notified for obligated entities in energy-intensive sectors (incl. aluminium, cement, pulp & paper, chlor-alkali); first cycle 2025-26.",
+    "source_url": "https://beeindia.gov.in/en/programmes/carbon-market"
+  },
+  {
+    "id": "6",
+    "milestone": "Trading platform readiness",
+    "date": "2025-10-01",
+    "detail": "Power exchanges + registry (Grid-India) prepare for Indian Carbon Market certificate trading.",
+    "source_url": "https://beeindia.gov.in/en/programmes/carbon-market"
+  }
+]

@@ -1,0 +1,72 @@
+[
+  {
+    "id": "wb_NY.GDP.MKTP.CD",
+    "indicator": "GDP (current US$)",
+    "code": "NY.GDP.MKTP.CD",
+    "value": 3956067115771.63,
+    "year": "2025",
+    "source": "World Bank",
+    "date": "2025-01-01",
+    "source_url": "https://data.worldbank.org/indicator/NY.GDP.MKTP.CD?locations=IN"
+  },
+  {
+    "id": "wb_NY.GDP.MKTP.KD.ZG",
+    "indicator": "GDP growth (annual %)",
+    "code": "NY.GDP.MKTP.KD.ZG",
+    "value": 7.56666179284244,
+    "year": "2025",
+    "source": "World Bank",
+    "date": "2025-01-01",
+    "source_url": "https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG?locations=IN"
+  },
+  {
+    "id": "wb_FP.CPI.TOTL.ZG",
+    "indicator": "Inflation, consumer prices (annual %)",
+    "code": "FP.CPI.TOTL.ZG",
+    "value": 2.39884954182294,
+    "year": "2025",
+    "source": "World Bank",
+    "date": "2025-01-01",
+    "source_url": "https://data.worldbank.org/indicator/FP.CPI.TOTL.ZG?locations=IN"
+  },
+  {
+    "id": "wb_FI.RES.TOTL.CD",
+    "indicator": "Total reserves (US$)",
+    "code": "FI.RES.TOTL.CD",
+    "value": 700073798240.701,
+    "year": "2025",
+    "source": "World Bank",
+    "date": "2025-01-01",
+    "source_url": "https://data.worldbank.org/indicator/FI.RES.TOTL.CD?locations=IN"
+  },
+  {
+    "id": "imf_NGDP_RPCH",
+    "indicator": "Real GDP growth (annual %, IMF WEO)",
+    "code": "NGDP_RPCH",
+    "value": 6.5,
+    "year": "2031",
+    "source": "IMF WEO",
+    "date": "2031-01-01",
+    "source_url": "https://www.imf.org/external/datamapper/NGDP_RPCH@WEO/IND"
+  },
+  {
+    "id": "imf_PCPIPCH",
+    "indicator": "Inflation, avg consumer prices (annual %, IMF WEO)",
+    "code": "PCPIPCH",
+    "value": 4,
+    "year": "2031",
+    "source": "IMF WEO",
+    "date": "2031-01-01",
+    "source_url": "https://www.imf.org/external/datamapper/PCPIPCH@WEO/IND"
+  },
+  {
+    "id": "imf_GGXWDG_NGDP",
+    "indicator": "General govt gross debt (% of GDP, IMF WEO)",
+    "code": "GGXWDG_NGDP",
+    "value": 77.7,
+    "year": "2031",
+    "source": "IMF WEO",
+    "date": "2031-01-01",
+    "source_url": "https://www.imf.org/external/datamapper/GGXWDG_NGDP@WEO/IND"
+  }
+]

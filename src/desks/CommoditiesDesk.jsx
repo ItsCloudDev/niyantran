@@ -1,0 +1,120 @@
+import { useMemo, useState } from 'react';
+import AiPanel from '../ai/AiPanel.jsx';
+import { exportJson, GeoAi, GeoDossierChrome, GeoSources } from './GeoDossier.jsx';
+
+const AI_SUMMARY =
+  'Energy and precious metals carry a geopolitical risk premium (Middle East, Red Sea, safe-haven gold). Soft commodities (cocoa, coffee) are climate-driven. The through-line to watch: any Hormuz/Red Sea shock transmits straight into oil, freight and food-import inflation for net importers like India.';
+
+const PROMPTS = [
+  [
+    'Inflation transmission',
+    'Trace how the current commodity picture flows into Indian CPI and the rupee.',
+  ],
+  [
+    'Supply shocks',
+    'Which commodities are most exposed to a geopolitical supply shock in the next quarter?',
+  ],
+  ['Safe havens', 'Explain the gold move in the context of current geopolitical risk.'],
+];
+
+const SOURCES = [
+  ['Trading Economics', 'https://tradingeconomics.com/commodities'],
+  ['CME Group', 'https://www.cmegroup.com/'],
+  ['World Bank Pink Sheet', 'https://www.worldbank.org/en/research/commodity-markets'],
+];
+
+function groupsFrom(feed) {
+  if (Array.isArray(feed?.meta?.groups) && feed.meta.groups.length) return feed.meta.groups;
+  const map = new Map();
+  for (const r of feed?.rows || []) {
+    const g = r.group || 'Other';
+    if (!map.has(g)) map.set(g, []);
+    map.get(g).push([r.commodity || r.title, r.level, r.change, r.pct]);
+  }
+  return [...map.entries()].map(([g, items]) => ({ g, items }));
+}
+
+function BarRow({ label, pct, val, up }) {
+  const n = Math.max(2, Math.min(100, Number(pct) || 2));
+  return (
+    <div className="geo-bar">
+      <span className="geo-bar-l">{label}</span>
+      <span className="geo-bar-t">
+        <i style={{ width: `${n}%`, background: up ? '#22c55e' : '#ef4444' }} />
+      </span>
+      <span className={`geo-bar-v${up ? ' up' : ' down'}`}>{val}</span>
+    </div>
+  );
+}
+
+function GroupPanel({ title, items }) {
+  return (
+    <section className="geo-panel">
+      <div className="geo-panel-h">
+        <span>{title}</span>
+      </div>
+      <div className="geo-panel-b">
+        {items.map((it) => {
+          const [name, level, change, pct] = it;
+          const up = String(change || '').trim().startsWith('+');
+          return <BarRow key={name} label={name} pct={pct} val={`${level}  ${change}`} up={up} />;
+        })}
+      </div>
+    </section>
+  );
+}
+
+export default function CommoditiesDesk({ feed, selected, onSelect }) {
+  const [tab, setTab] = useState('analytics');
+  const groups = useMemo(() => groupsFrom(feed), [feed]);
+  const stats = feed?.meta?.stats || {};
+  const asOfLabel = String(feed?.meta?.asOf || '2026-07');
+  const n = stats.tracked || feed?.rows?.length || 0;
+
+  function goAsk() {
+    setTab('ai');
+    onSelect?.(selected || feed?.rows?.[0] || null);
+  }
+
+  return (
+    <>
+      <GeoDossierChrome
+        title="GLOBAL COMMODITIES"
+        tag="GLOBAL COMMODITIES"
+        subtitle={`AS OF ${asOfLabel.toUpperCase()} · ${n} BENCHMARKS`}
+        kpis={[
+          [n, 'Benchmarks', 'acc'],
+          [stats.gainers ?? 0, 'Gainers', 'acc'],
+          [stats.losers ?? 0, 'Losers', 'bad'],
+          [groups.length || 4, 'Complexes'],
+          [stats.riskPremium || '—', 'Risk premium', 'warn'],
+          ['Live', 'API-ready', 'acc'],
+        ]}
+        tab={tab}
+        onTab={setTab}
+        onExport={() => exportJson('commodities', { asOf: asOfLabel, stats, groups })}
+        onAsk={goAsk}
+      >
+        <div className="geo-grid">
+            <div>
+              {groups.slice(0, 2).map((g) => (
+                <GroupPanel key={g.g} title={g.g} items={g.items || []} />
+              ))}
+            </div>
+            <div>
+              <GeoAi summary={AI_SUMMARY} prompts={PROMPTS} onAsk={goAsk} />
+              {groups.slice(2).map((g) => (
+                <GroupPanel key={g.g} title={g.g} items={g.items || []} />
+              ))}
+              <GeoSources links={SOURCES} asOf={asOfLabel} />
+            </div>
+          </div>
+      </GeoDossierChrome>
+      {tab === 'ai' ? (
+        <div className="gld-ai-wrap">
+          <AiPanel feed={feed} selected={selected} lang="en" />
+        </div>
+      ) : null}
+    </>
+  );
+}
