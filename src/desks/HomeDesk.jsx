@@ -1,12 +1,20 @@
 import { useEffect, useState } from 'react';
 import ads from '../data/home-ads.json';
 import zine from '../data/home-zine.json';
+import { homeLatestFromStatic, homeMarketsFromStatic, homePulseFromStatic } from '../lib/homeStatic.js';
 
 async function getJson(path, signal) {
-  const res = await fetch(path, { signal });
-  const body = await res.json().catch(() => null);
-  if (!res.ok || !body) throw new Error(body?.error || `HTTP ${res.status}`);
-  return body;
+  try {
+    const res = await fetch(path, { signal });
+    const body = await res.json().catch(() => null);
+    if (res.ok && body && (body.rows?.length || body.ok !== false)) return body;
+  } catch (err) {
+    if (err?.name === 'AbortError') throw err;
+  }
+  if (path === '/api/home/markets') return homeMarketsFromStatic(signal);
+  if (path === '/api/home/latest') return homeLatestFromStatic(signal);
+  if (path === '/api/home/pulse') return homePulseFromStatic(signal);
+  throw new Error(`HTTP ${path} unavailable`);
 }
 
 function fmtPx(n) {

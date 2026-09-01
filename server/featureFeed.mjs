@@ -20,8 +20,13 @@ const APP_ROOT = path.resolve(__dirname, '..');
 const REPO_ROOT = path.resolve(APP_ROOT, '..');
 const REGISTRY_PATH = path.join(APP_ROOT, 'src', 'data', 'source-registry.json');
 const FEATURES_PATH = path.join(APP_ROOT, 'src', 'data', 'html-feature-map.json');
-const MANIFEST_PATH = path.join(REPO_ROOT, 'data', 'embedded_csv', '_manifest.json');
-const EMBEDDED_DIR = path.join(REPO_ROOT, 'data', 'embedded_csv');
+const EMBEDDED_DIRS = [
+  path.join(APP_ROOT, 'public', 'data', 'embedded_csv'),
+  path.join(REPO_ROOT, 'data', 'embedded_csv'),
+];
+const MANIFEST_PATH = EMBEDDED_DIRS.map((d) => path.join(d, '_manifest.json')).find((p) => fs.existsSync(p))
+  || path.join(EMBEDDED_DIRS[0], '_manifest.json');
+const EMBEDDED_DIR = EMBEDDED_DIRS.find((d) => fs.existsSync(d)) || EMBEDDED_DIRS[0];
 
 const FETCH_MS = 12_000;
 const MAX_BYTES = 8 * 1024 * 1024;
