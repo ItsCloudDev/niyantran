@@ -1,6 +1,7 @@
 import { INDUSTRY_V1 } from '../data/nationalCurated.js';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import TableFilterPop from '../shell/TableFilterPop.jsx';
 
 export default function IndustryDesk({ feed, statusRow, selected, onSelect, vizFilter, onClearViz }) {
   const rows = (feed?.rows || []).filter((r) => r.status !== 'source_status').filter((r) => applyVizFilter(r, vizFilter));
@@ -11,6 +12,7 @@ export default function IndustryDesk({ feed, statusRow, selected, onSelect, vizF
         <h1>INDUSTRY UPDATES</h1>
         <span className={`live-feed${rows.length ? ' on' : ''}`}>{rows.length ? 'WORLD BANK' : 'OFFLINE'}</span>
         <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+        <TableFilterPop feed={feed} vizFilter={vizFilter} onClearViz={onClearViz} />
       </div>
       <div className="desk-strip">
         <span>INDUSTRY MONITOR — WORLD BANK WDI</span>

@@ -50,8 +50,10 @@ const WIRES = [
 ];
 
 const SNAPSHOT_MAX_AGE_H = 24;
+const DEFAULT_HOME_MAX_AGE_H = 6;
 
 let ohlcCache = null;
+const homeRefreshInflight = Object.create(null);
 let marketFeedCache = null;
 let warCache = null;
 
@@ -168,6 +170,61 @@ function readDiskSnapshot(feed) {
   return d;
 }
 
+function writeDiskSnapshot(feed, body) {
+  const rows = Array.isArray(body?.rows) ? body.rows : [];
+  if (!rows.length) return;
+  try {
+    fs.mkdirSync(PUBLIC_DATA, { recursive: true });
+    const out = {
+      updated: new Date().toISOString(),
+      rows,
+      note: body.note || '',
+      source: body.source || 'snapshot',
+      gdelt: Boolean(body.gdelt),
+      archive: Boolean(body.archive),
+    };
+    if (body.meta) out.meta = body.meta;
+    fs.writeFileSync(path.join(PUBLIC_DATA, `${feed}.json`), JSON.stringify(out));
+  } catch (err) {
+    console.warn('[home-cache] write failed', feed, err.message);
+  }
+}
+
+function snapshotPayload(snap, extra = {}) {
+  return {
+    ok: true,
+    rows: snap.rows,
+    source: snap.source || 'snapshot',
+    note: snap.note,
+    gdelt: Boolean(snap.gdelt),
+    archive: Boolean(snap.archive) || snap.__ageH > SNAPSHOT_MAX_AGE_H,
+    ageH: snap.__ageH,
+    updated: snap.updated,
+    cached: true,
+    ...extra,
+  };
+}
+
+function scheduleHomeRefresh(feed, fn) {
+  if (homeRefreshInflight[feed]) return;
+  homeRefreshInflight[feed] = true;
+  Promise.resolve()
+    .then(fn)
+    .then((body) => {
+      if (body?.rows?.length) writeDiskSnapshot(feed, body);
+    })
+    .catch((err) => console.warn('[home-cache] refresh', feed, err?.message || err))
+    .finally(() => {
+      homeRefreshInflight[feed] = false;
+    });
+}
+
+function maxAgeFromUrl(url) {
+  const n = Number(url.searchParams.get('maxAgeH'));
+  if (Number.isFinite(n) && n > 0 && n <= 72) return n;
+  return DEFAULT_HOME_MAX_AGE_H;
+}
+
 export async function serveOhlc(symbol, range = '1mo') {
   const sym = String(symbol || '').trim();
   if (!sym) return { error: 'symbol required' };
@@ -216,11 +273,7 @@ function snapshotMarketsFromArchive() {
   return { updated, rows };
 }
 
-export async function serveHomeMarkets() {
-  const snap = readDiskSnapshot('markets');
-  if (snap?.rows?.some((r) => r?.last != null) && snap.__ageH <= SNAPSHOT_MAX_AGE_H) {
-    return { ok: true, rows: snap.rows.filter((r) => r.last != null), source: 'snapshot', ageH: snap.__ageH };
-  }
+async function fetchLiveMarkets() {
   const rows = await Promise.all(TICKERS.map(([name, symbol]) => liveQuote(name, symbol)));
   const live = rows.filter(Boolean);
   if (live.some((r) => r.last != null && !r.archive)) {
@@ -245,6 +298,34 @@ export async function serveHomeMarkets() {
     source: 'Original HTML OHLC / NSE market-feed snapshot.',
     archive: true,
   };
+}
+
+export async function serveHomeMarkets(opts = {}) {
+  const maxAgeH = opts.maxAgeH ?? DEFAULT_HOME_MAX_AGE_H;
+  const fresh = Boolean(opts.fresh);
+  if (!fresh) {
+    const snap = readDiskSnapshot('markets');
+    if (snap?.rows?.some((r) => r?.last != null)) {
+      if (snap.__ageH > maxAgeH) scheduleHomeRefresh('markets', fetchLiveMarkets);
+      return snapshotPayload(snap, { source: snap.source || 'snapshot' });
+    }
+    const arch = snapshotMarketsFromArchive();
+    if (arch.rows?.length) {
+      writeDiskSnapshot('markets', { ...arch, archive: true, source: 'Original HTML OHLC / NSE market-feed snapshot.' });
+      scheduleHomeRefresh('markets', fetchLiveMarkets);
+      return {
+        ok: true,
+        rows: arch.rows,
+        source: 'Original HTML OHLC / NSE market-feed snapshot.',
+        archive: true,
+        cached: true,
+        ageH: 0,
+      };
+    }
+  }
+  const live = await fetchLiveMarkets();
+  writeDiskSnapshot('markets', live);
+  return live;
 }
 
 function decodeXml(s) {
@@ -302,17 +383,7 @@ function ago(iso) {
   return `${Math.round(s / 86400)} d`;
 }
 
-export async function serveHomeLatest() {
-  const snap = readDiskSnapshot('news');
-  if (snap?.rows?.length && snap.__ageH <= SNAPSHOT_MAX_AGE_H) {
-    return {
-      ok: true,
-      rows: snap.rows.map((r) => ({ ...r, ago: r.ago || ago(r.pub) })),
-      note: 'Agent snapshot (same /data/news.json the HTML home reads).',
-      source: 'snapshot',
-      ageH: snap.__ageH,
-    };
-  }
+async function fetchLiveLatest() {
   const batches = await Promise.all(
     WIRES.map(async (w) => {
       try {
@@ -333,12 +404,34 @@ export async function serveHomeLatest() {
   if (rows.length) {
     return { ok: true, rows, note: 'Headlines from The Wire, OCCRP, Scroll.in and The Hindu RSS — same feeds as the HTML home.' };
   }
+  return null;
+}
+
+export async function serveHomeLatest(opts = {}) {
+  const maxAgeH = opts.maxAgeH ?? DEFAULT_HOME_MAX_AGE_H;
+  const fresh = Boolean(opts.fresh);
+  if (!fresh) {
+    const snap = readDiskSnapshot('news');
+    if (snap?.rows?.length) {
+      if (snap.__ageH > maxAgeH) scheduleHomeRefresh('news', fetchLiveLatest);
+      return {
+        ...snapshotPayload(snap),
+        rows: snap.rows.map((r) => ({ ...r, ago: r.ago || ago(r.pub) })),
+        note: snap.note || 'Saved home-desk headlines. Live RSS refreshes on the admin interval.',
+      };
+    }
+  }
+  const live = await fetchLiveLatest();
+  if (live?.rows?.length) {
+    writeDiskSnapshot('news', live);
+    return live;
+  }
+  const snap = readDiskSnapshot('news');
   if (snap?.rows?.length) {
     return {
-      ok: true,
+      ...snapshotPayload(snap),
       rows: snap.rows.map((r) => ({ ...r, ago: r.ago || ago(r.pub) })),
-      note: 'Live RSS unreachable. Showing the HTML news snapshot.',
-      source: 'snapshot',
+      note: 'Live RSS unreachable. Showing the last saved headlines.',
       archive: true,
     };
   }
@@ -437,9 +530,93 @@ export async function serveConflict(days = 2, topic = '') {
   return conflictFromWarTracker();
 }
 
-export async function serveHomePulse() {
-  const body = await serveConflict(2);
-  return { ...body, rows: (body.rows || []).slice(0, 8) };
+async function fetchLiveConflict() {
+  const span = '2d';
+  const q = '(war OR conflict OR ceasefire OR airstrike)';
+  const url = `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(q)}&mode=artlist&format=json&sort=datedesc&timespan=${span}&maxrecords=75`;
+  try {
+    const text = await fetchText(url, 15000);
+    const j = JSON.parse(text);
+    const arts = j?.articles || [];
+    const seen = new Set();
+    const rows = [];
+    let deduped = 0;
+    for (const a of arts) {
+      const title = (a.title || '').trim();
+      const key = title.toLowerCase().replace(/\s+/g, ' ').slice(0, 80);
+      if (!title || seen.has(key)) {
+        if (title) deduped += 1;
+        continue;
+      }
+      seen.add(key);
+      rows.push({
+        title,
+        link: a.url || '',
+        time: gdeltTime(a.seendate),
+        region: a.sourcecountry || '',
+        source: a.domain || '',
+        outlets: a.domain || '',
+      });
+    }
+    if (rows.length) {
+      return {
+        ok: true,
+        rows,
+        gdelt: true,
+        meta: { unique: rows.length, deduped, window: span },
+        note: 'GDELT DOC 2.0 reporting search — not an official dataset.',
+      };
+    }
+  } catch {
+    /* fall through */
+  }
+  return conflictFromWarTracker();
+}
+
+export async function serveHomePulse(opts = {}) {
+  const maxAgeH = opts.maxAgeH ?? DEFAULT_HOME_MAX_AGE_H;
+  const fresh = Boolean(opts.fresh);
+  if (!fresh) {
+    const snap = readDiskSnapshot('conflict');
+    if (snap?.rows?.length) {
+      if (snap.__ageH > maxAgeH) scheduleHomeRefresh('conflict', fetchLiveConflict);
+      return { ...snapshotPayload(snap), rows: snap.rows.slice(0, 8) };
+    }
+    const war = conflictFromWarTracker();
+    if (war.rows?.length) {
+      writeDiskSnapshot('conflict', war);
+      scheduleHomeRefresh('conflict', fetchLiveConflict);
+      return { ...war, rows: war.rows.slice(0, 8), cached: true, ageH: 0 };
+    }
+  }
+  const live = await fetchLiveConflict();
+  writeDiskSnapshot('conflict', live);
+  return { ...live, rows: (live.rows || []).slice(0, 8) };
+}
+
+let fullRefreshInflight = null;
+
+export async function refreshHomeSnapshots() {
+  if (fullRefreshInflight) return fullRefreshInflight;
+  fullRefreshInflight = (async () => {
+    const [markets, news, conflict] = await Promise.all([
+      fetchLiveMarkets().catch(() => null),
+      fetchLiveLatest().catch(() => null),
+      fetchLiveConflict().catch(() => null),
+    ]);
+    if (markets?.rows?.length) writeDiskSnapshot('markets', markets);
+    if (news?.rows?.length) writeDiskSnapshot('news', news);
+    if (conflict?.rows?.length) writeDiskSnapshot('conflict', conflict);
+    return {
+      ok: true,
+      markets: markets?.rows?.length || 0,
+      news: news?.rows?.length || 0,
+      conflict: conflict?.rows?.length || 0,
+    };
+  })().finally(() => {
+    fullRefreshInflight = null;
+  });
+  return fullRefreshInflight;
 }
 
 function snapshotConflictFile() {
@@ -469,6 +646,10 @@ export async function handleHomeApi(req, res, next) {
     p === '/data/news.json';
   if (!homeish) {
     next();
+    return;
+  }
+  if (p === '/api/home/refresh' && (req.method === 'POST' || req.method === 'GET')) {
+    json(res, await refreshHomeSnapshots());
     return;
   }
   if (req.method !== 'GET' && req.method !== 'HEAD') {
@@ -515,15 +696,15 @@ export async function handleHomeApi(req, res, next) {
       return;
     }
     if (p === '/api/home/markets') {
-      json(res, await serveHomeMarkets());
+      json(res, await serveHomeMarkets({ maxAgeH: maxAgeFromUrl(url), fresh: url.searchParams.get('fresh') === '1' }));
       return;
     }
     if (p === '/api/home/latest') {
-      json(res, await serveHomeLatest());
+      json(res, await serveHomeLatest({ maxAgeH: maxAgeFromUrl(url), fresh: url.searchParams.get('fresh') === '1' }));
       return;
     }
     if (p === '/api/home/pulse') {
-      json(res, await serveHomePulse());
+      json(res, await serveHomePulse({ maxAgeH: maxAgeFromUrl(url), fresh: url.searchParams.get('fresh') === '1' }));
       return;
     }
     next();

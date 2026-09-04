@@ -5,8 +5,11 @@ import {
   obligationClass,
   statsFor,
 } from '../lib/alliances.js';
+import { applyVizFilter } from '../lib/nationalKpi.js';
+import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
+import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 
-export default function AlliancesMonitor({ feed, selected, onSelect, flags }) {
+export default function AlliancesMonitor({ feed, selected, onSelect, flags, vizFilter, onClearViz }) {
   const list = useMemo(
     () => (feed?.rows || []).map((r) => hydrateAlliance(r, flags)).filter((p) => p?.id),
     [feed, flags],
@@ -25,16 +28,17 @@ export default function AlliancesMonitor({ feed, selected, onSelect, flags }) {
   const view = useMemo(() => {
     const n = q.trim().toLowerCase();
     return list.filter((p) => {
-      if (region && p.region !== region) return false;
-      if (category && p.category !== category) return false;
-      if (obligation && obligationClass(p) !== obligation) return false;
+      if (!matchesChoice(region, p.region)) return false;
+      if (!matchesChoice(category, p.category)) return false;
+      if (!matchesChoice(obligation, obligationClass(p))) return false;
+      if (!applyVizFilter(p.row || p, vizFilter)) return false;
       if (!n) return true;
       const hay = [p.name, p.short, p.category, p.region, p.legalBasis, p.scope, p.latest, p.agenda.join(' '), p.members.join(' ')]
         .join(' ')
         .toLowerCase();
       return hay.includes(n);
     });
-  }, [list, q, region, category, obligation]);
+  }, [list, q, region, category, obligation, vizFilter]);
 
   const newest = useMemo(
     () => [...list].sort((a, b) => String(b.latestDate).localeCompare(String(a.latestDate))).slice(0, 8),
@@ -85,6 +89,19 @@ export default function AlliancesMonitor({ feed, selected, onSelect, flags }) {
         >
           ✓ LIVE FEED
         </button>
+        <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+        <TableFilterPop
+          extraGroups={[
+            choiceGroup('Region', regions, region, setRegion, { allLabel: 'All regions' }),
+            choiceGroup('Structure', categories, category, setCategory, { allLabel: 'All structures' }),
+            choiceGroup('Obligation', OBLIGATIONS, obligation, setObligation, { allLabel: 'All obligations' }),
+          ]}
+          q={q}
+          onQ={setQ}
+          searchPlaceholder="Search alliance, member, treaty or agenda"
+          vizFilter={vizFilter}
+          onClearViz={onClearViz}
+        />
       </div>
       {liveOpen && current && (
         <aside className="alw-live" aria-label="Live alliance feed">
@@ -156,40 +173,6 @@ export default function AlliancesMonitor({ feed, selected, onSelect, flags }) {
               <span>Complete dossiers</span>
             </div>
           </div>
-        </div>
-        <div className="alw-feedtools">
-          <input
-            className="alw-search"
-            type="search"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search alliance, member, treaty or agenda"
-            aria-label="Filter alliances"
-          />
-          <select className="alw-select" value={region} onChange={(e) => setRegion(e.target.value)} aria-label="Filter by region">
-            <option value="">All regions</option>
-            {regions.map((r) => (
-              <option key={r} value={r}>
-                {r}
-              </option>
-            ))}
-          </select>
-          <select className="alw-select" value={category} onChange={(e) => setCategory(e.target.value)} aria-label="Filter by structure">
-            <option value="">All structures</option>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
-            ))}
-          </select>
-          <select className="alw-select" value={obligation} onChange={(e) => setObligation(e.target.value)} aria-label="Filter by obligation">
-            <option value="">All obligations</option>
-            {OBLIGATIONS.map((o) => (
-              <option key={o} value={o}>
-                {o}
-              </option>
-            ))}
-          </select>
         </div>
         <div className="alw-resultbar">
           <span>

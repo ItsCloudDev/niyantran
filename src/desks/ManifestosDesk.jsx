@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { MANIFESTO_LIBRARY, UNION_PROMISES } from '../data/nationalCurated.js';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
 
 function curatedRows() {
   return UNION_PROMISES.map(([promise, domain, verifiable_status]) => ({
@@ -21,7 +22,7 @@ export default function ManifestosDesk({ selected, onSelect, onFeed, vizFilter, 
   const filtered = rows.filter(
     (r) =>
       applyVizFilter(r, vizFilter) &&
-      (domain === 'all' || r.domain === domain) &&
+      matchesChoice(domain, r.domain, 'all') &&
       (year === 'all' || String(r.cycle || '2024') === year),
   );
 
@@ -52,6 +53,12 @@ export default function ManifestosDesk({ selected, onSelect, onFeed, vizFilter, 
         <h1>MANIFESTOS & PROMISES</h1>
         <span className="live-feed">CURATED</span>
         <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+        <TableFilterPop
+          feed={{ feature: 'LS Manifestos & Promises Tracker', rows }}
+          vizFilter={vizFilter}
+          onClearViz={onClearViz}
+          extraGroups={[choiceGroup('Domain', domains, domain, setDomain, { allValue: 'all', allLabel: 'All domains' })]}
+        />
       </div>
       <div className="desk-strip">
         <span>UNION MANIFESTO TRACKER — 2024 PROMISES</span>
@@ -71,11 +78,6 @@ export default function ManifestosDesk({ selected, onSelect, onFeed, vizFilter, 
         <button type="button" className="nls-chip" disabled title="Party is not a column on these Union 2024 rows">
           Filter by party
         </button>
-        {['all', ...domains].map((d) => (
-          <button key={d} type="button" className={`nls-chip${domain === d ? ' on' : ''}`} onClick={() => setDomain(d)}>
-            {d === 'all' ? 'All domains' : d}
-          </button>
-        ))}
       </div>
       <div className="table-wrap">
         <table className="feed-table">

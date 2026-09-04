@@ -34,7 +34,13 @@ export default function DeskSidebar({ tab, lang, onDesk, onClose }) {
       <button type="button" className="desk-side-scrim" aria-label={hi ? 'बंद करें' : 'Close menu'} onClick={onClose} />
       <aside className="desk-side" role="dialog" aria-modal="true" aria-labelledby="desk-side-title">
         <header className="desk-side-head">
-          <h2 id="desk-side-title">{hi ? 'डेस्क' : 'Desks'}</h2>
+          <div className="desk-side-brand">
+            <img src="/brand/logo.png?v=2" alt="" />
+            <div>
+              <b>TERMINAL</b>
+              <h2 id="desk-side-title">{hi ? 'डेस्क' : 'Desks'}</h2>
+            </div>
+          </div>
           <button type="button" className="icon-btn" onClick={onClose} aria-label={hi ? 'बंद करें' : 'Close'}>
             <Icon name="close" />
           </button>

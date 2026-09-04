@@ -5,18 +5,24 @@ import { featureMenuLabel } from '../lib/national.js';
 import { Icon, TAB_ICON } from './Icons.jsx';
 import DeskSidebar from './DeskSidebar.jsx';
 
-function Menu({ items, active, onPick, anchor }) {
+function Menu({ items, active, onPick, anchor, onKeep, onLeave }) {
   const [pos, setPos] = useState({ top: 0, left: 0 });
   useLayoutEffect(() => {
     if (!anchor) return;
     const r = anchor.getBoundingClientRect();
     const width = 240;
     const left = Math.min(r.left, window.innerWidth - width - 12);
-    setPos({ top: r.bottom + 6, left: Math.max(12, left) });
+    setPos({ top: r.bottom + 2, left: Math.max(12, left) });
   }, [anchor]);
   if (!anchor) return null;
   return createPortal(
-    <ul className="drop-menu portal" role="menu" style={{ top: pos.top, left: pos.left }}>
+    <ul
+      className="drop-menu portal"
+      role="menu"
+      style={{ top: pos.top, left: pos.left }}
+      onMouseEnter={onKeep}
+      onMouseLeave={onLeave}
+    >
       {items.map((it) => (
         <li key={it.id}>
           <button type="button" role="menuitem" className={it.id === active ? 'on' : ''} onClick={() => onPick(it)}>
@@ -33,6 +39,7 @@ export default function DeskNav({ tab, featureName, lang, onDesk, onFeature }) {
   const [open, setOpen] = useState(null);
   const [sideOpen, setSideOpen] = useState(false);
   const btnRefs = useRef({});
+  const closeTimer = useRef(null);
   const hi = lang === 'hi';
   const active = TABS.find((t) => t.id === tab) || TABS[0];
   const buckets = tab === 'home' ? [] : bucketsFor(modulesForTier(active.tier), active.tier);
@@ -42,6 +49,7 @@ export default function DeskNav({ tab, featureName, lang, onDesk, onFeature }) {
 
   useEffect(() => {
     setSideOpen(false);
+    setOpen(null);
   }, [tab]);
 
   useEffect(() => {
@@ -49,9 +57,27 @@ export default function DeskNav({ tab, featureName, lang, onDesk, onFeature }) {
       if (e.target.closest('.desktabs') || e.target.closest('.drop-menu')) return;
       setOpen(null);
     }
+    function onKey(e) {
+      if (e.key === 'Escape') setOpen(null);
+    }
     document.addEventListener('mousedown', onDoc);
-    return () => document.removeEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+      clearTimeout(closeTimer.current);
+    };
   }, []);
+
+  function showMenu(label) {
+    clearTimeout(closeTimer.current);
+    setOpen(label);
+  }
+
+  function hideMenuSoon() {
+    clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(() => setOpen(null), 180);
+  }
 
   function labelOf(t) {
     if (hi) return t.labelHi;
@@ -107,19 +133,22 @@ export default function DeskNav({ tab, featureName, lang, onDesk, onFeature }) {
         const isOn = currentBucket?.label === b.label;
         const isOpen = open === b.label;
         return (
-          <div key={b.label} className="drop">
+          <div
+            key={b.label}
+            className="drop"
+            onMouseEnter={() => showMenu(b.label)}
+            onMouseLeave={hideMenuSoon}
+          >
             <button
               type="button"
               className={isOn ? 'on' : ''}
               aria-expanded={isOpen}
+              aria-haspopup="menu"
               title={b.label}
               ref={(el) => {
                 btnRefs.current[b.label] = el;
               }}
-              onClick={() => {
-                if (!isOn) onFeature(b.items[0]?.htmlFeature || '');
-                setOpen(isOpen ? null : b.label);
-              }}
+              onClick={() => showMenu(b.label)}
             >
               <span className="desk-pill-label">{b.label}</span>
               <Icon name="chevron" size={12} />
@@ -128,6 +157,8 @@ export default function DeskNav({ tab, featureName, lang, onDesk, onFeature }) {
               <Menu
                 anchor={btnRefs.current[b.label]}
                 active={featureName}
+                onKeep={() => showMenu(b.label)}
+                onLeave={hideMenuSoon}
                 items={b.items.map((m) => ({ id: m.htmlFeature, label: featureMenuLabel(m) }))}
                 onPick={(it) => {
                   onFeature(it.id);

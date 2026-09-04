@@ -5,12 +5,15 @@ import {
   statsFor,
   strategicKind,
 } from '../lib/strategicAssets.js';
+import { applyVizFilter } from '../lib/nationalKpi.js';
+import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
+import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 
 function filterOptions(list, key) {
   return [...new Set(list.map((p) => p[key]).filter(Boolean))].sort();
 }
 
-export default function AssetRegister({ feed, selected, onSelect, featureName }) {
+export default function AssetRegister({ feed, selected, onSelect, featureName, vizFilter, onClearViz }) {
   const kind = strategicKind(featureName || feed?.feature);
   const copy = deskCopy(kind);
   const list = useMemo(
@@ -36,16 +39,17 @@ export default function AssetRegister({ feed, selected, onSelect, featureName })
   const view = useMemo(() => {
     const n = q.trim().toLowerCase();
     return list.filter((p) => {
-      if (filterKeys[0] && f1 && p[filterKeys[0]] !== f1) return false;
-      if (filterKeys[1] && f2 && p[filterKeys[1]] !== f2) return false;
-      if (filterKeys[2] && f3 && p[filterKeys[2]] !== f3) return false;
+      if (filterKeys[0] && !matchesChoice(f1, p[filterKeys[0]])) return false;
+      if (filterKeys[1] && !matchesChoice(f2, p[filterKeys[1]])) return false;
+      if (filterKeys[2] && !matchesChoice(f3, p[filterKeys[2]])) return false;
+      if (!applyVizFilter(p.row || p, vizFilter)) return false;
       if (!n) return true;
       const hay = [p.name, p.region, p.country, p.sector, p.facilityKind, p.operators, p.provider, p.pad, p.note, p.status]
         .join(' ')
         .toLowerCase();
       return hay.includes(n);
     });
-  }, [list, q, f1, f2, f3, filterKeys]);
+  }, [list, q, f1, f2, f3, filterKeys, vizFilter]);
 
   useEffect(() => {
     if (!list.length) return;
@@ -116,6 +120,19 @@ export default function AssetRegister({ feed, selected, onSelect, featureName })
         >
           ✓ LIVE FEED
         </button>
+        <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+        <TableFilterPop
+          extraGroups={[
+            filterKeys[0] ? choiceGroup(filterKeys[0], opt1, f1, setF1, { allLabel: `All ${filterKeys[0]}` }) : null,
+            filterKeys[1] ? choiceGroup(filterKeys[1], opt2, f2, setF2, { allLabel: `All ${filterKeys[1]}` }) : null,
+            filterKeys[2] ? choiceGroup(filterKeys[2], opt3, f3, setF3, { allLabel: `All ${filterKeys[2]}` }) : null,
+          ].filter(Boolean)}
+          q={q}
+          onQ={setQ}
+          searchPlaceholder={copy.search}
+          vizFilter={vizFilter}
+          onClearViz={onClearViz}
+        />
       </div>
       {liveOpen && (
         <aside className="alw-live" aria-label={copy.liveTitle}>
@@ -192,33 +209,6 @@ export default function AssetRegister({ feed, selected, onSelect, featureName })
               </div>
             ))}
           </div>
-        </div>
-        <div className="alw-feedtools">
-          <input className="alw-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={copy.search} />
-          {filterKeys[0] && (
-            <select className="alw-select" value={f1} onChange={(e) => setF1(e.target.value)}>
-              <option value="">All {filterKeys[0].replace(/facilityKind/, 'classes')}</option>
-              {opt1.map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
-          )}
-          {filterKeys[1] && (
-            <select className="alw-select" value={f2} onChange={(e) => setF2(e.target.value)}>
-              <option value="">All {filterKeys[1]}</option>
-              {opt2.map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
-          )}
-          {filterKeys[2] && (
-            <select className="alw-select" value={f3} onChange={(e) => setF3(e.target.value)}>
-              <option value="">All {filterKeys[2]}</option>
-              {opt3.map((v) => (
-                <option key={v}>{v}</option>
-              ))}
-            </select>
-          )}
         </div>
         <div className="alw-resultbar">
           <span>

@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react';
+import { applyVizFilter } from '../lib/nationalKpi.js';
+import TableFilterPop from '../shell/TableFilterPop.jsx';
+import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 
 function parseRssItems(xml) {
   const doc = new DOMParser().parseFromString(xml, 'text/xml');
@@ -8,10 +11,11 @@ function parseRssItems(xml) {
   }).filter((x) => x.title);
 }
 
-export default function MorningBriefDesk({ onSelect, onFeed }) {
+export default function MorningBriefDesk({ onSelect, onFeed, vizFilter, onClearViz }) {
   const [top, setTop] = useState({ rows: [], err: '' });
   const [pib, setPib] = useState({ rows: [], err: '' });
   const [eco, setEco] = useState({ rows: [], err: '' });
+  const [q, setQ] = useState('');
 
   useEffect(() => {
     const ac = new AbortController();
@@ -69,13 +73,20 @@ export default function MorningBriefDesk({ onSelect, onFeed }) {
     });
   }, [top, pib, eco, onFeed]);
 
+  function match(r) {
+    if (!applyVizFilter(r, vizFilter)) return false;
+    if (!q.trim()) return true;
+    return `${r.title || ''} ${r.source || ''}`.toLowerCase().includes(q.trim().toLowerCase());
+  }
+
   function Block({ title, pack }) {
+    const rows = (pack.rows || []).filter(match);
     return (
       <section className="nat-brief-sec">
         <h2>{title}</h2>
         {pack.err ? <p className="banner warn">{pack.err}</p> : null}
         <ul>
-          {(pack.rows || []).slice(0, 12).map((r, i) => (
+          {rows.slice(0, 12).map((r, i) => (
             <li key={r.source_url || i}>
               <button type="button" onClick={() => onSelect?.(r)}>
                 {r.title}
@@ -95,6 +106,15 @@ export default function MorningBriefDesk({ onSelect, onFeed }) {
       <div className="feed-head">
         <h1>MORNING BRIEF</h1>
         <span className="live-feed">{items ? `${items} ITEMS` : 'OFFLINE'}</span>
+        <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+        <TableFilterPop
+          feed={{ feature: 'National Morning Brief (Auto-digest)', rows: [...top.rows, ...pib.rows, ...eco.rows] }}
+          q={q}
+          onQ={setQ}
+          searchPlaceholder="Search headlines"
+          vizFilter={vizFilter}
+          onClearViz={onClearViz}
+        />
       </div>
       <p className="desk-note">
         Three sections: Top of the Day (India), Government Wire (PIB), Economy (India). Nothing classifies a story into Politics / Sports /

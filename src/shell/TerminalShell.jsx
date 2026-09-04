@@ -13,8 +13,9 @@ import { isEnergyFeature } from '../lib/geonomics.js';
 import { isNationalFullscreen, isImpactRecordFeature } from '../lib/national.js';
 import { isGithubCsvRow } from '../lib/githubCsv.js';
 import { firstFeature, parseDeskHash, resolveDeskRoute, writeDeskHash } from '../lib/deskRoute.js';
+import { kickHomeRefreshIfDue } from '../lib/homeCache.js';
 
-export default function TerminalShell() {
+export default function TerminalShell({ onLogout }) {
   const start = parseDeskHash();
   const [tab, setTab] = useState(start.tab);
   const [featureName, setFeatureName] = useState(start.feature);
@@ -42,9 +43,24 @@ export default function TerminalShell() {
         return;
       }
       setVizFilter((prev) => {
-        const next = { col: it.filterCol, value: it.filterValue || it.label, values: it.filterValues };
-        if (prev && prev.col === next.col && String(prev.value) === String(next.value)) return null;
-        return next;
+        const next = {
+          col: it.filterCol,
+          value: it.filterValue || it.label,
+          values: it.filterValues,
+          map: it.filterMap,
+        };
+        const list = Array.isArray(prev) ? prev : prev?.col ? [prev] : [];
+        const i = list.findIndex(
+          (x) =>
+            x.col === next.col &&
+            String(x.value) === String(next.value) &&
+            String(x.map || '') === String(next.map || ''),
+        );
+        if (i >= 0) {
+          const out = list.filter((_, j) => j !== i);
+          return out.length ? out : null;
+        }
+        return [...list, next];
       });
     }
     window.addEventListener('niy-viz-filter', onViz);
@@ -54,6 +70,12 @@ export default function TerminalShell() {
   useEffect(() => {
     setVizFilter(null);
   }, [tab, featureName]);
+
+  useEffect(() => {
+    kickHomeRefreshIfDue();
+    const id = setInterval(() => kickHomeRefreshIfDue(), 60_000);
+    return () => clearInterval(id);
+  }, []);
 
   useEffect(() => {
     const r = parseDeskHash();
@@ -123,8 +145,9 @@ export default function TerminalShell() {
     <div className={`terminal theme-${theme}`}>
       <div className={`load-bar${loading ? ' on' : ''}`} />
       <header className="topbar">
-        <div className="brand" title="Niyantran">
-          <i className="brand-mark">N</i>
+        <div className="brand" title="Niyantran Terminal">
+          <img src="/brand/logo.png?v=2" alt="" />
+          <span>TERMINAL</span>
         </div>
         <div className="cmd">
           <Icon name="search" />
@@ -182,6 +205,17 @@ export default function TerminalShell() {
           <span className="avatar" title="analyst@niyantran">
             A
           </span>
+          <button
+            type="button"
+            className="logout-btn"
+            onClick={() => {
+              sessionStorage.removeItem('niyantranAuthed');
+              if (typeof location !== 'undefined') location.hash = '#/';
+              onLogout?.();
+            }}
+          >
+            Log out
+          </button>
         </div>
       </header>
       <DeskNav tab={tab} featureName={featureName} lang={lang} onDesk={onDesk} onFeature={onFeature} />

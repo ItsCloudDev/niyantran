@@ -66,7 +66,7 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
           className={tab === 'ai' ? 'on' : ''}
           onClick={() => setTab('ai')}
         >
-          {hi ? 'एआई अनुसंधान' : 'AI RESEARCH'}
+          {hi ? 'एआई अनुसंधान' : 'AI research'}
         </button>
       </div>
       {tab === 'ai' ? (
@@ -141,7 +141,18 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
               </div>
               {overview.charts.map((c) => (
                 <VizCard key={c.title} title={c.title} hint={c.hint}>
-                  {c.type === 'matrix' && <Heatmap matrix={c.matrix} />}
+                  {c.type === 'matrix' && (
+                    <Heatmap
+                      matrix={c.matrix}
+                      active={vizFilter}
+                      rowFilterCol={c.rowFilterCol}
+                      colFilterCol={c.colFilterCol}
+                      colFilterMap={c.colFilterMap}
+                      onPick={(it) => {
+                        window.dispatchEvent(new CustomEvent('niy-viz-filter', { detail: it }));
+                      }}
+                    />
+                  )}
                   {c.type === 'bars' && (
                     <BarList
                       items={c.items}

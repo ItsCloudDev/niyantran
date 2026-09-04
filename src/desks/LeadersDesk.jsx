@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react';
 import AiPanel from '../ai/AiPanel.jsx';
 import { exportJson, GeoAi, GeoDossierChrome, GeoKv, GeoSources } from './GeoDossier.jsx';
+import { applyVizFilter } from '../lib/nationalKpi.js';
+import TableFilterPop from '../shell/TableFilterPop.jsx';
+import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 
 const AI_SUMMARY =
   'The tracked cohort skews toward long-tenure strongmen (Putin 1999-, Xi 2012-, Erdogan 2014-). Democratic incumbents face fragmented parliaments and fiscal constraint. Watch succession/health risk in the Gulf and the impact of 2026 elections on Ukraine support.';
@@ -30,9 +33,16 @@ function isoOf(id) {
     .toUpperCase();
 }
 
-export default function LeadersDesk({ feed, selected, onSelect }) {
+export default function LeadersDesk({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const [tab, setTab] = useState('analytics');
-  const leaders = useMemo(() => (feed?.rows || []).filter((r) => r.name && r.country), [feed]);
+  const [q, setQ] = useState('');
+  const leaders = useMemo(() => {
+    const n = q.trim().toLowerCase();
+    return (feed?.rows || [])
+      .filter((r) => r.name && r.country)
+      .filter((r) => applyVizFilter(r, vizFilter))
+      .filter((r) => !n || `${r.name} ${r.country} ${r.role || ''}`.toLowerCase().includes(n));
+  }, [feed, vizFilter, q]);
   const stats = feed?.meta?.stats || {};
   const asOf = feed?.meta?.asOf || '2026-07';
   const n = stats.tracked || leaders.length;
@@ -63,6 +73,19 @@ export default function LeadersDesk({ feed, selected, onSelect }) {
         onTab={setTab}
         onExport={() => exportJson('leaders', { asOf, stats, leaders })}
         onAsk={() => goAsk(PROMPTS[0][1])}
+        tools={
+          <>
+            <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+            <TableFilterPop
+              feed={feed}
+              q={q}
+              onQ={setQ}
+              searchPlaceholder="Search leader or country"
+              vizFilter={vizFilter}
+              onClearViz={onClearViz}
+            />
+          </>
+        }
       >
         <div className="geo-grid">
           <section className="geo-panel">

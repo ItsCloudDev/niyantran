@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { hydrateAsset } from '../lib/strategicAssets.js';
+import { applyVizFilter } from '../lib/nationalKpi.js';
+import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
+import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 
 function tone(status, kind) {
   const s = `${status} ${kind}`.toLowerCase();
@@ -12,7 +15,7 @@ function options(list, key) {
   return [...new Set(list.map((p) => p[key]).filter(Boolean))].sort();
 }
 
-export default function NuclearWatch({ feed, selected, onSelect }) {
+export default function NuclearWatch({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const list = useMemo(
     () => (feed?.rows || []).map((r) => hydrateAsset(r, 'nuclear')).filter((p) => p?.id),
     [feed],
@@ -27,16 +30,17 @@ export default function NuclearWatch({ feed, selected, onSelect }) {
   const view = useMemo(() => {
     const n = q.trim().toLowerCase();
     return list.filter((p) => {
-      if (kind && p.facilityKind !== kind) return false;
-      if (region && p.region !== region) return false;
-      if (status && p.status !== status) return false;
+      if (!matchesChoice(kind, p.facilityKind)) return false;
+      if (!matchesChoice(region, p.region)) return false;
+      if (!matchesChoice(status, p.status)) return false;
+      if (!applyVizFilter(p.row || p, vizFilter)) return false;
       if (!n) return true;
       return [p.name, p.country, p.region, p.facilityKind, p.status, p.operators, p.material, p.scope, p.capacity]
         .join(' ')
         .toLowerCase()
         .includes(n);
     });
-  }, [list, q, kind, region, status]);
+  }, [list, q, kind, region, status, vizFilter]);
 
   useEffect(() => {
     if (!list.length) return;
@@ -57,6 +61,19 @@ export default function NuclearWatch({ feed, selected, onSelect }) {
         </div>
         <span className="nww-feed-meta">
           <b>{view.length}</b> records · {countries} countries
+          <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+          <TableFilterPop
+            extraGroups={[
+              choiceGroup('Facility class', options(list, 'facilityKind'), kind, setKind, { allLabel: 'All facility classes' }),
+              choiceGroup('Region', options(list, 'region'), region, setRegion, { allLabel: 'All regions' }),
+              choiceGroup('Status', options(list, 'status'), status, setStatus, { allLabel: 'All recorded statuses' }),
+            ]}
+            q={q}
+            onQ={setQ}
+            searchPlaceholder="Search facility, country, operator or material"
+            vizFilter={vizFilter}
+            onClearViz={onClearViz}
+          />
         </span>
       </section>
       <div className="nww-global-strip">
@@ -80,33 +97,6 @@ export default function NuclearWatch({ feed, selected, onSelect }) {
           <strong>{strip.inventory || '12,187 warheads'}</strong>
           <span>SIPRI estimate · Jan 2026</span>
         </div>
-      </div>
-      <div className="nww-filters">
-        <input
-          className="nww-search"
-          type="search"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Search facility, country, operator or material"
-        />
-        <select className="nww-select" value={kind} onChange={(e) => setKind(e.target.value)}>
-          <option value="">All facility classes</option>
-          {options(list, 'facilityKind').map((v) => (
-            <option key={v}>{v}</option>
-          ))}
-        </select>
-        <select className="nww-select" value={region} onChange={(e) => setRegion(e.target.value)}>
-          <option value="">All regions</option>
-          {options(list, 'region').map((v) => (
-            <option key={v}>{v}</option>
-          ))}
-        </select>
-        <select className="nww-select" value={status} onChange={(e) => setStatus(e.target.value)}>
-          <option value="">All recorded statuses</option>
-          {options(list, 'status').map((v) => (
-            <option key={v}>{v}</option>
-          ))}
-        </select>
       </div>
       <div className="nww-feednote">
         <span>Public facility and country-resource records</span>

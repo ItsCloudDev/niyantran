@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { STATEMENT_LEADERS } from '../data/nationalCurated.js';
-import { Sparkline } from '../shell/AnalyticsViz.jsx';
+import { Sparkline, VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import { applyVizFilter } from '../lib/nationalKpi.js';
+import TableFilterPop from '../shell/TableFilterPop.jsx';
 
 function gdeltDoc(q) {
   return `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(`"${q}" sourcecountry:IN`)}&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=40`;
@@ -19,13 +21,19 @@ async function proxyJson(url, signal) {
   }
 }
 
-export default function StatementsDesk({ onSelect, onFeed }) {
+export default function StatementsDesk({ onSelect, onFeed, vizFilter, onClearViz }) {
   const [i, setI] = useState(0);
   const [rows, setRows] = useState([]);
   const [vol, setVol] = useState(null);
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(true);
+  const [q, setQ] = useState('');
   const person = STATEMENT_LEADERS[i];
+  const shown = rows.filter((r) => {
+    if (!applyVizFilter(r, vizFilter)) return false;
+    if (!q.trim()) return true;
+    return `${r.title || ''} ${r.source || ''}`.toLowerCase().includes(q.trim().toLowerCase());
+  });
 
   useEffect(() => {
     const ac = new AbortController();
@@ -96,6 +104,15 @@ export default function StatementsDesk({ onSelect, onFeed }) {
       <div className="feed-head">
         <h1>STATEMENTS & CONTRADICTIONS</h1>
         <span className={`live-feed${rows.length ? ' on' : ''}`}>{loading ? 'LOADING' : rows.length ? 'GDELT 2.0' : 'OFFLINE'}</span>
+        <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+        <TableFilterPop
+          feed={{ feature: 'Statement & Contradiction Tracker', rows }}
+          q={q}
+          onQ={setQ}
+          searchPlaceholder="Search headlines"
+          vizFilter={vizFilter}
+          onClearViz={onClearViz}
+        />
       </div>
       <p className="desk-note">
         This is coverage volume, not statements. The desk measures how much a named person is written about. It does not hold their
@@ -139,12 +156,12 @@ export default function StatementsDesk({ onSelect, onFeed }) {
               <tr>
                 <td colSpan={2}>loading…</td>
               </tr>
-            ) : rows.length === 0 ? (
+            ) : shown.length === 0 ? (
               <tr>
                 <td colSpan={2}>No coverage rows in this window.</td>
               </tr>
             ) : (
-              rows.map((r, n) => (
+              shown.map((r, n) => (
                 <tr key={r.source_url || n} onClick={() => onSelect?.(r)}>
                   <td>
                     {r.source_url ? (

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { DELIM_SIZES } from '../data/nationalCurated.js';
 import { allocateSeats, applyVizFilter } from '../lib/nationalKpi.js';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import TableFilterPop from '../shell/TableFilterPop.jsx';
 
 export default function DelimitationDesk({ selected, onSelect, onFeed, vizFilter, onClearViz }) {
   const [house, setHouse] = useState(753);
@@ -51,6 +52,11 @@ export default function DelimitationDesk({ selected, onSelect, onFeed, vizFilter
         <h1>DELIMITATION SIMULATOR</h1>
         <span className="live-feed">SIMULATION</span>
         <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+        <TableFilterPop
+          feed={{ feature: 'Delimitation Simulator (NCP 2036)', rows }}
+          vizFilter={vizFilter}
+          onClearViz={onClearViz}
+        />
       </div>
       <div className="desk-strip">
         <span>SEAT REALLOCATION — POPULATION-PROPORTIONAL</span>

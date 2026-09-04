@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { fetchFeature } from '../lib/featureFeed.js';
-import { cellText, filterRows, isArticleHref, provenanceLabel, sortRows } from '../lib/normalise.js';
+import { cellText, feedKindLabel, filterRows, isArticleHref, sortRows } from '../lib/normalise.js';
 import { isGithubCsvRow } from '../lib/githubCsv.js';
 import { cellOf, feedColumns } from '../lib/columns.js';
 import { isConflictsFeature } from '../lib/conflictsMonitor.js';
@@ -35,6 +35,7 @@ import IndustryDesk from './IndustryDesk.jsx';
 import { tenderCloseBand, applyVizFilter } from '../lib/nationalKpi.js';
 import FeedLoader from '../shell/FeedLoader.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import TableFilterPop from '../shell/TableFilterPop.jsx';
 import ConflictsMonitor from './ConflictsMonitor.jsx';
 import TransitDesk from './TransitDesk.jsx';
 import AlliancesMonitor from './AlliancesMonitor.jsx';
@@ -110,16 +111,14 @@ export default function DeskView({
 
   const filtered = useMemo(() => {
     let rows = filterRows(feed?.rows || [], q);
-    if (vizFilter?.col) {
-      rows = rows.filter((r) => applyVizFilter(r, vizFilter));
-    }
+    rows = rows.filter((r) => applyVizFilter(r, vizFilter));
     return sortRows(rows, sort.key || undefined, sort.dir);
   }, [feed, q, sort, vizFilter]);
 
   const cols = useMemo(() => feedColumns(feed?.feature || featureName, filtered), [feed, featureName, filtered]);
   const statusRow = !loading && feed?.rows?.length === 1 && feed.rows[0]?.status === 'source_status' ? feed.rows[0] : null;
-  const liveLabel = loading ? 'LOADING' : provenanceLabel(feed) || '—';
-  const liveOn = !loading && feed && !feed.fallback && !statusRow;
+  const kindLabel = loading ? 'LOADING' : feedKindLabel(feed) || '—';
+  const liveOn = kindLabel === 'LIVE FEED';
 
   function toggleSort(key) {
     setSort((s) => (s.key === key ? { key, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'asc' }));
@@ -141,6 +140,8 @@ export default function DeskView({
               selected={selected}
               onSelect={onSelect}
               flags={feed?.meta?.memberFlags || {}}
+              vizFilter={vizFilter}
+              onClearViz={onClearViz}
             />
           )}
         </div>
@@ -154,7 +155,7 @@ export default function DeskView({
         {err && <p className="banner warn">{err}</p>}
         <div className={`alliances-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label="Loading sanctions register…" />}
-          {!loading && <SanctionsMonitor feed={feed} selected={selected} onSelect={onSelect} />}
+          {!loading && <SanctionsMonitor feed={feed} selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />}
         </div>
       </div>
     );
@@ -166,7 +167,7 @@ export default function DeskView({
         {err && <p className="banner warn">{err}</p>}
         <div className={`alliances-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label="Loading aid register…" />}
-          {!loading && <GlobalAidMonitor feed={feed} selected={selected} onSelect={onSelect} />}
+          {!loading && <GlobalAidMonitor feed={feed} selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />}
         </div>
       </div>
     );
@@ -178,7 +179,7 @@ export default function DeskView({
         {err && <p className="banner warn">{err}</p>}
         <div className={`alliances-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label="Loading nuclear register…" />}
-          {!loading && <NuclearWatch feed={feed} selected={selected} onSelect={onSelect} />}
+          {!loading && <NuclearWatch feed={feed} selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />}
         </div>
       </div>
     );
@@ -190,7 +191,7 @@ export default function DeskView({
         {err && <p className="banner warn">{err}</p>}
         <div className={`alliances-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label="Loading chokepoint dossier…" />}
-          {!loading && <ChokepointsDesk feed={feed} selected={selected} onSelect={onSelect} />}
+          {!loading && <ChokepointsDesk feed={feed} selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />}
         </div>
       </div>
     );
@@ -202,7 +203,7 @@ export default function DeskView({
         {err && <p className="banner warn">{err}</p>}
         <div className={`alliances-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label="Loading energy dossier…" />}
-          {!loading && <EnergyDesk feed={feed} selected={selected} onSelect={onSelect} />}
+          {!loading && <EnergyDesk feed={feed} selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />}
         </div>
       </div>
     );
@@ -214,7 +215,7 @@ export default function DeskView({
         {err && <p className="banner warn">{err}</p>}
         <div className={`alliances-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label="Loading policy graph…" />}
-          {!loading && <PolicyGraphDesk feed={feed} selected={selected} onSelect={onSelect} />}
+          {!loading && <PolicyGraphDesk feed={feed} selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />}
         </div>
       </div>
     );
@@ -263,7 +264,7 @@ export default function DeskView({
   if (isMorningBriefFeature(featureName)) {
     return (
       <div className="desk desk-wide desk-res">
-        <MorningBriefDesk onFeed={onFeed} onSelect={onSelect} />
+        <MorningBriefDesk onFeed={onFeed} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />
       </div>
     );
   }
@@ -271,7 +272,7 @@ export default function DeskView({
   if (isStatementsFeature(featureName)) {
     return (
       <div className="desk desk-wide desk-res">
-        <StatementsDesk onFeed={onFeed} onSelect={onSelect} />
+        <StatementsDesk onFeed={onFeed} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />
       </div>
     );
   }
@@ -315,7 +316,7 @@ export default function DeskView({
         {err && <p className="banner warn">{err}</p>}
         <div className={`alliances-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label="Loading leader register…" />}
-          {!loading && <LeadersDesk feed={feed} selected={selected} onSelect={onSelect} />}
+          {!loading && <LeadersDesk feed={feed} selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />}
         </div>
       </div>
     );
@@ -327,7 +328,7 @@ export default function DeskView({
         {err && <p className="banner warn">{err}</p>}
         <div className={`alliances-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label="Loading commodity board…" />}
-          {!loading && <CommoditiesDesk feed={feed} selected={selected} onSelect={onSelect} />}
+          {!loading && <CommoditiesDesk feed={feed} selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />}
         </div>
       </div>
     );
@@ -339,7 +340,7 @@ export default function DeskView({
         {err && <p className="banner warn">{err}</p>}
         <div className={`conflicts-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label="Loading conflict monitor…" />}
-          {!loading && <ConflictsMonitor feed={feed} selected={selected} onSelect={onSelect} />}
+          {!loading && <ConflictsMonitor feed={feed} selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />}
         </div>
       </div>
     );
@@ -349,16 +350,19 @@ export default function DeskView({
     <div className={`desk desk-wide${isGlobalResourcesTable(featureName) || isGeonomicsTable(featureName) || isNationalTable(featureName) ? ' desk-res' : ''}`}>
       <div className="feed-col compact">
         <div className="feed-head">
-          <h1>{(feed?.meta?.heading || featureName || 'FEED').toUpperCase()}</h1>
-          <span className={`live-feed ${liveOn ? 'on' : ''}`}>{liveOn ? 'LIVE FEED' : liveLabel}</span>
-          {vizFilter ? <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} /> : null}
+          <h1>
+            {(feed?.meta?.heading || featureName || 'FEED').toUpperCase()}
+            <span className={`live-feed ${liveOn ? 'on' : ''}`}>{kindLabel}</span>
+          </h1>
+          <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
           {!statusRow && (
-            <input
-              className="desk-search"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Filter this table"
-              aria-label="Filter this table"
+            <TableFilterPop
+              feed={feed}
+              q={q}
+              onQ={setQ}
+              searchPlaceholder="Search this table"
+              vizFilter={vizFilter}
+              onClearViz={onClearViz}
               disabled={loading}
             />
           )}
@@ -420,7 +424,7 @@ export default function DeskView({
                     <td colSpan={cols.length || 1}>No rows in this view.</td>
                   </tr>
                 ) : (
-                  filtered.slice(0, 400).map((row, i) => {
+                  filtered.slice(0, ['geo-pack', 'law-pack', 'finance-pack', 'carbon-pack'].includes(feed?.source?.kind) || feed?.tier === 'finance' || feed?.tier === 'climate' || feed?.tier === 'sports' || feed?.tier === 'entertainment' ? 2500 : 400).map((row, i) => {
                     const rowId = `${cellOf(row, cols[0] || { key: 'title' })}|${i}`;
                     const on =
                       selected === row ||
@@ -444,7 +448,11 @@ export default function DeskView({
                               ? row.source_url
                               : '';
                           return (
-                            <td key={c.key} title={text} className={c.num ? 'num' : undefined}>
+                            <td
+                              key={c.key}
+                              title={text}
+                              className={[c.num ? 'num' : '', c.key === 'station' ? 'station-cell' : ''].filter(Boolean).join(' ') || undefined}
+                            >
                               {ci === 0 ? (
                                 <span className="name-cell">
                                   <i className="status-dot" />

@@ -10,11 +10,6 @@ const TICKERS = [
   ['BITCOIN', 'BTC-USD'],
 ];
 
-const GDELT_HOME =
-  'https://api.gdeltproject.org/api/v2/doc/doc?query=India&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=40';
-const GDELT_PULSE =
-  'https://api.gdeltproject.org/api/v2/doc/doc?query=(war%20OR%20conflict%20OR%20ceasefire%20OR%20airstrike)&mode=artlist&format=json&sort=datedesc&timespan=2d&maxrecords=40';
-
 function quoteFromCloses(name, closes, symbol) {
   const c = (closes || []).filter((v) => v != null && Number.isFinite(Number(v))).map(Number);
   if (c.length < 2) return null;
@@ -38,20 +33,6 @@ async function getStaticJson(path, signal) {
   const res = await fetch(path, { signal });
   if (!res.ok) return null;
   return res.json().catch(() => null);
-}
-
-function gdeltArticles(json) {
-  return (json?.articles || []).map((a) => ({
-    title: a.title || '',
-    link: a.url || '',
-    pub: a.seendate || '',
-    time: String(a.seendate || '').length >= 15 ? `${String(a.seendate).slice(9, 11)}:${String(a.seendate).slice(11, 13)}` : '',
-    region: a.sourcecountry || '',
-    src: a.domain || '',
-    source: a.domain || '',
-    outlets: a.domain || '',
-    ago: '',
-  }));
 }
 
 export async function homeMarketsFromStatic(signal) {
@@ -81,40 +62,33 @@ export async function homeMarketsFromStatic(signal) {
 }
 
 export async function homeLatestFromStatic(signal) {
-  try {
-    const res = await fetch(GDELT_HOME, { signal });
-    const json = await res.json().catch(() => null);
-    const rows = gdeltArticles(json).slice(0, 9);
-    if (rows.length) {
-      return {
-        ok: true,
-        rows,
-        note: 'GDELT DOC 2.0 reporting search for India, last 7 days — not an official dataset.',
-        gdelt: true,
-      };
-    }
-  } catch {
-    /* fall through */
+  const snap = await getStaticJson('/data/news.json', signal);
+  const rows = Array.isArray(snap?.rows) ? snap.rows : [];
+  if (rows.length) {
+    return {
+      ok: true,
+      rows,
+      note: snap.note || 'Saved home-desk headlines.',
+      archive: true,
+      ageH: snap.updated ? (Date.now() - new Date(snap.updated).getTime()) / 3600000 : null,
+      updated: snap.updated,
+    };
   }
   return { ok: true, rows: [], note: 'Live wire unreachable on this host. No headlines were invented.', archive: true };
 }
 
 export async function homePulseFromStatic(signal) {
-  try {
-    const res = await fetch(GDELT_PULSE, { signal });
-    const json = await res.json().catch(() => null);
-    const rows = gdeltArticles(json).slice(0, 8);
-    if (rows.length) {
-      return {
-        ok: true,
-        rows,
-        gdelt: true,
-        note: 'GDELT DOC 2.0 reporting search — not an official dataset.',
-        archive: false,
-      };
-    }
-  } catch {
-    /* fall through */
+  const snap = await getStaticJson('/data/conflict.json', signal);
+  if (Array.isArray(snap?.rows) && snap.rows.length) {
+    return {
+      ok: true,
+      rows: snap.rows.slice(0, 8),
+      gdelt: Boolean(snap.gdelt),
+      archive: true,
+      note: snap.note || 'Saved conflict-pulse snapshot.',
+      ageH: snap.updated ? (Date.now() - new Date(snap.updated).getTime()) / 3600000 : null,
+      updated: snap.updated,
+    };
   }
   const war = await getStaticJson('/data/embedded_csv/geopolitics_war_tracker.json', signal);
   const rows = (Array.isArray(war) ? war : [])

@@ -22,6 +22,13 @@ import { flattenAppeal } from './globalAid.js';
 import { flattenChokepoint, flattenInfra, flattenNuclear } from './strategicAssets.js';
 import { flattenLeader, commoditiesFromPack } from './globalResources.js';
 import { flattenEnergyMineral, flattenMineralRef } from './geonomics.js';
+import { geoRows, geoNote, isGeoDesk } from './niyGeo.js';
+import { isLawExtract, isUsScotusDesk, lawNote, lawRows, lawSlice } from './lawPack.js';
+import { dgftRows, econNote, econSlice, isEconExtract, manifoldPoliticalRows, marketQuoteRows } from './econPack.js';
+import { carbonDataset, carbonNote, carbonRows, carbonSlice, isCarbonExtract } from './carbonPack.js';
+import { sportsNote, sportsSlice } from './sportsPack.js';
+import { entertainmentNote, entertainmentSlice } from './entertainmentPack.js';
+import niyGeo from '../data/niy-geo.json';
 
 const TIER_ALIAS = {
   home: 'home',
@@ -94,6 +101,7 @@ function flattenRow(item) {
       'billName',
       'name',
       'headline',
+      'case_title',
       'topic',
       'policy_name',
       'tender_title',
@@ -156,6 +164,15 @@ function datasetFileName(dataset) {
   const noCsv = key.replace(/\.csv$/i, '');
   if (datasetToFile[noCsv]) return datasetToFile[noCsv];
   return `${noCsv}.json`;
+}
+
+async function loadRawEmbedded(dataset, signal) {
+  const file = datasetFileName(dataset);
+  if (!file) return [];
+  const res = await fetch(`/data/embedded_csv/${file}`, { signal });
+  if (!res.ok) return [];
+  const json = await res.json().catch(() => null);
+  return Array.isArray(json) ? json : [];
 }
 
 async function loadEmbedded(dataset, signal) {
@@ -226,6 +243,116 @@ export async function fetchArchiveFeature({ tier, feature, signal } = {}) {
 
   const dataset = entry?.dataset || feat.dataset || '';
   const name = feat.htmlFeature || '';
+
+  if (isGeoDesk(name, dataset)) {
+    const rows = geoRows(niyGeo, name, dataset);
+    if (rows.length) {
+      return envelope({
+        feature: feat,
+        rows,
+        kind: 'geo-pack',
+        meta: { vintage: niyGeo.packs?.GA?.vintage || niyGeo.vintage, state: 'Goa' },
+        note: geoNote(niyGeo),
+      });
+    }
+  }
+
+  if (isLawExtract(name)) {
+    const slice = lawSlice(name);
+    const rows = lawRows(slice, {
+      sc: await loadRawEmbedded('judiciary_sc_orders.csv', signal),
+      nclt: await loadRawEmbedded('judiciary_nclt_orders.csv', signal),
+      ibbi: await loadRawEmbedded('national_ibbi_announcements.csv', signal),
+    });
+    if (rows.length) {
+      return envelope({
+        feature: feat,
+        rows,
+        kind: 'law-pack',
+        meta: { heading: name },
+        note: lawNote(slice),
+        fallback: false,
+      });
+    }
+  }
+
+  if (isUsScotusDesk(name)) {
+    return envelope({
+      feature: feat,
+      rows: [],
+      note: 'CourtListener is only available through the live feed host.',
+    });
+  }
+
+  if (isEconExtract(name)) {
+    const slice = econSlice(name);
+    let rows = [];
+    if (slice === 'nse') rows = marketQuoteRows(await loadRawEmbedded('finance_market_feed.csv', signal));
+    else if (slice === 'trade') rows = dgftRows(await loadRawEmbedded('national_dgft_notifications.csv', signal));
+    else if (slice === 'manifold') {
+      rows = manifoldPoliticalRows(await loadRawEmbedded('finance_manifold_markets.csv', signal));
+    }
+    if (rows.length) {
+      return envelope({
+        feature: feat,
+        rows,
+        kind: 'finance-pack',
+        meta: { heading: name },
+        note: econNote(slice),
+        fallback: false,
+      });
+    }
+  }
+
+  const econLive = econSlice(name);
+  if (econLive && !isEconExtract(name)) {
+    return envelope({
+      feature: feat,
+      rows: [],
+      note: `${econNote(econLive)} Live host only on the static archive.`,
+    });
+  }
+
+  if (isCarbonExtract(name)) {
+    const slice = carbonSlice(name);
+    const rows = carbonRows(slice, {
+      cbam: await loadRawEmbedded(carbonDataset('cbam'), signal),
+      pricing: await loadRawEmbedded(carbonDataset('pricing'), signal),
+      monitor: await loadRawEmbedded(carbonDataset('monitor'), signal),
+      ets: await loadRawEmbedded(carbonDataset('ets'), signal),
+      ccts: await loadRawEmbedded(carbonDataset('ccts'), signal),
+      registry: await loadRawEmbedded(carbonDataset('registry'), signal),
+      news: await loadRawEmbedded(carbonDataset('news'), signal),
+    });
+    if (rows.length) {
+      return envelope({
+        feature: feat,
+        rows,
+        kind: 'carbon-pack',
+        meta: { heading: name },
+        note: carbonNote(slice),
+        fallback: false,
+      });
+    }
+  }
+
+  const sport = sportsSlice(name);
+  if (sport) {
+    return envelope({
+      feature: feat,
+      rows: [],
+      note: `${sportsNote(sport)} Live host only on the static archive.`,
+    });
+  }
+
+  const ent = entertainmentSlice(name);
+  if (ent) {
+    return envelope({
+      feature: feat,
+      rows: [],
+      note: `${entertainmentNote(ent)} Live host only on the static archive.`,
+    });
+  }
 
   if (/^infra$/i.test(name) || dataset === 'geopolitics_infra_projects.csv') {
     const rows = (infraProjects.projects || []).map(flattenInfra);

@@ -18,6 +18,7 @@ export function GeoDossierChrome({
   onTab,
   onExport,
   onAsk,
+  tools,
   children,
 }) {
   return (
@@ -25,6 +26,7 @@ export function GeoDossierChrome({
       <div className="gld-head">
         <h1>{title}</h1>
         <span className="live-feed on">LIVE FEED</span>
+        {tools}
         <nav className="gld-tabs" aria-label="Dossier views">
           <button type="button" className={tab === 'analytics' ? 'on' : ''} onClick={() => onTab('analytics')}>
             ANALYTICS

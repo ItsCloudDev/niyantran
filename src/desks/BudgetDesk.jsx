@@ -1,19 +1,23 @@
 import { BUDGET_KEY, BUDGET_SCHEMES } from '../data/nationalCurated.js';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import TableFilterPop from '../shell/TableFilterPop.jsx';
 
 export default function BudgetDesk({ selected, onSelect, vizFilter, onClearViz }) {
-  const schemeRows = BUDGET_SCHEMES.map(([scheme, allocation_cr]) => ({
+  const all = BUDGET_SCHEMES.map(([scheme, allocation_cr]) => ({
     scheme,
     allocation_cr,
     title: scheme,
-  })).filter((r) => applyVizFilter(r, vizFilter));
+  }));
+  const schemeRows = all.filter((r) => applyVizFilter(r, vizFilter));
+  const feed = { feature: 'Budget Utilisation Tracker', rows: all };
   return (
     <div className="nat-panel">
       <div className="feed-head">
         <h1>BUDGET & SCHEMES</h1>
         <span className="live-feed">CURATED</span>
         <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+        <TableFilterPop feed={feed} vizFilter={vizFilter} onClearViz={onClearViz} />
       </div>
       <div className="desk-strip">
         <span>UNION BUDGET 2025–26 — KEY NUMBERS</span>
