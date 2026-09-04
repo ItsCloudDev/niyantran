@@ -9,6 +9,7 @@ import {
   overlaps,
 } from '../lib/alliances.js';
 import GeoHeatMap from './GeoHeatMap.jsx';
+import TableFilterPop from '../shell/TableFilterPop.jsx';
 
 const LEGEND = [
   ['Recorded member', '#397ca5'],
@@ -156,13 +157,7 @@ export default function AlliancesAnalytics({ row, rows, flags, onSelect, onResea
           </div>
         </div>
         <div className="alw-member-tools">
-          <input
-            className="alw-member-search"
-            type="search"
-            value={memberQ}
-            onChange={(e) => setMemberQ(e.target.value)}
-            placeholder="Find a member country"
-          />
+          <TableFilterPop q={memberQ} onQ={setMemberQ} searchPlaceholder="Find a member country" />
           <span className="alw-member-guide">Open a row for evidence</span>
         </div>
         <div className={`alw-member-ledger${expanded ? ' alw-expanded' : ''}`}>

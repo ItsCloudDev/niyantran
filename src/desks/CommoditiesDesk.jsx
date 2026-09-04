@@ -1,6 +1,9 @@
 import { useMemo, useState } from 'react';
 import AiPanel from '../ai/AiPanel.jsx';
 import { exportJson, GeoAi, GeoDossierChrome, GeoSources } from './GeoDossier.jsx';
+import { applyVizFilter } from '../lib/nationalKpi.js';
+import TableFilterPop from '../shell/TableFilterPop.jsx';
+import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 
 const AI_SUMMARY =
   'Energy and precious metals carry a geopolitical risk premium (Middle East, Red Sea, safe-haven gold). Soft commodities (cocoa, coffee) are climate-driven. The through-line to watch: any Hormuz/Red Sea shock transmits straight into oil, freight and food-import inflation for net importers like India.';
@@ -64,9 +67,17 @@ function GroupPanel({ title, items }) {
   );
 }
 
-export default function CommoditiesDesk({ feed, selected, onSelect }) {
+export default function CommoditiesDesk({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const [tab, setTab] = useState('analytics');
-  const groups = useMemo(() => groupsFrom(feed), [feed]);
+  const [q, setQ] = useState('');
+  const groups = useMemo(() => {
+    const rows = (feed?.rows || []).filter((r) => applyVizFilter(r, vizFilter));
+    const n = q.trim().toLowerCase();
+    const filtered = n
+      ? rows.filter((r) => `${r.commodity || r.title || ''} ${r.group || ''}`.toLowerCase().includes(n))
+      : rows;
+    return groupsFrom({ ...feed, rows: filtered });
+  }, [feed, vizFilter, q]);
   const stats = feed?.meta?.stats || {};
   const asOfLabel = String(feed?.meta?.asOf || '2026-07');
   const n = stats.tracked || feed?.rows?.length || 0;
@@ -94,6 +105,19 @@ export default function CommoditiesDesk({ feed, selected, onSelect }) {
         onTab={setTab}
         onExport={() => exportJson('commodities', { asOf: asOfLabel, stats, groups })}
         onAsk={goAsk}
+        tools={
+          <>
+            <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+            <TableFilterPop
+              feed={feed}
+              q={q}
+              onQ={setQ}
+              searchPlaceholder="Search commodity or group"
+              vizFilter={vizFilter}
+              onClearViz={onClearViz}
+            />
+          </>
+        }
       >
         <div className="geo-grid">
             <div>

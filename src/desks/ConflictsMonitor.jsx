@@ -7,8 +7,11 @@ import {
   statusOf,
   theatresFromFeed,
 } from '../lib/conflictsMonitor.js';
+import { applyVizFilter } from '../lib/nationalKpi.js';
+import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
+import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 
-export default function ConflictsMonitor({ feed, selected, onSelect }) {
+export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const theatres = useMemo(() => theatresFromFeed(feed), [feed]);
   const [region, setRegion] = useState('Global');
   const [posture, setPosture] = useState('All');
@@ -22,12 +25,13 @@ export default function ConflictsMonitor({ feed, selected, onSelect }) {
   const view = useMemo(() => {
     const q = query.trim().toLowerCase();
     return theatres.filter((c) => {
-      if (region !== 'Global' && regionGroup(c.region) !== region) return false;
-      if (posture !== 'All' && c.status !== posture) return false;
+      if (!matchesChoice(region, regionGroup(c.region), 'Global')) return false;
+      if (!matchesChoice(posture, c.status, 'All')) return false;
+      if (!applyVizFilter(c.row || c, vizFilter)) return false;
       if (!q) return true;
       return [c.name, c.region, c.status, c.latest, ...(c.actors || [])].join(' ').toLowerCase().includes(q);
     });
-  }, [theatres, region, posture, query]);
+  }, [theatres, region, posture, query, vizFilter]);
 
   const ranked = useMemo(() => ordered(view), [view]);
   const stats = useMemo(() => statsFor(theatres), [theatres]);
@@ -86,36 +90,34 @@ export default function ConflictsMonitor({ feed, selected, onSelect }) {
           </span>
         </div>
         <div className="c2-actions">
+          <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+          <TableFilterPop
+            q={query}
+            onQ={setQuery}
+            searchPlaceholder="Search theatre, actor or region"
+            vizFilter={vizFilter}
+            onClearViz={onClearViz}
+            extraGroups={[
+              choiceGroup('Region', regions.filter((r) => r !== 'Global'), region, setRegion, { allValue: 'Global', allLabel: 'Global' }),
+              choiceGroup(
+                'Posture',
+                [
+                  { value: 'escalating', label: 'Deteriorating' },
+                  { value: 'active', label: 'Active hostilities' },
+                  { value: 'ceasefire-fragile', label: 'Fragile ceasefire' },
+                  { value: 'under-review', label: 'Monitored' },
+                ],
+                posture,
+                setPosture,
+                { allValue: 'All', allLabel: 'All postures' },
+              ),
+            ]}
+          />
           <button type="button" className="c2-action" onClick={exportRegister}>
             Export
           </button>
         </div>
       </header>
-
-      <div className="c2-controls">
-        <span className="c2-label">View</span>
-        <select className="c2-select" value={region} onChange={(e) => setRegion(e.target.value)} aria-label="Filter by region">
-          {regions.map((r) => (
-            <option key={r}>{r}</option>
-          ))}
-        </select>
-        <select className="c2-select" value={posture} onChange={(e) => setPosture(e.target.value)} aria-label="Filter by posture">
-          <option value="All">All postures</option>
-          <option value="escalating">Deteriorating</option>
-          <option value="active">Active hostilities</option>
-          <option value="ceasefire-fragile">Fragile ceasefire</option>
-          <option value="under-review">Monitored</option>
-        </select>
-        <span className="c2-result">{view.length} shown</span>
-        <input
-          className="c2-search"
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search theatre, actor or region"
-          aria-label="Search conflict records"
-        />
-      </div>
 
       <section className="c2-main">
         <div className="c2-map">

@@ -2,16 +2,16 @@ import features from '../data/html-feature-map.json';
 import registry from '../data/source-registry.json';
 
 export const TABS = [
-  { id: 'home', label: 'HOME', labelHi: 'मुखपृष्ठ', tier: 'home' },
-  { id: 'global', label: 'GLOBAL', labelHi: 'वैश्विक', tier: 'geopolitics' },
-  { id: 'national', label: 'NATIONAL', labelHi: 'राष्ट्रीय', tier: 'national' },
-  { id: 'state', label: 'STATE', labelHi: 'राज्य', tier: 'state' },
-  { id: 'local', label: 'LOCAL', labelHi: 'स्थानीय', tier: 'local' },
-  { id: 'law', label: 'LAW', labelHi: 'विधि', tier: 'judiciary' },
-  { id: 'economics', label: 'ECONOMICS', labelHi: 'अर्थव्यवस्था', tier: 'finance' },
-  { id: 'carbon', label: 'CARBON', labelHi: 'कार्बन', tier: 'climate' },
-  { id: 'sports', label: 'SPORTS', labelHi: 'खेल', tier: 'sports' },
-  { id: 'entertainment', label: 'ENTERTAINMENT', labelHi: 'मनोरंजन', tier: 'entertainment' },
+  { id: 'home', label: 'Home', labelHi: 'मुखपृष्ठ', tier: 'home' },
+  { id: 'global', label: 'Global', labelHi: 'वैश्विक', tier: 'geopolitics' },
+  { id: 'national', label: 'National', labelHi: 'राष्ट्रीय', tier: 'national' },
+  { id: 'state', label: 'State', labelHi: 'राज्य', tier: 'state' },
+  { id: 'local', label: 'Local', labelHi: 'स्थानीय', tier: 'local' },
+  { id: 'law', label: 'Law', labelHi: 'विधि', tier: 'judiciary' },
+  { id: 'economics', label: 'Economics', labelHi: 'अर्थव्यवस्था', tier: 'finance' },
+  { id: 'carbon', label: 'Carbon', labelHi: 'कार्बन', tier: 'climate' },
+  { id: 'sports', label: 'Sports', labelHi: 'खेल', tier: 'sports' },
+  { id: 'entertainment', label: 'Entertainment', labelHi: 'मनोरंजन', tier: 'entertainment' },
 ];
 
 const registryByKey = new Map(registry.map((r) => [r.key, r]));
@@ -43,12 +43,35 @@ const STATE_DESKS = [
   'Centre-State Fund Flow Tracker',
 ];
 
+const LOCAL_DESKS = [
+  'Local Governance Brief',
+  'Booth-level Results Database',
+  'Booth Register',
+  'Booth Demography',
+  'Booth Bloc Composition',
+  'Booth-level Roll Churn',
+  'Booth Political History',
+  'Swing Booths',
+  'Anchor Booths',
+  'Hyperlocal News Aggregator',
+  'Municipal Watch',
+  'Panchayat Watch',
+  'Municipal & Panchayat Tender Aggregator',
+  'Municipal Finance & Solvency',
+  'MGNREGA Works & Muster Roll Tracker',
+  'Gram Panchayat Development Plan (GPDP) Fund Tracker',
+  'Councillor & Pradhan Profiles + Report Cards',
+  'Local Officer Directory + Transfer Tracker (BDO/SDO/EO)',
+];
+
 const STATE_DESK_SET = new Set(STATE_DESKS);
+const LOCAL_DESK_SET = new Set(LOCAL_DESKS);
 
 export function modulesForTier(tier) {
   const list = features.filter((f) => f.htmlTier === tier);
-  if (tier !== 'state') return list;
-  return list.filter((f) => STATE_DESK_SET.has(f.htmlFeature));
+  if (tier === 'state') return list.filter((f) => STATE_DESK_SET.has(f.htmlFeature));
+  if (tier === 'local') return list.filter((f) => LOCAL_DESK_SET.has(f.htmlFeature));
+  return list;
 }
 
 export function catalogModules() {
@@ -119,6 +142,33 @@ const BUCKET_ORDER = {
     'Government Operations',
     'Public Finance',
   ],
+  local: [
+    'Assembly',
+    'Booths',
+    'Contest Analysis',
+    'Local Wires',
+    'Municipality',
+    'Panchayats',
+    'Representatives',
+  ],
+  judiciary: [
+    'Judicial Intelligence',
+    'Judicial Analytics',
+    'International Courts',
+    'Comparative Jurisprudence',
+    'Tribunals',
+    'Court Operations',
+    'Justice System Data',
+  ],
+  finance: [
+    'Market Intelligence',
+    'Macro, Trade & Economy',
+    'Sector & Industry Intelligence',
+    'Prediction Markets',
+  ],
+  climate: ['Border Mechanisms', 'Carbon Markets', 'India Carbon Market', 'Registries & Wire'],
+  sports: ['Scores & Fixtures', 'Football Desk', 'India Sports Desk', 'Sports Business'],
+  entertainment: ['Screens & Streaming', 'Industry Wire', 'Music', 'Screen Intelligence'],
 };
 
 const FEATURE_ORDER = {
@@ -186,6 +236,101 @@ const FEATURE_ORDER = {
     ],
     'Public Finance': ['CAG Audit Tracker', 'State Fiscal Deep-Dive', 'Centre-State Fund Flow Tracker'],
   },
+  local: {
+    Assembly: ['Local Governance Brief', 'Booth-level Results Database'],
+    Booths: ['Booth Register', 'Booth Demography', 'Booth Bloc Composition', 'Booth-level Roll Churn'],
+    'Contest Analysis': ['Booth Political History', 'Swing Booths', 'Anchor Booths'],
+    'Local Wires': ['Hyperlocal News Aggregator', 'Municipal Watch', 'Panchayat Watch'],
+    Municipality: ['Municipal & Panchayat Tender Aggregator', 'Municipal Finance & Solvency'],
+    Panchayats: [
+      'MGNREGA Works & Muster Roll Tracker',
+      'Gram Panchayat Development Plan (GPDP) Fund Tracker',
+    ],
+    Representatives: [
+      'Councillor & Pradhan Profiles + Report Cards',
+      'Local Officer Directory + Transfer Tracker (BDO/SDO/EO)',
+    ],
+  },
+  judiciary: {
+    'Judicial Intelligence': [
+      'Supreme Court Order & Judgment Feed',
+      'Order Archive by Topic (Cross-Court)',
+      'District Court Case Tracker',
+      'UP High Court (Allahabad) Order Feed',
+      'NGT Environmental Litigation Tracker',
+      'CAT & Consumer Disputes (NCDRC) Watch',
+      'Constitutional Bench Tracker',
+      'HC Constitutional & PIL Tracker',
+      'HC vs State Government Litigation',
+    ],
+    'Judicial Analytics': [
+      'Judge Analytics (Ruling Patterns)',
+      'Case Pendency & Disposal Analytics',
+      'Precedent / Citation Network',
+      'HC Pendency & Disposal Analytics',
+      'HC Judge Profiles & Bench Analytics',
+      'District Court Pendency & Disposal',
+      'Professional Case-Law Database',
+    ],
+    'International Courts': [
+      'ICC Proceedings',
+      'ICJ Proceedings',
+      'WTO Dispute Settlement',
+      "Regional Int'l Courts (ECtHR / CJEU / ITLOS)",
+    ],
+    'Comparative Jurisprudence': [
+      'Supreme Courts & precedent — United States',
+      'Supreme Courts & precedent — other common-law jurisdictions',
+    ],
+    Tribunals: [
+      'NCLT / NCLAT (Insolvency)',
+      'Sector Tribunals (ITAT / TDSAT / SAT / DRT)',
+    ],
+    'Court Operations': [
+      'Cause-List / Hearing Scheduler',
+      'HC Case Status & Cause Lists',
+      'District Court Cause Lists',
+      'Local Judge & Court Directory',
+    ],
+    'Justice System Data': ['Undertrial & Prison Data', 'Legal Aid & Lok Adalat Tracker'],
+  },
+  finance: {
+    'Market Intelligence': ['NSE/BSE Delayed Market Feed', 'Live Global Stock Exchanges'],
+    'Macro, Trade & Economy': [
+      'Economic Overview of All Countries',
+      'Key Financial Indicators (GDP, CPI, PMI, Emp-to-Pop)',
+      'Trade Agreements & Economic Sanctions',
+      'Economic Simulator',
+    ],
+    'Sector & Industry Intelligence': [
+      'Sector Policy — Power/Energy/Green/Critical Minerals',
+      'Top Financial & Business Players',
+      'AI & the Tech Industry',
+    ],
+    'Prediction Markets': ['Prediction Market Political Odds', 'Election Forecast Aggregator'],
+  },
+  climate: {
+    'Border Mechanisms': ['Carbon Border (CBAM) Watch'],
+    'Carbon Markets': [
+      'Global Carbon Pricing Tracker',
+      'Carbon Price Monitor',
+      'ETS & Tax Adoption Timeline',
+    ],
+    'India Carbon Market': ['India CCTS & Green Credits'],
+    'Registries & Wire': ['Carbon Registry Wire', 'Climate Newswire'],
+  },
+  sports: {
+    'Scores & Fixtures': ['Cricket Wire', 'Fixtures & Results — World Leagues'],
+    'Football Desk': ['Football Wire', 'ISL Tracker'],
+    'India Sports Desk': ['Indian Sports Wire', 'Sports Governance & Policy'],
+    'Sports Business': ['Sports Business & Media Rights', 'Athlete Index'],
+  },
+  entertainment: {
+    'Screens & Streaming': ['TV & Streaming Tonight', 'Box Office Tracker'],
+    'Industry Wire': ['Entertainment News Wire', 'Bollywood & Film Wire'],
+    Music: ['Music Charts — India Top 25', 'Music Charts — Global Top 25'],
+    'Screen Intelligence': ['OTT & Studio Intelligence', 'Celebrity Influence Index'],
+  },
 };
 
 export function bucketLabel(name, tier) {
@@ -204,7 +349,7 @@ export function bucketsFor(mods, tier) {
     let label;
     if (FEATURE_ORDER[tier]) {
       label = Object.keys(featOrderByBucket).find((k) => featOrderByBucket[k].includes(m.htmlFeature));
-      if (!label && tier === 'state') continue;
+      if (!label && (tier === 'state' || tier === 'local' || tier === 'judiciary' || tier === 'finance' || tier === 'climate' || tier === 'sports' || tier === 'entertainment')) continue;
     }
     if (!label) label = bucketLabel(m.bucket || 'Desk', tier);
     if (!merged.has(label)) merged.set(label, { name: m.bucket, label, items: [] });

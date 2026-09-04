@@ -69,7 +69,7 @@ export function featureMenuLabel(mod) {
   const raw = String(mod?.workbookFunctions || mod?.htmlFeature || '').trim();
   if (!raw) return '';
   return raw.replace(/[A-Za-z]+/g, (w) => {
-    if (/^(IAS|IPS|AGMUT|MP|MLA|PIB|RBI|SEBI|TRAI|CCI|LS|SIR|CAG)$/i.test(w)) return w.toUpperCase();
+    if (/^(IAS|IPS|AGMUT|MP|MLA|PIB|RBI|SEBI|TRAI|CCI|LS|SIR|CAG|GPDP|MGNREGA|BDO|SDO|SDM|EO)$/i.test(w)) return w.toUpperCase();
     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
   });
 }

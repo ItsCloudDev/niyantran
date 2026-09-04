@@ -1,15 +1,43 @@
-import { useState } from 'react';
-import Login from './Login.jsx';
+import { useEffect, useState } from 'react';
+import MarketingSite from './marketing/MarketingSite.jsx';
 import TerminalShell from './shell/TerminalShell.jsx';
+import AdminApp from './admin/AdminApp.jsx';
+import { startSiteHead } from './lib/siteHead.js';
+
+function pathKey() {
+  return location.pathname.replace(/\/+$/, '') || '/';
+}
+
+function isAdminPath() {
+  return pathKey() === '/admin';
+}
+
+function isLegalPath() {
+  const p = pathKey();
+  return p === '/privacy' || p === '/terms';
+}
 
 export default function App() {
-  const [authed, setAuthed] = useState(
-    () => sessionStorage.getItem('niyantranAuthed') === '1',
-  );
+  const [admin, setAdmin] = useState(isAdminPath);
+  const [legal, setLegal] = useState(isLegalPath);
+  const [authed, setAuthed] = useState(() => sessionStorage.getItem('niyantranAuthed') === '1');
 
-  if (!authed) {
-    return <Login onSuccess={() => setAuthed(true)} />;
+  useEffect(() => startSiteHead(), []);
+
+  useEffect(() => {
+    const sync = () => {
+      setAdmin(isAdminPath());
+      setLegal(isLegalPath());
+    };
+    window.addEventListener('popstate', sync);
+    return () => window.removeEventListener('popstate', sync);
+  }, []);
+
+  if (admin) return <AdminApp />;
+
+  if (legal || !authed) {
+    return <MarketingSite onAuthed={() => setAuthed(true)} />;
   }
 
-  return <TerminalShell />;
+  return <TerminalShell onLogout={() => setAuthed(false)} />;
 }

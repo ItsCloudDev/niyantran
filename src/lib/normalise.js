@@ -6,6 +6,11 @@ const HIDDEN = new Set([
   'feature',
   'host',
   'fail_reason',
+  'brief',
+  'why_it_matters',
+  'watch_for',
+  'tags',
+  'sizeBand',
 ]);
 
 export function displayColumns(rows) {
@@ -54,10 +59,24 @@ export function sortRows(rows, key, dir = 'desc') {
 export function provenanceLabel(feed) {
   if (!feed) return '';
   if (feed.rows?.[0]?.status === 'source_status') return 'SOURCE STATUS';
+  if (feed.source?.kind === 'geo-pack') return 'INGESTED';
+  if (feed.source?.kind === 'law-pack') return feed.fallback ? 'ARCHIVE' : 'INGESTED';
+  if (feed.source?.kind === 'finance-pack') return feed.fallback ? 'ARCHIVE' : 'INGESTED';
+  if (feed.source?.kind === 'carbon-pack') return feed.fallback ? 'ARCHIVE' : 'INGESTED';
   if (feed.source?.kind === 'dossier') return 'DOSSIER';
   if (feed.source?.gdelt) return feed.fallback ? 'GDELT SEARCH (fallback)' : 'GDELT SEARCH';
   if (feed.fallback) return 'ARCHIVE';
   return 'LIVE';
+}
+
+/** Badge in front of the desk heading: live table vs archived snapshot. */
+export function feedKindLabel(feed) {
+  const p = provenanceLabel(feed);
+  if (!p) return '';
+  if (p === 'SOURCE STATUS') return 'SOURCE STATUS';
+  if (p === 'LIVE') return 'LIVE FEED';
+  if (p.startsWith('GDELT')) return p;
+  return 'ARCHIVED FEED';
 }
 
 export function cellText(v) {

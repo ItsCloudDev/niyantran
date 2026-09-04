@@ -11,9 +11,70 @@ import { flattenAppeal } from '../src/lib/globalAid.js';
 import { flattenChokepoint, flattenInfra, flattenNuclear } from '../src/lib/strategicAssets.js';
 import { flattenLeader, commoditiesFromPack } from '../src/lib/globalResources.js';
 import { flattenEnergyMineral, flattenMineralRef } from '../src/lib/geonomics.js';
+import { geoRows, geoNote, isGeoDesk } from '../src/lib/niyGeo.js';
+import {
+  isGithubListing,
+  isLawExtract,
+  isUsScotusDesk,
+  lawNote,
+  lawRows,
+  lawSlice,
+  mapCourtListener,
+} from '../src/lib/lawPack.js';
+import {
+  dgftRows,
+  econNote,
+  econSlice,
+  manifoldPoliticalRows,
+  marketQuoteRows,
+  nseLiveRows,
+} from '../src/lib/econPack.js';
+import {
+  NEWS_FEEDS,
+  REGISTRY_FEEDS,
+  carbonDataset,
+  carbonNote,
+  carbonRows,
+  carbonSlice,
+  newsRows,
+  registryRows,
+} from '../src/lib/carbonPack.js';
+import {
+  CRICKET_RSS,
+  FOOTBALL_RSS,
+  INDIA_SPORTS_RSS,
+  rssWireRows,
+  sportsNote,
+  sportsSlice,
+} from '../src/lib/sportsPack.js';
+import {
+  BOLLYWOOD_NEWS_RSS,
+  BOLLYWOOD_RSS,
+  VARIETY_RSS,
+  entertainmentNote,
+  entertainmentSlice,
+  rssWireRows as entRssRows,
+} from '../src/lib/entertainmentPack.js';
 import { serveNational } from './nationalFeed.mjs';
 import { loadLaunches } from './assetsApi.mjs';
 import { loadConstitutions, loadGrowth, loadTrade } from './resourcesApi.mjs';
+import {
+  loadCountryEconomies,
+  loadIndiaCeos,
+  loadIndiaEnergy,
+  loadKeyIndicators,
+  loadManifoldPolitical,
+  loadWorldExchanges,
+} from './financeApi.mjs';
+import { loadAthletes, loadIsl, loadSportsLeagues, loadWorldFixtures } from './sportsApi.mjs';
+import {
+  loadBoxOffice,
+  loadCelebrities,
+  loadMusicIndia,
+  loadMusicUs,
+  loadOtt,
+  loadTvTonight,
+} from './entertainmentApi.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = path.resolve(__dirname, '..');
@@ -167,6 +228,7 @@ function flattenRow(item, extra = {}) {
       'billName',
       'name',
       'headline',
+      'case_title',
       'topic',
       'policy_name',
       'tender_title',
@@ -532,6 +594,13 @@ function datasetFile(dataset) {
   return null;
 }
 
+function loadRawEmbedded(dataset) {
+  const file = datasetFile(dataset);
+  if (!file || !fs.existsSync(file)) return [];
+  const json = JSON.parse(fs.readFileSync(file, 'utf8'));
+  return Array.isArray(json) ? json : [];
+}
+
 function loadEmbedded(dataset) {
   const file = datasetFile(dataset);
   if (!file || !fs.existsSync(file)) return null;
@@ -785,6 +854,10 @@ async function tryUrls(urls) {
     try {
       const got = await fetchText(url);
       const rows = rowsFromPayload(got.text, got.contentType, got.finalUrl);
+      if (isGithubListing(rows, got.finalUrl || url)) {
+        errors.push(`${hostOf(url) || 'source'}: directory listing, not a table`);
+        continue;
+      }
       if (rows.length) return { rows, url: got.finalUrl, error: null };
       errors.push(`${hostOf(url) || 'source'}: empty`);
     } catch (err) {
@@ -792,6 +865,18 @@ async function tryUrls(urls) {
     }
   }
   return { rows: [], url: urls[0] || '', error: errors.join(' | ') };
+}
+
+async function rssTagged(url, extra = {}) {
+  try {
+    const got = await fetchText(url);
+    const rows = rowsFromPayload(got.text, got.contentType, got.finalUrl);
+    return rows
+      .filter((r) => r && r.title)
+      .map((r) => ({ ...r, ...extra }));
+  } catch {
+    return [];
+  }
 }
 
 function mergeBills(archive, live) {
@@ -929,6 +1014,806 @@ export async function serveFeatureFeed(searchParams) {
   };
   const primary = entry?.primaryFeedUrl || (isHttpsUrl(feat.source) ? feat.source : '');
   const gdeltFallback = entry?.openLiveFallback || '';
+
+  // State/Local geography: ingested NIY_GEO pack, not GitHub directory listings or GDELT.
+  if (isGeoDesk(feat.htmlFeature, dataset)) {
+    const pack = loadJsonPack('niy-geo.json');
+    const rows = geoRows(pack, feat.htmlFeature, dataset);
+    if (rows.length) {
+      return envelope({
+        tier,
+        feature: feat,
+        rows,
+        adapter: 'embedded',
+        links: [],
+        coverage: { from: pack?.vintage || pack?.packs?.GA?.vintage || '', through: '', exhaustive: false },
+        fallback: false,
+        kind: 'geo-pack',
+        note: geoNote(pack),
+        meta: { vintage: pack?.packs?.GA?.vintage || pack?.vintage, state: 'Goa', heading: feat.htmlFeature },
+      });
+    }
+  }
+
+  // Law: extracted order tables. Do not dump GDELT news or GitHub listings as dockets.
+  if (tier === 'judiciary') {
+    const slice = lawSlice(feat.htmlFeature);
+    if (isLawExtract(feat.htmlFeature)) {
+      const rows = lawRows(slice, {
+        sc: loadRawEmbedded('judiciary_sc_orders.csv'),
+        nclt: loadRawEmbedded('judiciary_nclt_orders.csv'),
+        ibbi: loadRawEmbedded('national_ibbi_announcements.csv'),
+      });
+      if (rows.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows,
+          adapter: 'embedded',
+          links: [...new Set(rows.map((r) => r.source_url).filter(Boolean))].slice(0, 8),
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: false,
+          kind: 'law-pack',
+          note: lawNote(slice),
+          meta: { heading: feat.htmlFeature, section: slice === 'archive' ? 'ORDER ARCHIVE' : slice === 'nclt' ? 'INSOLVENCY' : 'SUPREME COURT' },
+        });
+      }
+    }
+    if (isUsScotusDesk(feat.htmlFeature)) {
+      const clUrls = [
+        primary,
+        'https://www.courtlistener.com/api/rest/v4/search/?type=o&court=scotus&order_by=dateFiled%20desc&page_size=100',
+      ]
+        .filter((u) => u && !isGdelt(u))
+        .map((u) => (u.includes('page_size=') ? u : `${u}${u.includes('?') ? '&' : '?'}page_size=100`));
+      for (const url of clUrls) {
+        try {
+          const got = await fetchText(url);
+          const json = JSON.parse(got.text);
+          const rows = mapCourtListener(json);
+          if (rows.length) {
+            return envelope({
+              tier,
+              feature: feat,
+              rows,
+              adapter: 'api',
+              links: [url],
+              coverage: { from: '', through: '', exhaustive: false },
+              fallback: false,
+              note: 'CourtListener opinion search for SCOTUS. Not a news search.',
+              meta: { heading: feat.htmlFeature, section: 'US SUPREME COURT' },
+            });
+          }
+        } catch {
+          /* try next */
+        }
+      }
+    }
+    return envelope({
+      tier,
+      feature: feat,
+      rows: statusRow({
+        adapter: adapter || 'unmapped',
+        url: primary || links[0] || '',
+        reason: 'no extracted court table for this desk',
+        featureName: feat.htmlFeature,
+      }),
+      adapter: adapter || 'unmapped',
+      links,
+      coverage,
+      fallback: false,
+      note: 'No extracted docket for this desk. GDELT news was not used as a stand-in, and no records were invented.',
+    });
+  }
+
+  // Economics: extracted tables + free live APIs. Never GDELT as a quote/macro/docket stand-in.
+  if (tier === 'finance') {
+    const slice = econSlice(feat.htmlFeature);
+    const liveAttempt = ['nse', 'world', 'countries', 'indicators', 'sector', 'leaders', 'ai', 'manifold'].includes(slice);
+    const econStatus = (reason) =>
+      envelope({
+        tier,
+        feature: feat,
+        rows: statusRow({
+          adapter: liveAttempt ? 'api' : adapter || 'unmapped',
+          url: primary || links[0] || '',
+          reason,
+          featureName: feat.htmlFeature,
+        }),
+        adapter: liveAttempt ? 'api' : adapter || 'unmapped',
+        links,
+        coverage,
+        fallback: false,
+        note: econNote(slice || 'elections'),
+      });
+
+    if (slice === 'nse') {
+      try {
+        const got = await fetchText(NSE_INDICES);
+        const json = JSON.parse(got.text);
+        const live = nseLiveRows(json);
+        if (live.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live,
+            adapter: 'api',
+            links: [NSE_INDICES],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: 'NSE allIndices via proxy. Quotes are delayed by the exchange, not a recommendation.',
+          });
+        }
+      } catch {
+        /* licence / session */
+      }
+      const rows = marketQuoteRows(loadRawEmbedded('finance_market_feed.csv'));
+      if (rows.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows,
+          adapter: 'embedded',
+          links: [NSE_INDICES],
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: false,
+          kind: 'finance-pack',
+          note: econNote('nse'),
+          meta: { heading: feat.htmlFeature, section: 'EQUITY MARKET FEED' },
+        });
+      }
+      return econStatus('NSE allIndices blocked; no extracted quote snapshot');
+    }
+
+    if (slice === 'world') {
+      try {
+        const live = await loadWorldExchanges();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1d&range=5d'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: econNote('world'),
+            meta: { heading: feat.htmlFeature, section: 'WORLD EXCHANGES' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return econStatus('Yahoo index quotes did not return venue last prices');
+    }
+
+    if (slice === 'countries') {
+      try {
+        const live = await loadCountryEconomies();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://data.worldbank.org/indicator/NY.GDP.MKTP.CD'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: econNote('countries'),
+            meta: { heading: feat.htmlFeature, section: 'COUNTRY ECONOMIES' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return econStatus('World Bank GDP (current US$) did not return country rows');
+    }
+
+    if (slice === 'indicators') {
+      try {
+        const live = await loadKeyIndicators();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: econNote('indicators'),
+            meta: { heading: feat.htmlFeature, section: 'KEY INDICATORS' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return econStatus('World Bank growth/CPI/emp-to-pop did not return country rows');
+    }
+
+    if (slice === 'trade') {
+      const rows = dgftRows(loadRawEmbedded('national_dgft_notifications.csv'));
+      if (rows.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows,
+          adapter: 'embedded',
+          links: [...new Set(rows.map((r) => r.source_url).filter(Boolean))].slice(0, 8),
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: false,
+          kind: 'finance-pack',
+          note: econNote('trade'),
+          meta: { heading: feat.htmlFeature, section: 'TRADE POLICY' },
+        });
+      }
+      return econStatus('no extracted DGFT notification table');
+    }
+
+    if (slice === 'simulator') {
+      return econStatus('no macro series in this pack to model against');
+    }
+
+    if (slice === 'sector') {
+      try {
+        const live = await loadIndiaEnergy();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://data.worldbank.org/indicator/EG.ELC.ACCS.ZS'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: econNote('sector'),
+            meta: { heading: feat.htmlFeature, section: 'SECTOR POLICY' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return econStatus('World Bank India electricity-access series unavailable');
+    }
+
+    if (slice === 'leaders') {
+      try {
+        const live = await loadIndiaCeos();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://query.wikidata.org/'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: econNote('leaders'),
+            meta: { heading: feat.htmlFeature, section: 'BUSINESS LEADERS' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return econStatus('Wikidata SPARQL for Indian enterprise CEOs did not return rows');
+    }
+
+    if (slice === 'ai') {
+      const pib = 'https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3';
+      const got = await tryUrls([pib]);
+      const english = (got.rows || []).filter((r) => {
+        const t = String(r.title || '');
+        return t && !/[\u0900-\u097F]/.test(t);
+      });
+      if (english.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows: english,
+          adapter: 'api',
+          links: [pib],
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: false,
+          note: econNote('ai'),
+          meta: { heading: feat.htmlFeature, section: 'AI & TECH' },
+        });
+      }
+      return econStatus('PIB technology RSS empty or Hindi-only; licensed investment data not substituted');
+    }
+
+    if (slice === 'manifold') {
+      try {
+        const live = await loadManifoldPolitical();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://api.manifold.markets/v0/markets?limit=1000'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: econNote('manifold', 'Live Manifold polling.'),
+            meta: { heading: feat.htmlFeature, section: 'PREDICTION MARKETS' },
+          });
+        }
+      } catch {
+        /* archive */
+      }
+      const rows = manifoldPoliticalRows(loadRawEmbedded('finance_manifold_markets.csv'));
+      if (rows.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows,
+          adapter: 'embedded',
+          links: ['https://api.manifold.markets/v0/markets?limit=1000'],
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: true,
+          kind: 'finance-pack',
+          note: econNote('manifold', 'Live polling failed; 31-row political snapshot.'),
+          meta: { heading: feat.htmlFeature, section: 'PREDICTION MARKETS' },
+        });
+      }
+      return econStatus('Manifold live polling failed and no political snapshot was present');
+    }
+
+    if (slice === 'elections') {
+      return econStatus('no Indian election-forecast table; prediction markets on Indian elections are not legal');
+    }
+
+    return econStatus('no extracted economics table for this desk');
+  }
+
+  // Carbon: extracted milestone/price tables + outlet RSS. Never GDELT, never World Bank CO2-as-price.
+  if (tier === 'climate') {
+    const slice = carbonSlice(feat.htmlFeature);
+    const carbonStatus = (reason) =>
+      envelope({
+        tier,
+        feature: feat,
+        rows: statusRow({
+          adapter: adapter || 'unmapped',
+          url: primary || links[0] || '',
+          reason,
+          featureName: feat.htmlFeature,
+        }),
+        adapter: adapter || 'unmapped',
+        links,
+        coverage,
+        fallback: false,
+        note: carbonNote(slice || 'cbam'),
+      });
+
+    if (slice === 'news') {
+      const parts = await Promise.all(NEWS_FEEDS.map((f) => rssTagged(f.url, { outlet: f.outlet, source: f.outlet })));
+      const live = newsRows(parts.flat());
+      if (live.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows: live,
+          adapter: 'api',
+          links: NEWS_FEEDS.map((f) => f.url),
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: false,
+          note: carbonNote('news', 'Live outlet RSS.'),
+          meta: { heading: feat.htmlFeature, section: 'CLIMATE NEWSWIRE' },
+        });
+      }
+    }
+
+    if (slice === 'registry') {
+      const parts = await Promise.all(REGISTRY_FEEDS.map((f) => rssTagged(f.url, { registry: f.registry })));
+      const live = registryRows(parts.flat());
+      const extracted = registryRows(loadRawEmbedded(carbonDataset('registry')));
+      if (live.length) {
+        const keep = extracted.filter((r) => !/^verra$/i.test(r.registry));
+        const rows = registryRows([...live, ...keep]);
+        return envelope({
+          tier,
+          feature: feat,
+          rows,
+          adapter: 'api',
+          links: REGISTRY_FEEDS.map((f) => f.url),
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: false,
+          note: carbonNote(
+            'registry',
+            'Verra from live RSS. Isometric from the extracted publication list. Puro.earth has no public RSS.',
+          ),
+          meta: { heading: feat.htmlFeature, section: 'REGISTRY WIRE' },
+        });
+      }
+    }
+
+    if (slice) {
+      const rows = carbonRows(slice, {
+        cbam: loadRawEmbedded(carbonDataset('cbam')),
+        pricing: loadRawEmbedded(carbonDataset('pricing')),
+        monitor: loadRawEmbedded(carbonDataset('monitor')),
+        ets: loadRawEmbedded(carbonDataset('ets')),
+        ccts: loadRawEmbedded(carbonDataset('ccts')),
+        registry: loadRawEmbedded(carbonDataset('registry')),
+        news: loadRawEmbedded(carbonDataset('news')),
+      });
+      if (rows.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows,
+          adapter: 'embedded',
+          links: [...new Set(rows.map((r) => r.source_url).filter(Boolean))].slice(0, 8),
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: slice === 'news' || slice === 'registry',
+          kind: 'carbon-pack',
+          note: carbonNote(slice, slice === 'news' || slice === 'registry' ? 'Live RSS failed; extracted snapshot.' : ''),
+          meta: { heading: feat.htmlFeature, section: String(feat.htmlFeature || '').toUpperCase() },
+        });
+      }
+    }
+
+    return carbonStatus('no extracted carbon table for this desk');
+  }
+
+  // Sports: live RSS / TheSportsDB / ESPN / Wikidata. Never GDELT.
+  if (tier === 'sports') {
+    const slice = sportsSlice(feat.htmlFeature);
+    const sportsStatus = (reason) =>
+      envelope({
+        tier,
+        feature: feat,
+        rows: statusRow({
+          adapter: slice === 'governance' ? 'internal' : 'api',
+          url: primary || links[0] || '',
+          reason,
+          featureName: feat.htmlFeature,
+        }),
+        adapter: slice === 'governance' ? 'internal' : 'api',
+        links,
+        coverage,
+        fallback: false,
+        note: sportsNote(slice || 'governance'),
+      });
+
+    if (slice === 'cricket') {
+      const live = rssWireRows(await rssTagged(CRICKET_RSS, { outlet: 'ESPNcricinfo' }), 'ESPNcricinfo');
+      if (live.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows: live,
+          adapter: 'api',
+          links: [CRICKET_RSS],
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: false,
+          note: sportsNote('cricket'),
+          meta: { heading: feat.htmlFeature, section: 'CRICKET WIRE' },
+        });
+      }
+      return sportsStatus('ESPNcricinfo RSS did not return stories');
+    }
+
+    if (slice === 'football') {
+      const live = rssWireRows(await rssTagged(FOOTBALL_RSS, { outlet: 'BBC Sport' }), 'BBC Sport');
+      if (live.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows: live,
+          adapter: 'api',
+          links: [FOOTBALL_RSS],
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: false,
+          note: sportsNote('football'),
+          meta: { heading: feat.htmlFeature, section: 'FOOTBALL WIRE' },
+        });
+      }
+      return sportsStatus('BBC Sport football RSS did not return stories');
+    }
+
+    if (slice === 'india') {
+      const live = rssWireRows(await rssTagged(INDIA_SPORTS_RSS, { outlet: 'Google News' }), 'Google News');
+      if (live.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows: live,
+          adapter: 'api',
+          links: [INDIA_SPORTS_RSS],
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: false,
+          note: sportsNote('india'),
+          meta: { heading: feat.htmlFeature, section: 'INDIAN SPORTS WIRE' },
+        });
+      }
+      return sportsStatus('Google News Indian-sports RSS did not return headlines');
+    }
+
+    if (slice === 'fixtures') {
+      try {
+        const live = await loadWorldFixtures();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=4328'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: sportsNote('fixtures'),
+            meta: { heading: feat.htmlFeature, section: 'WORLD LEAGUES' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return sportsStatus('TheSportsDB did not return Premier League, NBA, IPL or La Liga events');
+    }
+
+    if (slice === 'isl') {
+      try {
+        const live = await loadIsl();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://site.api.espn.com/apis/site/v2/sports/soccer/ind.1/scoreboard'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: sportsNote('isl', live.source === 'espn' ? 'ESPN scoreboard.' : 'ESPN empty; TheSportsDB ISL.'),
+            meta: { heading: feat.htmlFeature, section: 'ISL TRACKER' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return sportsStatus('ESPN ISL scoreboard and TheSportsDB ISL returned no fixtures');
+    }
+
+    if (slice === 'business') {
+      try {
+        const live = await loadSportsLeagues();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://query.wikidata.org/'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: sportsNote('business'),
+            meta: { heading: feat.htmlFeature, section: 'SPORTS BUSINESS' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return sportsStatus('Wikidata SPARQL for Indian leagues did not return rows');
+    }
+
+    if (slice === 'athletes') {
+      try {
+        const live = await loadAthletes();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://query.wikidata.org/'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: sportsNote('athletes'),
+            meta: { heading: feat.htmlFeature, section: 'ATHLETE INDEX' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return sportsStatus('Wikidata SPARQL for Indian athletes did not return rows');
+    }
+
+    if (slice === 'governance') {
+      return sportsStatus('no extracted MYAS / National Sports Code table');
+    }
+
+    return sportsStatus('no sports table for this desk');
+  }
+
+  // Entertainment: TVmaze / Apple / Variety / Wikidata. Never GDELT.
+  if (tier === 'entertainment') {
+    const slice = entertainmentSlice(feat.htmlFeature);
+    const entStatus = (reason) =>
+      envelope({
+        tier,
+        feature: feat,
+        rows: statusRow({
+          adapter: 'api',
+          url: primary || links[0] || '',
+          reason,
+          featureName: feat.htmlFeature,
+        }),
+        adapter: 'api',
+        links,
+        coverage,
+        fallback: false,
+        note: entertainmentNote(slice || 'tv'),
+      });
+
+    if (slice === 'tv') {
+      try {
+        const live = await loadTvTonight();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://api.tvmaze.com/schedule?country=IN', 'https://api.tvmaze.com/schedule?country=US'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: entertainmentNote('tv'),
+            meta: { heading: feat.htmlFeature, section: 'TV & STREAMING TONIGHT' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return entStatus('TVmaze schedule for India and the United States returned no listings');
+    }
+
+    if (slice === 'variety') {
+      const live = entRssRows(await rssTagged(VARIETY_RSS, { outlet: 'Variety' }), 'Variety');
+      if (live.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows: live,
+          adapter: 'api',
+          links: [VARIETY_RSS],
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: false,
+          note: entertainmentNote('variety'),
+          meta: { heading: feat.htmlFeature, section: 'ENTERTAINMENT NEWS WIRE' },
+        });
+      }
+      return entStatus('Variety RSS did not return stories');
+    }
+
+    if (slice === 'bollywood') {
+      const ndtv = entRssRows(await rssTagged(BOLLYWOOD_RSS, { outlet: 'NDTV Movies' }), 'NDTV Movies');
+      if (ndtv.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows: ndtv,
+          adapter: 'api',
+          links: [BOLLYWOOD_RSS],
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: false,
+          note: entertainmentNote('bollywood', 'NDTV Movies RSS.'),
+          meta: { heading: feat.htmlFeature, section: 'BOLLYWOOD & FILM WIRE' },
+        });
+      }
+      const gnews = entRssRows(
+        await rssTagged(BOLLYWOOD_NEWS_RSS, { outlet: 'Google News' }),
+        'Google News',
+      );
+      if (gnews.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows: gnews,
+          adapter: 'api',
+          links: [BOLLYWOOD_NEWS_RSS],
+          coverage: { from: '', through: '', exhaustive: false },
+          fallback: false,
+          note: entertainmentNote('bollywood', 'NDTV Movies empty; Google News Bollywood wire.'),
+          meta: { heading: feat.htmlFeature, section: 'BOLLYWOOD & FILM WIRE' },
+        });
+      }
+      return entStatus('NDTV Movies RSS and Google News Bollywood returned no headlines');
+    }
+
+    if (slice === 'music-in' || slice === 'music-us') {
+      try {
+        const live = slice === 'music-in' ? await loadMusicIndia() : await loadMusicUs();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: [
+              slice === 'music-in'
+                ? 'https://rss.marketingtools.apple.com/api/v2/in/music/most-played/25/songs.json'
+                : 'https://rss.marketingtools.apple.com/api/v2/us/music/most-played/25/songs.json',
+            ],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: entertainmentNote(slice, live.source === 'itunes' ? 'Apple Music empty; iTunes Top Songs.' : ''),
+            meta: { heading: feat.htmlFeature, section: slice === 'music-in' ? 'INDIA TOP 25' : 'GLOBAL TOP 25' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return entStatus('Apple Music and iTunes Top Songs returned no chart rows');
+    }
+
+    if (slice === 'box') {
+      try {
+        const live = await loadBoxOffice();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://query.wikidata.org/'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: entertainmentNote('box'),
+            meta: { heading: feat.htmlFeature, section: 'BOX OFFICE TRACKER' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return entStatus('Wikidata SPARQL for Indian films did not return rows');
+    }
+
+    if (slice === 'ott') {
+      try {
+        const live = await loadOtt();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://query.wikidata.org/'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: entertainmentNote('ott'),
+            meta: { heading: feat.htmlFeature, section: 'OTT & STUDIO INTELLIGENCE' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return entStatus('Wikidata SPARQL for Indian OTT and studios did not return rows');
+    }
+
+    if (slice === 'celebrity') {
+      try {
+        const live = await loadCelebrities();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: ['https://query.wikidata.org/'],
+            coverage: { from: '', through: '', exhaustive: false },
+            fallback: false,
+            note: entertainmentNote('celebrity'),
+            meta: { heading: feat.htmlFeature, section: 'CELEBRITY INFLUENCE INDEX' },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return entStatus('Wikidata SPARQL for Indian screen and music personalities did not return rows');
+    }
+
+    return entStatus('no entertainment table for this desk');
+  }
 
   // Strategic Assets — Infra: curated public project register, not World Bank/GDELT.
   if (/^infra$/i.test(feat.htmlFeature || '') || dataset === 'geopolitics_infra_projects.csv') {

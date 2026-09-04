@@ -1,4 +1,5 @@
 import { matrixCellStyle } from '../lib/analytics.js';
+import { vizFilterList, vizFilterOn } from '../lib/nationalKpi.js';
 import { Icon } from './Icons.jsx';
 
 export function VizCard({ title, hint, children }) {
@@ -16,23 +17,49 @@ export function VizCard({ title, hint, children }) {
   );
 }
 
-export function Heatmap({ matrix }) {
+export function Heatmap({ matrix, onPick, active, rowFilterCol, colFilterCol, colFilterMap }) {
   if (!matrix?.rows?.length) return null;
   const cols = matrix.cols;
+  const rowOn = (label) => Boolean(rowFilterCol && vizFilterOn(active, rowFilterCol, label, ''));
+  const colOn = (label) => Boolean(colFilterCol && vizFilterOn(active, colFilterCol, label, colFilterMap));
   return (
     <div className="heat">
       <div className="heat-grid" style={{ '--heat-cols': cols.length }}>
         <span className="heat-corner" />
-        {cols.map((c) => (
-          <span key={c} className="heat-colh">
-            {String(c).toUpperCase()}
-          </span>
-        ))}
+        {cols.map((c) =>
+          colFilterCol ? (
+            <button
+              key={c}
+              type="button"
+              className={`heat-colh is-filter${colOn(c) ? ' on' : ''}`}
+              onClick={() => onPick?.({ filterCol: colFilterCol, filterValue: c, label: c, filterMap: colFilterMap })}
+              title={`Filter: ${c}`}
+            >
+              {String(c)}
+            </button>
+          ) : (
+            <span key={c} className="heat-colh">
+              {String(c)}
+            </span>
+          ),
+        )}
         <span className="heat-colh">Σ</span>
         {matrix.rows.flatMap((r) => [
-          <span key={`${r.label}-h`} className="heat-rowh">
-            {r.label}
-          </span>,
+          rowFilterCol ? (
+            <button
+              key={`${r.label}-h`}
+              type="button"
+              className={`heat-rowh is-filter${rowOn(r.label) ? ' on' : ''}`}
+              onClick={() => onPick?.({ filterCol: rowFilterCol, filterValue: r.label, label: r.label })}
+              title={r.label}
+            >
+              {r.label}
+            </button>
+          ) : (
+            <span key={`${r.label}-h`} className="heat-rowh" title={r.label}>
+              {r.label}
+            </span>
+          ),
           ...r.cells.map((n, i) => (
             <span key={`${r.label}-${cols[i]}`} className="heat-cell" style={matrixCellStyle(cols[i], n, matrix.colMax[i], matrix.sequential)}>
               {n || ''}
@@ -61,13 +88,14 @@ export function BarList({ items, onPick, active }) {
     <ul className="bar-list">
       {items.map((it) => {
         const clickable = Boolean(onPick && it.filterCol);
-        const on = clickable && active?.col === it.filterCol && String(active?.value) === String(it.filterValue || it.label);
+        const on = clickable && vizFilterOn(active, it.filterCol, it.filterValue || it.label, it.filterMap);
         return (
           <li key={it.label}>
             <button
               type="button"
-              className={`bar-lab${on ? ' on' : ''}`}
+              className={`bar-lab${clickable ? ' is-filter' : ''}${on ? ' on' : ''}`}
               disabled={!clickable}
+              aria-pressed={clickable ? on : undefined}
               onClick={() => onPick?.(it)}
               title={it.filterCol ? `Filter feed: ${it.label}` : it.label}
             >
@@ -85,11 +113,33 @@ export function BarList({ items, onPick, active }) {
 }
 
 export function VizFilterChip({ vizFilter, onClear }) {
-  if (!vizFilter?.value) return null;
+  const list = vizFilterList(vizFilter);
+  if (!list.length) return null;
   return (
-    <button type="button" className="nls-chip on" onClick={onClear}>
-      {vizFilter.value} ×
-    </button>
+    <span className="viz-chips">
+      {list.map((f) => (
+        <button
+          key={`${f.col}|${f.map || ''}|${f.value}`}
+          type="button"
+          className="nls-chip on"
+          title="Remove this filter"
+          onClick={() =>
+            window.dispatchEvent(
+              new CustomEvent('niy-viz-filter', {
+                detail: { filterCol: f.col, filterValue: f.value, filterMap: f.map, filterValues: f.values, label: f.value },
+              }),
+            )
+          }
+        >
+          {f.value} ×
+        </button>
+      ))}
+      {list.length > 1 ? (
+        <button type="button" className="nls-chip" onClick={onClear}>
+          Clear all
+        </button>
+      ) : null}
+    </span>
   );
 }
 

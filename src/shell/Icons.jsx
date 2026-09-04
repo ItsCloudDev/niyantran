@@ -122,6 +122,12 @@ export function Icon({ name, size = 16 }) {
           <path d="M12 10v6M12 7h.01" />
         </svg>
       );
+    case 'filter':
+      return (
+        <svg {...p}>
+          <path d="M4 5h16l-6 7v5l-4 2v-7z" />
+        </svg>
+      );
     default:
       return null;
   }

@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { hydrateSanction, issuerTokens, statsFor } from '../lib/sanctions.js';
+import { applyVizFilter } from '../lib/nationalKpi.js';
+import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
+import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 
-export default function SanctionsMonitor({ feed, selected, onSelect }) {
+export default function SanctionsMonitor({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const list = useMemo(
     () => (feed?.rows || []).map((r) => hydrateSanction(r)).filter((p) => p?.id),
     [feed],
@@ -24,14 +27,15 @@ export default function SanctionsMonitor({ feed, selected, onSelect }) {
   const view = useMemo(() => {
     const n = q.trim().toLowerCase();
     return list.filter((p) => {
-      if (region && p.region !== region) return false;
-      if (type && p.type !== type) return false;
-      if (status && p.status !== status) return false;
+      if (!matchesChoice(region, p.region)) return false;
+      if (!matchesChoice(type, p.type)) return false;
+      if (!matchesChoice(status, p.status)) return false;
+      if (!applyVizFilter(p.row || p, vizFilter)) return false;
       if (!n) return true;
       const hay = [p.name, p.issuer, p.target, p.reason, p.sectors.join(' '), p.type].join(' ').toLowerCase();
       return hay.includes(n);
     });
-  }, [list, q, region, type, status]);
+  }, [list, q, region, type, status, vizFilter]);
 
   useEffect(() => {
     if (!list.length) return;
@@ -87,6 +91,29 @@ export default function SanctionsMonitor({ feed, selected, onSelect }) {
         >
           ✓ LIVE FEED
         </button>
+        <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+        <TableFilterPop
+          extraGroups={[
+            choiceGroup('Region', regions, region, setRegion, { allLabel: 'All regions' }),
+            choiceGroup('Regime type', types, type, setType, { allLabel: 'All regime types' }),
+            choiceGroup(
+              'Status',
+              [
+                { value: 'active', label: 'active' },
+                { value: 'escalating', label: 'escalating' },
+                { value: 'under-review', label: 'under-review' },
+              ],
+              status,
+              setStatus,
+              { allLabel: 'All statuses' },
+            ),
+          ]}
+          q={q}
+          onQ={setQ}
+          searchPlaceholder="Search programme, issuer or sector"
+          vizFilter={vizFilter}
+          onClearViz={onClearViz}
+        />
       </div>
       {liveOpen && (
         <aside className="alw-live" aria-label="Live OpenSanctions lists">
@@ -144,27 +171,6 @@ export default function SanctionsMonitor({ feed, selected, onSelect }) {
               <span>Regions</span>
             </div>
           </div>
-        </div>
-        <div className="alw-feedtools">
-          <input className="alw-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search programme, issuer or sector" />
-          <select className="alw-select" value={region} onChange={(e) => setRegion(e.target.value)}>
-            <option value="">All regions</option>
-            {regions.map((r) => (
-              <option key={r}>{r}</option>
-            ))}
-          </select>
-          <select className="alw-select" value={type} onChange={(e) => setType(e.target.value)}>
-            <option value="">All regime types</option>
-            {types.map((t) => (
-              <option key={t}>{t}</option>
-            ))}
-          </select>
-          <select className="alw-select" value={status} onChange={(e) => setStatus(e.target.value)}>
-            <option value="">All statuses</option>
-            <option value="active">active</option>
-            <option value="escalating">escalating</option>
-            <option value="under-review">under-review</option>
-          </select>
         </div>
         <div className="alw-resultbar">
           <span>

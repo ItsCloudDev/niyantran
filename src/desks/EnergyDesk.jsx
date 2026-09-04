@@ -1,6 +1,9 @@
 import { useMemo, useState, Fragment } from 'react';
 import { energyStatusOf } from '../lib/geonomics.js';
 import GeoDotsMap from './GeoDotsMap.jsx';
+import { applyVizFilter } from '../lib/nationalKpi.js';
+import TableFilterPop from '../shell/TableFilterPop.jsx';
+import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 
 const AI_SUMMARY =
   'The geoeconomic story is refining concentration, not just mining: China controls ~90% of rare-earth processing and near-monopoly on gallium/germanium — direct leverage in the chip war. Energy prices carry a persistent Middle-East risk premium. Uranium is re-rating on the nuclear revival.';
@@ -27,11 +30,12 @@ const SOURCES = [
   ['Trading Economics', 'https://tradingeconomics.com/commodities'],
 ];
 
-export default function EnergyDesk({ feed, selected, onSelect, onAsk }) {
-  const minerals = useMemo(
+export default function EnergyDesk({ feed, selected, onSelect, onAsk, vizFilter, onClearViz }) {
+  const rawMinerals = useMemo(
     () => (feed?.rows || []).filter((r) => r.id && r.name).sort((a, b) => (b.intensity || 0) - (a.intensity || 0)),
     [feed],
   );
+  const minerals = useMemo(() => rawMinerals.filter((r) => applyVizFilter(r, vizFilter)), [rawMinerals, vizFilter]);
   const commodities = feed?.meta?.commodities || [];
   const stats = feed?.meta?.stats || {};
   const asOf = feed?.meta?.asOf || '2026-07';
@@ -64,7 +68,7 @@ export default function EnergyDesk({ feed, selected, onSelect, onAsk }) {
     URL.revokeObjectURL(a.href);
   }
 
-  if (!minerals.length) return <div className="alw-empty-page">Energy register is unavailable.</div>;
+  if (!rawMinerals.length) return <div className="alw-empty-page">Energy register is unavailable.</div>;
 
   return (
     <div className="cpd">
@@ -72,6 +76,8 @@ export default function EnergyDesk({ feed, selected, onSelect, onAsk }) {
         <span className="geo-risk">ENERGY & CRITICAL MINERALS</span>
         <span className="geo-asof">AS OF {String(asOf).toUpperCase()} · GEOECONOMIC LEVERAGE</span>
         <span className="geo-actions">
+          <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+          <TableFilterPop feed={feed} vizFilter={vizFilter} onClearViz={onClearViz} />
           <button type="button" className="geo-btn" onClick={exportJson}>
             Export JSON
           </button>

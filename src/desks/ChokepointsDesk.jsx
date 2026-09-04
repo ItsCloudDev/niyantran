@@ -1,6 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 import { chokeStatusOf, hydrateAsset } from '../lib/strategicAssets.js';
 import GeoDotsMap from './GeoDotsMap.jsx';
+import { applyVizFilter } from '../lib/nationalKpi.js';
+import TableFilterPop from '../shell/TableFilterPop.jsx';
+import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 
 const AI_SUMMARY =
   'Bab-el-Mandeb and Hormuz are the acute risks: Houthi strikes have already rerouted Suez traffic around the Cape (+10-14 days), and any Hormuz disruption removes ~1/5 of world oil with no bypass. Panama’s constraint is climate, not conflict.';
@@ -11,11 +14,12 @@ const PROMPTS = [
   ['China exposure', 'How exposed is China to the Malacca dilemma and what is it doing to hedge it?'],
 ];
 
-export default function ChokepointsDesk({ feed, selected, onSelect, onAsk }) {
-  const list = useMemo(
+export default function ChokepointsDesk({ feed, selected, onSelect, onAsk, vizFilter, onClearViz }) {
+  const allList = useMemo(
     () => (feed?.rows || []).map((r) => hydrateAsset(r, 'chokepoint')).filter((p) => p?.id),
     [feed],
   );
+  const list = useMemo(() => allList.filter((p) => applyVizFilter(p.row || p, vizFilter)), [allList, vizFilter]);
   const ranked = useMemo(() => [...list].sort((a, b) => (b.row?.intensity || 0) - (a.row?.intensity || 0)), [list]);
   const stats = feed?.meta?.stats || {};
   const asOf = feed?.meta?.asOf || '2026-07';
@@ -74,7 +78,7 @@ export default function ChokepointsDesk({ feed, selected, onSelect, onAsk }) {
     URL.revokeObjectURL(a.href);
   }
 
-  if (!list.length) return <div className="alw-empty-page">Chokepoint register is unavailable.</div>;
+  if (!allList.length) return <div className="alw-empty-page">Chokepoint register is unavailable.</div>;
 
   const liveRows = live?.rows || [];
 
@@ -89,6 +93,8 @@ export default function ChokepointsDesk({ feed, selected, onSelect, onAsk }) {
           LIVE FEED ↗
         </button>
         <span className="geo-actions">
+          <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+          <TableFilterPop feed={feed} vizFilter={vizFilter} onClearViz={onClearViz} />
           <button type="button" className="geo-btn" onClick={exportJson}>
             Export JSON
           </button>

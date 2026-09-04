@@ -1,21 +1,25 @@
 import { FLAGSHIP_PROGRAMMES } from '../data/nationalCurated.js';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import TableFilterPop from '../shell/TableFilterPop.jsx';
 
 export default function ProjectsDesk({ selected, onSelect, vizFilter, onClearViz }) {
-  const rows = FLAGSHIP_PROGRAMMES.map(([programme, domain, verifiable_status, activity]) => ({
+  const all = FLAGSHIP_PROGRAMMES.map(([programme, domain, verifiable_status, activity]) => ({
     programme,
     domain,
     verifiable_status,
     activity,
     title: programme,
-  })).filter((r) => applyVizFilter(r, vizFilter));
+  }));
+  const rows = all.filter((r) => applyVizFilter(r, vizFilter));
+  const feed = { feature: 'Centre-sanctioned Projects Monitor', rows: all };
   return (
     <div className="nat-panel">
       <div className="feed-head">
         <h1>CENTRAL PROJECTS</h1>
         <span className="live-feed">CURATED</span>
         <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+        <TableFilterPop feed={feed} vizFilter={vizFilter} onClearViz={onClearViz} />
       </div>
       <div className="desk-strip">
         <span>FLAGSHIP PROGRAMMES — CURATED REFERENCE</span>

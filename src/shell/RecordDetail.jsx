@@ -3,7 +3,24 @@ import { dossierFor, impactCards, isOpenFronts } from '../lib/openFronts.js';
 import { isGithubCsvRow } from '../lib/githubCsv.js';
 import CsvTablePane from './CsvTablePane.jsx';
 
-const SKIP = new Set(['source_url', 'status', 'adapter', 'fail_reason', 'host', 'detail', 'reporting_search', 'sources_json', 'lat', 'lon', 'id']);
+const SKIP = new Set([
+  'source_url',
+  'status',
+  'adapter',
+  'fail_reason',
+  'host',
+  'detail',
+  'reporting_search',
+  'sources_json',
+  'lat',
+  'lon',
+  'id',
+  'brief',
+  'why_it_matters',
+  'watch_for',
+  'tags',
+  'sizeBand',
+]);
 const ENTITY_KEYS = /party|ministry|sector|region|state|constituency|vendor|origin|category|department|court|status|stage|company|sponsor|financier|country|cadre|scheme|type|trend|intensity/i;
 
 function prettyKey(k) {
@@ -32,6 +49,17 @@ function entriesOf(row) {
   return Object.entries(row || {}).filter(
     ([k, v]) => !SKIP.has(k) && !/^source_\d/.test(k) && v != null && String(v).trim() !== '',
   );
+}
+
+function packAnalysis(row) {
+  if (!row?.brief && !row?.why_it_matters) return null;
+  const tags = Array.isArray(row.tags) ? row.tags.filter(Boolean) : [];
+  return {
+    brief: String(row.brief || '').trim(),
+    why: String(row.why_it_matters || '').trim(),
+    latest: String(row.watch_for || '').trim(),
+    tags,
+  };
 }
 
 function frontsAnalysis(row) {
@@ -99,7 +127,7 @@ export default function RecordDetail({ row, feed, onClear }) {
   const entries = entriesOf(row);
   const title = String(row.conflict_name || row.title || row.bill_name || row.name || 'Record').trim();
   const fronts = isOpenFronts(feed);
-  const analysis = fronts ? frontsAnalysis(row) : null;
+  const analysis = fronts ? frontsAnalysis(row) : packAnalysis(row);
   const pairs = sourcePairs(row);
   const docs = pairs.length
     ? pairs.map((p) => [p.label, p.url])
@@ -159,7 +187,7 @@ export default function RecordDetail({ row, feed, onClear }) {
           </div>
           {analysis.latest ? (
             <div className="rd-ai-sub">
-              <span>Latest feed note</span>
+              <span>{fronts ? 'Latest feed note' : 'Watch for'}</span>
               {analysis.latest}
             </div>
           ) : null}

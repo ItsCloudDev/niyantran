@@ -1,7 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { compact, hydrateAppeal, money, statsFor } from '../lib/globalAid.js';
+import { applyVizFilter } from '../lib/nationalKpi.js';
+import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
+import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 
-export default function GlobalAidMonitor({ feed, selected, onSelect }) {
+export default function GlobalAidMonitor({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const list = useMemo(
     () => (feed?.rows || []).map((r) => hydrateAppeal(r)).filter((p) => p?.id),
     [feed],
@@ -25,14 +28,15 @@ export default function GlobalAidMonitor({ feed, selected, onSelect }) {
   const view = useMemo(() => {
     const n = q.trim().toLowerCase();
     return list.filter((p) => {
-      if (region && p.region !== region) return false;
-      if (agency && p.agency !== agency) return false;
-      if (type && p.type !== type) return false;
+      if (!matchesChoice(region, p.region)) return false;
+      if (!matchesChoice(agency, p.agency)) return false;
+      if (!matchesChoice(type, p.type)) return false;
+      if (!applyVizFilter(p.row || p, vizFilter)) return false;
       if (!n) return true;
       const hay = [p.name, p.agency, p.region, p.geography, p.type, p.sectors.join(' '), p.latest].join(' ').toLowerCase();
       return hay.includes(n);
     });
-  }, [list, q, region, agency, type]);
+  }, [list, q, region, agency, type, vizFilter]);
 
   useEffect(() => {
     if (!list.length) return;
@@ -88,6 +92,19 @@ export default function GlobalAidMonitor({ feed, selected, onSelect }) {
         >
           ✓ LIVE FEED
         </button>
+        <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
+        <TableFilterPop
+          extraGroups={[
+            choiceGroup('Region', regions, region, setRegion, { allLabel: 'All regions' }),
+            choiceGroup('Institution', agencies, agency, setAgency, { allLabel: 'All institutions' }),
+            choiceGroup('Programme type', types, type, setType, { allLabel: 'All programme types' }),
+          ]}
+          q={q}
+          onQ={setQ}
+          searchPlaceholder="Search programme, institution, country or sector"
+          vizFilter={vizFilter}
+          onClearViz={onClearViz}
+        />
       </div>
       {liveOpen && (
         <aside className="alw-live" aria-label="Live UN OCHA FTS">
@@ -162,27 +179,6 @@ export default function GlobalAidMonitor({ feed, selected, onSelect }) {
               <span>Source-linked</span>
             </div>
           </div>
-        </div>
-        <div className="alw-feedtools">
-          <input className="alw-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search programme, institution, country or sector" />
-          <select className="alw-select" value={region} onChange={(e) => setRegion(e.target.value)}>
-            <option value="">All regions</option>
-            {regions.map((r) => (
-              <option key={r}>{r}</option>
-            ))}
-          </select>
-          <select className="alw-select" value={agency} onChange={(e) => setAgency(e.target.value)}>
-            <option value="">All institutions</option>
-            {agencies.map((a) => (
-              <option key={a}>{a}</option>
-            ))}
-          </select>
-          <select className="alw-select" value={type} onChange={(e) => setType(e.target.value)}>
-            <option value="">All programme types</option>
-            {types.map((t) => (
-              <option key={t}>{t}</option>
-            ))}
-          </select>
         </div>
         <div className="alw-resultbar">
           <span>

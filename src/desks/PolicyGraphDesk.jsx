@@ -1,5 +1,7 @@
 import { useMemo, useState } from 'react';
 import { PIG_SEC_META } from '../data/nationalCurated.js';
+import { applyVizFilter } from '../lib/nationalKpi.js';
+import TableFilterPop from '../shell/TableFilterPop.jsx';
 import {
   buildPigModel,
   pigEdgeTone,
@@ -10,7 +12,7 @@ import {
   pigYearCounts,
 } from '../lib/pigModel.js';
 
-export default function PolicyGraphDesk({ feed, selected, onSelect }) {
+export default function PolicyGraphDesk({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const rows = feed?.rows || [];
   const model = useMemo(() => buildPigModel(rows), [rows]);
   const [expanded, setExpanded] = useState(() => new Set());
@@ -83,9 +85,14 @@ export default function PolicyGraphDesk({ feed, selected, onSelect }) {
         <div className="pig-sub">
           {model.billTotal.toLocaleString('en-IN')} bills · {model.domainCount} domains · live
         </div>
-        <div className="pig-search">
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search bills…" autoComplete="off" />
-        </div>
+        <TableFilterPop
+          feed={feed}
+          q={query}
+          onQ={setQuery}
+          searchPlaceholder="Search bills"
+          vizFilter={vizFilter}
+          onClearViz={onClearViz}
+        />
         <button type="button" className="pig-chip" onClick={reset}>
           Reset view
         </button>
@@ -148,7 +155,9 @@ export default function PolicyGraphDesk({ feed, selected, onSelect }) {
                 const n = model.nodes[id];
                 const v = vis[id];
                 const st = pigNodeStyle(n);
-                const dim = q && n.level === 3 && !n.label.toLowerCase().includes(q) && !(n.raw?.bill_name || '').toLowerCase().includes(q);
+                const dim =
+                  (q && n.level === 3 && !n.label.toLowerCase().includes(q) && !(n.raw?.bill_name || '').toLowerCase().includes(q)) ||
+                  (n.raw && !applyVizFilter(n.raw, vizFilter));
                 const showLabel = n.level <= 2 || picked === id;
                 const label = n.level === 3 ? (n.label.length > 26 ? `${n.label.slice(0, 24)}…` : n.label) : n.label;
                 return (

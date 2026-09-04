@@ -1,9 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ads from '../data/home-ads.json';
 import zine from '../data/home-zine.json';
+import {
+  homeCacheHasRows,
+  isHomeCacheFresh,
+  kickHomeRefreshIfDue,
+  loadHomeCache,
+  saveHomeCache,
+} from '../lib/homeCache.js';
 import { homeLatestFromStatic, homeMarketsFromStatic, homePulseFromStatic } from '../lib/homeStatic.js';
+import { loadRefreshCfg } from '../lib/refreshStore.js';
 
 async function getJson(path, signal) {
+  const route = String(path).split('?')[0];
   try {
     const res = await fetch(path, { signal });
     const body = await res.json().catch(() => null);
@@ -11,10 +20,10 @@ async function getJson(path, signal) {
   } catch (err) {
     if (err?.name === 'AbortError') throw err;
   }
-  if (path === '/api/home/markets') return homeMarketsFromStatic(signal);
-  if (path === '/api/home/latest') return homeLatestFromStatic(signal);
-  if (path === '/api/home/pulse') return homePulseFromStatic(signal);
-  throw new Error(`HTTP ${path} unavailable`);
+  if (route === '/api/home/markets') return homeMarketsFromStatic(signal);
+  if (route === '/api/home/latest') return homeLatestFromStatic(signal);
+  if (route === '/api/home/pulse') return homePulseFromStatic(signal);
+  throw new Error(`HTTP ${route} unavailable`);
 }
 
 function fmtPx(n) {
@@ -59,12 +68,18 @@ function AgentBadge({ ageH }) {
 }
 
 export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }) {
-  const [markets, setMarkets] = useState([]);
-  const [latest, setLatest] = useState([]);
-  const [pulse, setPulse] = useState([]);
-  const [meta, setMeta] = useState({ markets: null, latest: null, pulse: null });
+  const boot = loadHomeCache();
+  const [markets, setMarkets] = useState(boot?.markets?.rows || []);
+  const [latest, setLatest] = useState(boot?.latest?.rows || []);
+  const [pulse, setPulse] = useState(boot?.pulse?.rows || []);
+  const [meta, setMeta] = useState({
+    markets: boot?.markets || null,
+    latest: boot?.latest || null,
+    pulse: boot?.pulse || null,
+  });
   const [ad, setAd] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!homeCacheHasRows(boot));
+  const prevReload = useRef(reload);
 
   const featured = zine[0];
 
@@ -76,44 +91,97 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
 
   useEffect(() => {
     const ac = new AbortController();
-    setLoading(true);
-    onLoading?.(true);
-    Promise.allSettled([
-      getJson('/api/home/markets', ac.signal),
-      getJson('/api/home/latest', ac.signal),
-      getJson('/api/home/pulse', ac.signal),
-    ])
-      .then(([m, l, p]) => {
+    const force = prevReload.current !== reload;
+    prevReload.current = reload;
+    const hours = loadRefreshCfg().intervalHours;
+    const cached = loadHomeCache();
+    const hasCache = homeCacheHasRows(cached);
+
+    function applyFeed(marketsBody, latestBody, pulseBody) {
+      if (latestBody?.rows?.length) {
+        onFeed({
+          feature: 'Home',
+          rows: latestBody.rows.map((r) => ({ title: r.title, source_url: r.link, date: r.pub, status: '' })),
+          source: { adapter: 'rss', note: latestBody.note, gdelt: false },
+          fallback: Boolean(latestBody.archive),
+        });
+      } else if (pulseBody?.rows?.length) {
+        onFeed({
+          feature: 'Conflict Pulse',
+          rows: pulseBody.rows.map((r) => ({ title: r.title, source_url: r.link, date: r.time, status: '' })),
+          source: { adapter: pulseBody.gdelt ? 'news-search' : 'embedded', note: pulseBody.note, gdelt: Boolean(pulseBody.gdelt) },
+          fallback: Boolean(pulseBody.archive),
+        });
+      }
+      onSelect(null);
+    }
+
+    function paintCache(c) {
+      if (!c) return;
+      setMarkets(c.markets?.rows || []);
+      setLatest(c.latest?.rows || []);
+      setPulse(c.pulse?.rows || []);
+      setMeta({ markets: c.markets, latest: c.latest, pulse: c.pulse });
+      setLoading(false);
+      onLoading?.(false);
+    }
+
+    async function pullSnapshots(fresh) {
+      const q = `maxAgeH=${encodeURIComponent(hours)}${fresh ? '&fresh=1' : ''}`;
+      const [m, l, p] = await Promise.allSettled([
+        getJson(`/api/home/markets?${q}`, ac.signal),
+        getJson(`/api/home/latest?${q}`, ac.signal),
+        getJson(`/api/home/pulse?${q}`, ac.signal),
+      ]);
+      if (ac.signal.aborted) return;
+      const marketsBody = m.status === 'fulfilled' ? m.value : null;
+      const latestBody = l.status === 'fulfilled' ? l.value : null;
+      const pulseBody = p.status === 'fulfilled' ? p.value : null;
+      if (marketsBody?.rows) setMarkets(marketsBody.rows);
+      if (latestBody?.rows) setLatest(latestBody.rows);
+      if (pulseBody?.rows) setPulse(pulseBody.rows);
+      setMeta({ markets: marketsBody, latest: latestBody, pulse: pulseBody });
+      saveHomeCache({ markets: marketsBody, latest: latestBody, pulse: pulseBody });
+      applyFeed(marketsBody, latestBody, pulseBody);
+    }
+
+    if (hasCache) {
+      paintCache(cached);
+      applyFeed(cached.markets, cached.latest, cached.pulse);
+    } else {
+      setLoading(true);
+      onLoading?.(true);
+    }
+
+    const cfg = loadRefreshCfg();
+    const skipLive = !force && hasCache && (!cfg.auto || isHomeCacheFresh(hours, cached));
+
+    (async () => {
+      try {
+        if (!skipLive && !force && hasCache) await kickHomeRefreshIfDue();
         if (ac.signal.aborted) return;
-        const marketsBody = m.status === 'fulfilled' ? m.value : null;
-        const latestBody = l.status === 'fulfilled' ? l.value : null;
-        const pulseBody = p.status === 'fulfilled' ? p.value : null;
-        setMarkets(marketsBody?.rows || []);
-        setLatest(latestBody?.rows || []);
-        setPulse(pulseBody?.rows || []);
-        setMeta({ markets: marketsBody, latest: latestBody, pulse: pulseBody });
-        if (latestBody?.rows?.length) {
-          onFeed({
-            feature: 'Home',
-            rows: latestBody.rows.map((r) => ({ title: r.title, source_url: r.link, date: r.pub, status: '' })),
-            source: { adapter: 'rss', note: latestBody.note, gdelt: false },
-            fallback: Boolean(latestBody.archive),
-          });
-        } else if (pulseBody?.rows?.length) {
-          onFeed({
-            feature: 'Conflict Pulse',
-            rows: pulseBody.rows.map((r) => ({ title: r.title, source_url: r.link, date: r.time, status: '' })),
-            source: { adapter: pulseBody.gdelt ? 'news-search' : 'embedded', note: pulseBody.note, gdelt: Boolean(pulseBody.gdelt) },
-            fallback: Boolean(pulseBody.archive),
-          });
+        await pullSnapshots(force);
+      } catch (err) {
+        if (err?.name === 'AbortError') return;
+      } finally {
+        if (!ac.signal.aborted) {
+          setLoading(false);
+          onLoading?.(false);
         }
-        onSelect(null);
-      })
-      .finally(() => {
-        if (ac.signal.aborted) return;
-        setLoading(false);
-        onLoading?.(false);
-      });
+      }
+      try {
+        if (ac.signal.aborted || force) return;
+        const saved = loadHomeCache();
+        if ((saved?.markets?.rows?.length || 0) < 9) {
+          await new Promise((r) => setTimeout(r, 20000));
+          if (ac.signal.aborted) return;
+          await pullSnapshots(false);
+        }
+      } catch (err) {
+        if (err?.name === 'AbortError') return;
+      }
+    })();
+
     return () => ac.abort();
   }, [onFeed, onSelect, onLoading, reload]);
 

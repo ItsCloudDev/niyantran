@@ -120,15 +120,85 @@ export function deadlineLabel(row) {
   return d ? d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '';
 }
 
-export function applyVizFilter(row, f) {
+function intensityBucket(raw) {
+  const s = String(raw || '').toLowerCase();
+  if (/critic/.test(s)) return 'Critical';
+  if (/\bhigh\b/.test(s)) return 'High';
+  if (/medium|moderat/.test(s)) return 'Medium';
+  if (/\blow\b|calm|minor/.test(s)) return 'Low';
+  return '';
+}
+
+function trendBucket(raw) {
+  const s = String(raw || '').toLowerCase();
+  if (/escalat/.test(s)) return 'Escalating';
+  if (/eas(e|ing)|de-?escalat|improving/.test(s)) return 'Easing';
+  if (/stable|unchanged|static/.test(s)) return 'Stable';
+  return raw ? String(raw) : '';
+}
+
+function decadeBucket(raw) {
+  const yr = Number(raw);
+  if (!Number.isFinite(yr) || yr < 1000) return 'Unknown';
+  return `${Math.floor(yr / 10) * 10}s`;
+}
+
+function sizeBandOf(electors) {
+  const e = Number(electors) || 0;
+  if (e < 300) return 'under 300';
+  if (e < 600) return '300–600';
+  if (e < 900) return '600–900';
+  if (e < 1200) return '900–1200';
+  return '1200+';
+}
+
+export function vizFilterList(f) {
+  if (!f) return [];
+  if (Array.isArray(f)) return f.filter((x) => x && x.col);
+  if (f.col) return [f];
+  return [];
+}
+
+export function vizFilterOn(active, col, value, map) {
+  const want = String(value ?? '');
+  const wantMap = String(map || '');
+  return vizFilterList(active).some(
+    (x) => x.col === col && String(x.value) === want && String(x.map || '') === wantMap,
+  );
+}
+
+function applyOneVizFilter(row, f) {
   if (!f?.col || !row) return true;
   if (f.col === '_crim_band') return crimBand(row) === f.value;
   if (f.col === '_asset_band') return assetBand(row) === f.value;
   if (f.col === '_q_band') return questionBand(row) === f.value;
   if (f.col === '_deadline_label') return deadlineLabel(row) === f.value;
+  const want = String(f.value ?? '').trim();
+  if (f.map === 'intensity') return intensityBucket(row[f.col]) === want;
+  if (f.map === 'trend') return trendBucket(row[f.col]) === want;
+  if (f.map === 'decade') return decadeBucket(row[f.col]) === want;
+  if (f.col === 'sizeBand') {
+    const band = String(row.sizeBand || sizeBandOf(row.electors)).trim();
+    return band === want;
+  }
   const v = String(row[f.col] ?? '').trim();
   if (f.values?.length) return f.values.map(String).includes(v);
-  return v === String(f.value ?? '').trim();
+  return v === want;
+}
+
+export function applyVizFilter(row, f) {
+  const list = vizFilterList(f);
+  if (!list.length || !row) return true;
+  const groups = new Map();
+  for (const clause of list) {
+    const k = `${clause.col}|${clause.map || ''}`;
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(clause);
+  }
+  for (const clauses of groups.values()) {
+    if (!clauses.some((c) => applyOneVizFilter(row, c))) return false;
+  }
+  return true;
 }
 
 function sparkLast(rows, key, last, title) {
