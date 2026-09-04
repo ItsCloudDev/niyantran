@@ -1,5 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { authenticateUser } from '../lib/userStore.js';
+import {
+  authenticateUser,
+  setSessionUser,
+  updateUser,
+  USER_TYPES,
+  userTypeOf,
+} from '../lib/userStore.js';
 
 const TICKS = [
   'GLOBAL',
@@ -105,6 +111,7 @@ function Field({ mouse }) {
 export default function LoginPage({ onSuccess }) {
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
+  const [userType, setUserType] = useState('analyst');
   const mouse = useRef({ x: 0.72, y: 0.42 });
   const root = useRef(null);
 
@@ -130,8 +137,10 @@ export default function LoginPage({ onSuccess }) {
     setError('');
     const res = authenticateUser(user, pass);
     if (res.ok) {
-      sessionStorage.setItem('niyantranAuthed', '1');
-      sessionStorage.setItem('niyantranUser', res.user.email);
+      const type = userTypeOf(userType).id;
+      updateUser(res.user.id, { type });
+      setSessionUser({ ...res.user, type });
+      sessionStorage.setItem('niyantranLand', userTypeOf(type).startTab);
       onSuccess();
       return;
     }
@@ -174,8 +183,27 @@ export default function LoginPage({ onSuccess }) {
           <img src="/brand/logo.png?v=2" alt="" />
         </div>
         <h1>TERMINAL</h1>
-        <div className="tag">ANALYST ACCESS</div>
+        <div className="tag">DESK ACCESS</div>
         <form onSubmit={handleSubmit} autoComplete="off">
+          <div className="mkt-field">
+            <span>I am a</span>
+            <div className="mkt-types" role="radiogroup" aria-label="User type">
+              {USER_TYPES.map((t) => (
+                <button
+                  key={t.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={userType === t.id}
+                  className={userType === t.id ? 'on' : ''}
+                  title={t.hint}
+                  onClick={() => setUserType(t.id)}
+                >
+                  {t.short}
+                </button>
+              ))}
+            </div>
+            <em className="mkt-type-hint">{userTypeOf(userType).label}</em>
+          </div>
           <label className="mkt-field">
             <span>User ID</span>
             <input name="user" type="text" autoComplete="username" spellCheck="false" required autoFocus />
@@ -191,7 +219,9 @@ export default function LoginPage({ onSuccess }) {
             {error}
           </div>
         </form>
-        <div className="mkt-login-hint">Restricted terminal. Sign in with an issued analyst ID.</div>
+        <div className="mkt-login-hint">
+          Students, journalists, lawyers, policy desks, and analysts. Sign in with an issued ID.
+        </div>
       </main>
     </div>
   );

@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
-import AiPanel from '../ai/AiPanel.jsx';
 import { exportJson, GeoAi, GeoDossierChrome, GeoKv, GeoSources } from './GeoDossier.jsx';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import { aiDragProps, openAiResearch } from '../lib/aiDrop.js';
 
 const AI_SUMMARY =
   'The tracked cohort skews toward long-tenure strongmen (Putin 1999-, Xi 2012-, Erdogan 2014-). Democratic incumbents face fragmented parliaments and fiscal constraint. Watch succession/health risk in the Gulf and the impact of 2026 elections on Ukraine support.';
@@ -50,9 +50,11 @@ export default function LeadersDesk({ feed, selected, onSelect, vizFilter, onCle
   const selectedId = selected?.id || '';
 
   function goAsk(prompt) {
-    setTab('ai');
-    onSelect?.(selected || leaders[0] || null);
-    void prompt;
+    openAiResearch({
+      prompt: typeof prompt === 'string' ? prompt : PROMPTS[0][1],
+      attachFeed: true,
+      row: selected || leaders[0] || undefined,
+    });
   }
 
   return (
@@ -70,7 +72,13 @@ export default function LeadersDesk({ feed, selected, onSelect, vizFilter, onCle
           ['24/7', 'Statement watch', 'acc'],
         ]}
         tab={tab}
-        onTab={setTab}
+        onTab={(t) => {
+          if (t === 'ai') {
+            goAsk(PROMPTS[0][1]);
+            return;
+          }
+          setTab(t);
+        }}
         onExport={() => exportJson('leaders', { asOf, stats, leaders })}
         onAsk={() => goAsk(PROMPTS[0][1])}
         tools={
@@ -100,6 +108,7 @@ export default function LeadersDesk({ feed, selected, onSelect, vizFilter, onCle
                     type="button"
                     className={`geo-e${selectedId === l.id ? ' on' : ''}`}
                     onClick={() => onSelect?.(selectedId === l.id ? null : l)}
+                    {...aiDragProps({ kind: 'row', feature: feed?.feature, title: l.name, row: l })}
                   >
                     <div className="geo-e-h">
                       {l.flag ? <span className="geo-e-flag">{l.flag}</span> : null}
@@ -149,11 +158,6 @@ export default function LeadersDesk({ feed, selected, onSelect, vizFilter, onCle
           </div>
         </div>
       </GeoDossierChrome>
-      {tab === 'ai' ? (
-        <div className="gld-ai-wrap">
-          <AiPanel feed={feed} selected={selected} lang="en" />
-        </div>
-      ) : null}
     </>
   );
 }

@@ -3,6 +3,7 @@ import { MANIFESTO_LIBRARY, UNION_PROMISES } from '../data/nationalCurated.js';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
+import { rowDragProps } from '../lib/aiDrop.js';
 
 function curatedRows() {
   return UNION_PROMISES.map(([promise, domain, verifiable_status]) => ({
@@ -94,6 +95,7 @@ export default function ManifestosDesk({ selected, onSelect, onFeed, vizFilter, 
                 key={r.promise || i}
                 className={selected?.promise === r.promise ? 'on' : ''}
                 onClick={() => onSelect?.(selected?.promise === r.promise ? null : r)}
+                {...rowDragProps(r, { title: r.promise || r.title, feature: 'Manifestos' })}
               >
                 <td>{r.promise || r.title}</td>
                 <td>{r.domain}</td>

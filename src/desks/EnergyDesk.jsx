@@ -4,6 +4,7 @@ import GeoDotsMap from './GeoDotsMap.jsx';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import { aiDragProps } from '../lib/aiDrop.js';
 
 const AI_SUMMARY =
   'The geoeconomic story is refining concentration, not just mining: China controls ~90% of rare-earth processing and near-monopoly on gallium/germanium — direct leverage in the chip war. Energy prices carry a persistent Middle-East risk premium. Uranium is re-rating on the nuclear revival.';
@@ -161,6 +162,7 @@ export default function EnergyDesk({ feed, selected, onSelect, onAsk, vizFilter,
                         onSelect?.(m);
                         setOpenId((id) => (id === m.id ? '' : m.id));
                       }}
+                      {...aiDragProps({ kind: 'row', feature: feed?.feature, title: m.name, row: m })}
                     >
                       <span className="geo-card-dot" style={{ color: s.c, background: s.c }} />
                       <span className="geo-card-nm">{m.name}</span>

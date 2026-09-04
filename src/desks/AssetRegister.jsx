@@ -8,6 +8,7 @@ import {
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import { rowDragProps } from '../lib/aiDrop.js';
 
 function filterOptions(list, key) {
   return [...new Set(list.map((p) => p[key]).filter(Boolean))].sort();
@@ -227,7 +228,7 @@ export default function AssetRegister({ feed, selected, onSelect, featureName, v
             </thead>
             <tbody>
               {view.map((p) => (
-                <tr key={p.id} className={p.id === current?.id ? 'alw-row-selected' : ''} onClick={() => onSelect?.(p.row || p)}>
+                <tr key={p.id} className={p.id === current?.id ? 'alw-row-selected' : ''} onClick={() => onSelect?.(p.row || p)} {...rowDragProps(p.row || p, { title: p.name, feature: feed?.feature })}>
                   {copy.columns.map((c, i) => (
                     <td key={c} className={i === copy.columns.length - 1 ? 'alw-obligation' : i === 1 ? 'alw-kind' : ''} title={String(cell(p, i) || '')}>
                       {i === 0 && kind === 'nuclear' ? (

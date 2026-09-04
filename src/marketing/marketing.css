@@ -2482,6 +2482,38 @@ html.mkt-doc #root {
   border-color: var(--mkt-blue);
   box-shadow: 0 0 0 3px rgba(1, 46, 161, 0.12);
 }
+.mkt-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.mkt-types button {
+  border: 1px solid var(--mkt-border);
+  background: #fff;
+  color: var(--mkt-muted);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font: 600 11px var(--font-ui);
+  cursor: pointer;
+  line-height: 1.2;
+}
+.mkt-types button:hover {
+  border-color: var(--mkt-blue);
+  color: var(--mkt-black);
+}
+.mkt-types button.on {
+  background: var(--mkt-blue);
+  border-color: var(--mkt-blue);
+  color: #fff;
+}
+.mkt-type-hint {
+  display: block;
+  margin-top: 8px;
+  font-style: normal;
+  font-size: 11px;
+  color: var(--mkt-muted);
+  line-height: 1.35;
+}
 .mkt-login-card .mkt-cta {
   width: 100%;
   justify-content: center;

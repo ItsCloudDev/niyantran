@@ -2,6 +2,7 @@ import { FLAGSHIP_PROGRAMMES } from '../data/nationalCurated.js';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
+import { rowDragProps } from '../lib/aiDrop.js';
 
 export default function ProjectsDesk({ selected, onSelect, vizFilter, onClearViz }) {
   const all = FLAGSHIP_PROGRAMMES.map(([programme, domain, verifiable_status, activity]) => ({
@@ -41,7 +42,7 @@ export default function ProjectsDesk({ selected, onSelect, vizFilter, onClearViz
           </thead>
           <tbody>
             {rows.map((r) => (
-              <tr key={r.programme} className={selected?.programme === r.programme ? 'on' : ''} onClick={() => onSelect?.(r)}>
+              <tr key={r.programme} className={selected?.programme === r.programme ? 'on' : ''} onClick={() => onSelect?.(r)} {...rowDragProps(r, { title: r.programme, feature: 'Centre-sanctioned Projects Monitor' })}>
                 <td>{r.programme}</td>
                 <td>{r.domain}</td>
                 <td>{r.verifiable_status}</td>

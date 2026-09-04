@@ -35,16 +35,16 @@ function Menu({ items, active, onPick, anchor, onKeep, onLeave }) {
   );
 }
 
-export default function DeskNav({ tab, featureName, lang, onDesk, onFeature }) {
+export default function DeskNav({ tab, featureName, lang, onDesk, onFeature, tabs }) {
   const [open, setOpen] = useState(null);
   const [sideOpen, setSideOpen] = useState(false);
   const btnRefs = useRef({});
   const closeTimer = useRef(null);
   const hi = lang === 'hi';
-  const active = TABS.find((t) => t.id === tab) || TABS[0];
+  const homeTabs = tabs || TABS;
+  const active = homeTabs.find((t) => t.id === tab) || TABS.find((t) => t.id === tab) || TABS[0];
   const buckets = tab === 'home' ? [] : bucketsFor(modulesForTier(active.tier), active.tier);
   const currentBucket = bucketContaining(buckets, featureName);
-  const homeTabs = TABS;
   const onDeskPage = tab !== 'home';
 
   useEffect(() => {
@@ -159,7 +159,7 @@ export default function DeskNav({ tab, featureName, lang, onDesk, onFeature }) {
                 active={featureName}
                 onKeep={() => showMenu(b.label)}
                 onLeave={hideMenuSoon}
-                items={b.items.map((m) => ({ id: m.htmlFeature, label: featureMenuLabel(m) }))}
+                items={b.items.map((m) => ({ id: m.htmlFeature, label: featureMenuLabel(m), tier: m.htmlTier }))}
                 onPick={(it) => {
                   onFeature(it.id);
                   setOpen(null);
@@ -170,7 +170,7 @@ export default function DeskNav({ tab, featureName, lang, onDesk, onFeature }) {
         );
       })}
 
-      {sideOpen && <DeskSidebar tab={tab} lang={lang} onDesk={onDesk} onClose={() => setSideOpen(false)} />}
+      {sideOpen && <DeskSidebar tab={tab} lang={lang} onDesk={onDesk} onClose={() => setSideOpen(false)} tabs={homeTabs} />}
     </nav>
   );
 }

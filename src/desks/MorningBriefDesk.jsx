@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import { rowDragProps } from '../lib/aiDrop.js';
 
 function parseRssItems(xml) {
   const doc = new DOMParser().parseFromString(xml, 'text/xml');
@@ -88,7 +89,7 @@ export default function MorningBriefDesk({ onSelect, onFeed, vizFilter, onClearV
         <ul>
           {rows.slice(0, 12).map((r, i) => (
             <li key={r.source_url || i}>
-              <button type="button" onClick={() => onSelect?.(r)}>
+              <button type="button" onClick={() => onSelect?.(r)} {...rowDragProps(r, { title: r.title, feature: title })}>
                 {r.title}
               </button>
               <span>{r.date || r.source || ''}</span>

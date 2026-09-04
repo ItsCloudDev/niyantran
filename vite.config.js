@@ -6,9 +6,10 @@ import { transitApiPlugin } from './server/transitApi.mjs'
 import { diplomacyApiPlugin } from './server/diplomacyApi.mjs'
 import { assetsApiPlugin } from './server/assetsApi.mjs'
 import { resourcesApiPlugin } from './server/resourcesApi.mjs'
+import { aiApiPlugin } from './server/aiApi.mjs'
 
 export default defineConfig({
-  plugins: [react(), featureFeedPlugin(), homeApiPlugin(), transitApiPlugin(), diplomacyApiPlugin(), assetsApiPlugin(), resourcesApiPlugin()],
+  plugins: [react(), featureFeedPlugin(), homeApiPlugin(), transitApiPlugin(), diplomacyApiPlugin(), assetsApiPlugin(), resourcesApiPlugin(), aiApiPlugin()],
   server: {
     port: 5173,
     strictPort: true,

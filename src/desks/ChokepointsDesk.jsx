@@ -4,6 +4,7 @@ import GeoDotsMap from './GeoDotsMap.jsx';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import { aiDragProps } from '../lib/aiDrop.js';
 
 const AI_SUMMARY =
   'Bab-el-Mandeb and Hormuz are the acute risks: Houthi strikes have already rerouted Suez traffic around the Cape (+10-14 days), and any Hormuz disruption removes ~1/5 of world oil with no bypass. Panama’s constraint is climate, not conflict.';
@@ -176,6 +177,7 @@ export default function ChokepointsDesk({ feed, selected, onSelect, onAsk, vizFi
                     type="button"
                     className={`geo-bar cpd-rank${p.id === selectedId ? ' on' : ''}`}
                     onClick={() => onSelect?.(p.row)}
+                    {...aiDragProps({ kind: 'row', feature: feed?.feature, title: p.name, row: p.row || p })}
                   >
                     <span className="geo-bar-l">{p.name}</span>
                     <span className="geo-bar-t">
@@ -197,7 +199,7 @@ export default function ChokepointsDesk({ feed, selected, onSelect, onAsk, vizFi
                 const on = openId === p.id || p.id === selectedId;
                 return (
                   <div key={p.id} className={`geo-card${on && openId === p.id ? ' open' : ''}${p.id === selectedId ? ' hl' : ''}`}>
-                    <button type="button" className="geo-card-h" onClick={() => { onSelect?.(p.row); setOpenId((id) => (id === p.id ? '' : p.id)); }}>
+                    <button type="button" className="geo-card-h" onClick={() => { onSelect?.(p.row); setOpenId((id) => (id === p.id ? '' : p.id)); }} {...aiDragProps({ kind: 'row', feature: feed?.feature, title: p.name, row: p.row || p })}>
                       <span className="geo-card-dot" style={{ color: s.c, background: s.c }} />
                       <span className="geo-card-nm">{p.name}</span>
                       <span className="geo-card-st" style={{ background: `${s.c}22`, color: s.c }}>

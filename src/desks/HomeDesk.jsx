@@ -10,6 +10,7 @@ import {
 } from '../lib/homeCache.js';
 import { homeLatestFromStatic, homeMarketsFromStatic, homePulseFromStatic } from '../lib/homeStatic.js';
 import { loadRefreshCfg } from '../lib/refreshStore.js';
+import { aiDragProps } from '../lib/aiDrop.js';
 
 async function getJson(path, signal) {
   const route = String(path).split('?')[0];
@@ -253,14 +254,14 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
                 MARKETS
                 <AgentBadge ageH={meta.markets?.ageH} />
               </span>
-              <button type="button" className="nh-link" onClick={() => onOpen({ tab: 'economics', feature: 'NSE/BSE Delayed Market Feed' })}>
+              <button type="button" className="nh-link" onClick={() => onOpen({ tab: 'economics', feature: 'NSE/BSE Delayed Market Feed' })} {...aiDragProps({ kind: 'feature', tab: 'economics', feature: 'NSE/BSE Delayed Market Feed', title: 'NSE/BSE Delayed Market Feed' })}>
                 Economics desk →
               </button>
             </div>
             <table className="nh-moves">
               <tbody>
                 {quotes.map((q) => (
-                  <tr key={`m-${q.name}`}>
+                  <tr key={`m-${q.name}`} {...aiDragProps({ kind: 'row', tab: 'economics', feature: 'NSE/BSE Delayed Market Feed', title: q.name, row: q })}>
                     <td>{q.name}</td>
                     <td className="spk">
                       <Spark values={q.spark} up={(q.dM || 0) >= 0} />
@@ -282,7 +283,7 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
               {loading && !latest.length && <li className="muted">Loading…</li>}
               {!loading && !latest.length && <li className="muted">Wire quiet. Headlines arrive from RSS when the proxy can reach the publishers.</li>}
               {latest.map((r, i) => (
-                <li key={`${r.link}-${i}`}>
+                <li key={`${r.link}-${i}`} {...aiDragProps({ kind: 'row', title: r.title, row: { title: r.title, source_url: r.link, src: r.src } })}>
                   <span className="t">{r.ago || ''}</span>
                   <div>
                     <a href={r.link} target="_blank" rel="noreferrer">
@@ -306,13 +307,13 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
               {!loading && !pulse.length && (
                 <li className="muted">
                   Conflict wire quiet.{' '}
-                  <button type="button" className="nh-inline" onClick={() => onOpen({ tab: 'global', feature: 'Open Fronts' })}>
+                  <button type="button" className="nh-inline" onClick={() => onOpen({ tab: 'global', feature: 'Open Fronts' })} {...aiDragProps({ kind: 'feature', tab: 'global', feature: 'Open Fronts', title: 'Open Fronts' })}>
                     Open Fronts
                   </button>
                 </li>
               )}
               {pulse.slice(0, 5).map((r, i) => (
-                <li key={`${r.link || r.title}-${i}`}>
+                <li key={`${r.link || r.title}-${i}`} {...aiDragProps({ kind: 'row', tab: 'global', feature: 'Open Fronts', title: r.title, row: r })}>
                   <span className="pt">
                     {r.time}
                     {r.region ? ` · ${r.region}` : ''}

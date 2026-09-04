@@ -3,6 +3,7 @@ import { hydrateAsset } from '../lib/strategicAssets.js';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import { rowDragProps } from '../lib/aiDrop.js';
 
 function tone(status, kind) {
   const s = `${status} ${kind}`.toLowerCase();
@@ -124,6 +125,7 @@ export default function NuclearWatch({ feed, selected, onSelect, vizFilter, onCl
                 key={p.id}
                 className={p.id === selectedId ? 'nww-row-selected' : ''}
                 onClick={() => onSelect?.(p.row)}
+                {...rowDragProps(p.row || p, { title: p.name, feature: feed?.feature })}
               >
                 <td>
                   <div className="nww-facility">

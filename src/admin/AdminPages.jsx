@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { apiStats, classifyApis, STATUS } from '../lib/apiStatus.js';
-import { createUser, removeUser, updateUser } from '../lib/userStore.js';
+import { createUser, removeUser, updateUser, USER_TYPES, userTypeOf } from '../lib/userStore.js';
 import { loadPricing, savePricing } from '../lib/pricingStore.js';
 import {
   formatAgo,
@@ -333,6 +333,7 @@ export function UsersPage({ users, onChange }) {
       email: fd.get('email'),
       password: fd.get('password'),
       plan: fd.get('plan'),
+      type: fd.get('type'),
     });
     if (!res.ok) {
       setErr(res.reason);
@@ -349,8 +350,8 @@ export function UsersPage({ users, onChange }) {
     <>
       <h1 className="adm-h1">Dashboard users</h1>
       <p className="adm-lede">
-        Accounts created here can sign in on the marketing login and open the terminal. Suspend to lock a desk without
-        deleting the record.
+        Accounts created here can sign in on the marketing login and open the terminal. Assign a user type so each
+        seat opens the matching desks. Suspend to lock a desk without deleting the record.
       </p>
       <div className="adm-card">
         <h2>Issue access</h2>
@@ -366,6 +367,16 @@ export function UsersPage({ users, onChange }) {
           <label className="adm-field">
             <span>Password</span>
             <input name="password" type="text" required minLength={8} />
+          </label>
+          <label className="adm-field">
+            <span>User type</span>
+            <select name="type" defaultValue="analyst">
+              {USER_TYPES.map((t) => (
+                <option key={t.id} value={t.id}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
           </label>
           <label className="adm-field">
             <span>Plan</span>
@@ -392,6 +403,7 @@ export function UsersPage({ users, onChange }) {
               <tr>
                 <th>Name</th>
                 <th>User ID</th>
+                <th>Type</th>
                 <th>Plan</th>
                 <th>State</th>
                 <th />
@@ -402,6 +414,22 @@ export function UsersPage({ users, onChange }) {
                 <tr key={u.id}>
                   <td className="feat">{u.name}</td>
                   <td>{u.email}</td>
+                  <td>
+                    <select
+                      className="adm-inline-select"
+                      value={userTypeOf(u.type).id}
+                      onChange={(e) => {
+                        updateUser(u.id, { type: e.target.value });
+                        onChange();
+                      }}
+                    >
+                      {USER_TYPES.map((t) => (
+                        <option key={t.id} value={t.id}>
+                          {t.short}
+                        </option>
+                      ))}
+                    </select>
+                  </td>
                   <td>{u.plan}</td>
                   <td>{u.active ? 'Active' : 'Suspended'}</td>
                   <td>

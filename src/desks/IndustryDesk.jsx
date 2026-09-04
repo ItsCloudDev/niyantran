@@ -2,6 +2,7 @@ import { INDUSTRY_V1 } from '../data/nationalCurated.js';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
+import { rowDragProps } from '../lib/aiDrop.js';
 
 export default function IndustryDesk({ feed, statusRow, selected, onSelect, vizFilter, onClearViz }) {
   const rows = (feed?.rows || []).filter((r) => r.status !== 'source_status').filter((r) => applyVizFilter(r, vizFilter));
@@ -45,6 +46,7 @@ export default function IndustryDesk({ feed, statusRow, selected, onSelect, vizF
                 key={r.id}
                 className={selected?.id === r.id ? 'on' : ''}
                 onClick={() => onSelect?.(selected?.id === r.id ? null : r)}
+                {...rowDragProps(r, { title: r.label, feature: 'Industry Updates' })}
               >
                 <td>{r.label}</td>
                 <td>{r.units}</td>
@@ -69,7 +71,7 @@ export default function IndustryDesk({ feed, statusRow, selected, onSelect, vizF
               </thead>
               <tbody>
                 {rows.slice(0, 40).map((r, i) => (
-                  <tr key={r.id || i}>
+                  <tr key={r.id || i} {...rowDragProps(r, { title: r.title || r.indicator, feature: feed?.feature })}>
                     <td>{r.title || r.indicator || '—'}</td>
                     <td>{r.date || r.year || '—'}</td>
                     <td className="num">{r.value ?? r.n ?? '—'}</td>

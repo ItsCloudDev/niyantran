@@ -8,6 +8,7 @@ import {
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import { rowDragProps } from '../lib/aiDrop.js';
 
 export default function AlliancesMonitor({ feed, selected, onSelect, flags, vizFilter, onClearViz }) {
   const list = useMemo(
@@ -136,6 +137,7 @@ export default function AlliancesMonitor({ feed, selected, onSelect, flags, vizF
                 type="button"
                 className={p.id === current.id ? 'on' : ''}
                 onClick={() => pick(p)}
+                {...rowDragProps(p.row || p, { title: p.name, feature: feed?.feature })}
               >
                 <label>
                   {p.latestDate} · {p.short}
@@ -222,6 +224,7 @@ export default function AlliancesMonitor({ feed, selected, onSelect, flags, vizF
                         pick(p);
                       }
                     }}
+                    {...rowDragProps(p.row || p, { title: p.name, feature: feed?.feature })}
                   >
                     <td title={p.name}>{p.name}</td>
                     <td className="alw-kind" title={p.category}>
