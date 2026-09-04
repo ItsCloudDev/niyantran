@@ -3,6 +3,7 @@ import { DELIM_SIZES } from '../data/nationalCurated.js';
 import { allocateSeats, applyVizFilter } from '../lib/nationalKpi.js';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
+import { rowDragProps } from '../lib/aiDrop.js';
 
 export default function DelimitationDesk({ selected, onSelect, onFeed, vizFilter, onClearViz }) {
   const [house, setHouse] = useState(753);
@@ -114,6 +115,7 @@ export default function DelimitationDesk({ selected, onSelect, onFeed, vizFilter
                 key={r.name}
                 className={selected?.name === r.name ? 'on' : ''}
                 onClick={() => onSelect?.(selected?.name === r.name ? null : r)}
+                {...rowDragProps(r, { title: r.name, feature: 'Delimitation' })}
               >
                 <td>{r.name}</td>
                 <td className="num">{(r.pop / 1000).toFixed(1)}</td>

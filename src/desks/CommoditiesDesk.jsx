@@ -1,9 +1,9 @@
 import { useMemo, useState } from 'react';
-import AiPanel from '../ai/AiPanel.jsx';
 import { exportJson, GeoAi, GeoDossierChrome, GeoSources } from './GeoDossier.jsx';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import { openAiResearch } from '../lib/aiDrop.js';
 
 const AI_SUMMARY =
   'Energy and precious metals carry a geopolitical risk premium (Middle East, Red Sea, safe-haven gold). Soft commodities (cocoa, coffee) are climate-driven. The through-line to watch: any Hormuz/Red Sea shock transmits straight into oil, freight and food-import inflation for net importers like India.';
@@ -82,9 +82,12 @@ export default function CommoditiesDesk({ feed, selected, onSelect, vizFilter, o
   const asOfLabel = String(feed?.meta?.asOf || '2026-07');
   const n = stats.tracked || feed?.rows?.length || 0;
 
-  function goAsk() {
-    setTab('ai');
-    onSelect?.(selected || feed?.rows?.[0] || null);
+  function goAsk(prompt) {
+    openAiResearch({
+      prompt: typeof prompt === 'string' ? prompt : PROMPTS[0][1],
+      attachFeed: true,
+      row: selected || undefined,
+    });
   }
 
   return (
@@ -102,7 +105,13 @@ export default function CommoditiesDesk({ feed, selected, onSelect, vizFilter, o
           ['Live', 'API-ready', 'acc'],
         ]}
         tab={tab}
-        onTab={setTab}
+        onTab={(t) => {
+          if (t === 'ai') {
+            goAsk(PROMPTS[0][1]);
+            return;
+          }
+          setTab(t);
+        }}
         onExport={() => exportJson('commodities', { asOf: asOfLabel, stats, groups })}
         onAsk={goAsk}
         tools={
@@ -134,11 +143,6 @@ export default function CommoditiesDesk({ feed, selected, onSelect, vizFilter, o
             </div>
           </div>
       </GeoDossierChrome>
-      {tab === 'ai' ? (
-        <div className="gld-ai-wrap">
-          <AiPanel feed={feed} selected={selected} lang="en" />
-        </div>
-      ) : null}
     </>
   );
 }

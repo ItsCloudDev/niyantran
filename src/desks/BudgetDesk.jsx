@@ -2,6 +2,7 @@ import { BUDGET_KEY, BUDGET_SCHEMES } from '../data/nationalCurated.js';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
+import { rowDragProps } from '../lib/aiDrop.js';
 
 export default function BudgetDesk({ selected, onSelect, vizFilter, onClearViz }) {
   const all = BUDGET_SCHEMES.map(([scheme, allocation_cr]) => ({
@@ -55,7 +56,7 @@ export default function BudgetDesk({ selected, onSelect, vizFilter, onClearViz }
           </thead>
           <tbody>
             {schemeRows.map((r) => (
-              <tr key={r.scheme} className={selected?.scheme === r.scheme ? 'on' : ''} onClick={() => onSelect?.(r)}>
+              <tr key={r.scheme} className={selected?.scheme === r.scheme ? 'on' : ''} onClick={() => onSelect?.(r)} {...rowDragProps(r, { title: r.scheme, feature: 'Budget Utilisation Tracker' })}>
                 <td>{r.scheme}</td>
                 <td className="num">~{r.allocation_cr.toLocaleString('en-IN')}</td>
               </tr>

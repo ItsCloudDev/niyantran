@@ -3,6 +3,7 @@ import { hydrateSanction, issuerTokens, statsFor } from '../lib/sanctions.js';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import { rowDragProps } from '../lib/aiDrop.js';
 
 export default function SanctionsMonitor({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const list = useMemo(
@@ -192,7 +193,7 @@ export default function SanctionsMonitor({ feed, selected, onSelect, vizFilter, 
             </thead>
             <tbody>
               {view.map((p) => (
-                <tr key={p.id} className={p.id === current?.id ? 'alw-row-selected' : ''} onClick={() => pick(p)}>
+                <tr key={p.id} className={p.id === current?.id ? 'alw-row-selected' : ''} onClick={() => pick(p)} {...rowDragProps(p.row || p, { title: p.name, feature: feed?.feature })}>
                   <td title={p.name}>{p.name}</td>
                   <td className="alw-kind" title={p.issuer}>
                     {issuerTokens(p).join(' · ')}

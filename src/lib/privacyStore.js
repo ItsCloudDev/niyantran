@@ -179,7 +179,8 @@ Authentication sessions currently use signed cookies, with production sessions c
 
 - Signed session cookie — authentication; 12 hours; HttpOnly, SameSite=Strict, Secure in production
 - niyantranAuthed / niyantranAdmin (session storage) — local sign-in state for the Terminal and control plane; cleared when the browser session ends
-- niyantranUser (session storage) — issued user identifier for the current session
+- niyantranUser (session storage) — issued user identifier and desk type for the current session
+- niyantranPersonaPrompts (local storage) — operator-edited AI desk training prompts per user type; applied only on the server as a hidden system instruction
 - niyantranPricing / niyantranSiteSettings / niyantranPrivacy / niyantranRefreshCfg (local storage) — operator-published site copy, pricing, and refresh configuration on this device
 - _ga / _ga_* / _gid (Google Analytics, if enabled) — measurement of site usage; duration per Google's current policy; only set when a Measurement ID or Analytics script is published in website settings
 

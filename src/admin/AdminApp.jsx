@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import AdminLogin from './AdminLogin.jsx';
 import { ApisPage, OverviewPage, PricingAdminPage, UsersPage } from './AdminPages.jsx';
+import { AiModelsPage } from './AiModelsPage.jsx';
+import { AiPersonasPage } from './AiPersonasPage.jsx';
 import { PrivacyAdminPage, SiteSettingsPage, TermsAdminPage } from './AdminSitePages.jsx';
 import { loadUsers } from '../lib/userStore.js';
 import { isDue, loadRefreshCfg, refreshProgress } from '../lib/refreshStore.js';
@@ -12,6 +14,8 @@ const NAV = [
   { id: 'apis', label: 'API status' },
   { id: 'users', label: 'Users' },
   { id: 'pricing', label: 'Pricing' },
+  { id: 'ai', label: 'AI models' },
+  { id: 'personas', label: 'AI personas' },
   { id: 'site', label: 'Website' },
   { id: 'privacy', label: 'Privacy' },
   { id: 'terms', label: 'Terms' },
@@ -143,6 +147,8 @@ export default function AdminApp() {
           {view === 'apis' && <ApisPage />}
           {view === 'users' && <UsersPage users={users} onChange={refreshUsers} />}
           {view === 'pricing' && <PricingAdminPage />}
+          {view === 'ai' && <AiModelsPage />}
+          {view === 'personas' && <AiPersonasPage />}
           {view === 'site' && <SiteSettingsPage />}
           {view === 'privacy' && <PrivacyAdminPage />}
           {view === 'terms' && <TermsAdminPage />}

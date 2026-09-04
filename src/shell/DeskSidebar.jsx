@@ -3,8 +3,9 @@ import { createPortal } from 'react-dom';
 import { TABS } from '../desks/catalog.js';
 import { Icon, TAB_ICON } from './Icons.jsx';
 
-export default function DeskSidebar({ tab, lang, onDesk, onClose }) {
+export default function DeskSidebar({ tab, lang, onDesk, onClose, tabs }) {
   const hi = lang === 'hi';
+  const list = tabs || TABS;
 
   useEffect(() => {
     function onKey(e) {
@@ -46,7 +47,7 @@ export default function DeskSidebar({ tab, lang, onDesk, onClose }) {
           </button>
         </header>
         <nav className="desk-side-nav">
-          {TABS.map((t) => (
+          {list.map((t) => (
             <button
               key={t.id}
               type="button"

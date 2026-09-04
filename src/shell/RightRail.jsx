@@ -3,7 +3,7 @@ import FeedLoader from './FeedLoader.jsx';
 import { feedOverview } from '../lib/analytics.js';
 import { BarList, Heatmap, Sparkline, VizCard } from './AnalyticsViz.jsx';
 import RecordDetail from './RecordDetail.jsx';
-import AiPanel from '../ai/AiPanel.jsx';
+import { openAiResearch } from '../lib/aiDrop.js';
 import AlliancesAnalytics from '../desks/AlliancesAnalytics.jsx';
 import SanctionsAnalytics from '../desks/SanctionsAnalytics.jsx';
 import GlobalAidAnalytics from '../desks/GlobalAidAnalytics.jsx';
@@ -62,17 +62,13 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
         <button
           type="button"
           role="tab"
-          aria-selected={tab === 'ai'}
-          className={tab === 'ai' ? 'on' : ''}
-          onClick={() => setTab('ai')}
+          aria-selected={false}
+          onClick={() => openAiResearch({ attachFeed: true, row: selected || undefined })}
         >
           {hi ? 'एआई अनुसंधान' : 'AI research'}
         </button>
       </div>
-      {tab === 'ai' ? (
-        <AiPanel feed={feed} selected={selected} lang={lang} />
-      ) : (
-        <div ref={bodyRef} className={`rail-body${loading ? ' is-loading' : ''}${selected ? ' rd-body' : ''}`}>
+      <div ref={bodyRef} className={`rail-body${loading ? ' is-loading' : ''}${selected ? ' rd-body' : ''}`}>
           {loading && <FeedLoader label="Updating overview…" />}
           {gdelt && <p className="banner warn">GDELT reporting search — not an official dataset.</p>}
           {feed?.fallback && !status && (
@@ -93,7 +89,7 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
               meta={feed?.meta}
               liveCount={(feed?.rows || []).filter((r) => r.status !== 'source_status').length}
               onClear={() => onSelect?.(null)}
-              onAskAi={() => setTab('ai')}
+              onAskAi={() => openAiResearch({ row: selected, attachFeed: true })}
             />
           ) : selected && alliances ? (
             <AlliancesAnalytics
@@ -101,23 +97,23 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
               rows={feed?.rows || []}
               flags={feed?.meta?.memberFlags || {}}
               onSelect={onSelect}
-              onResearch={() => setTab('ai')}
+              onResearch={() => openAiResearch({ row: selected, attachFeed: true })}
             />
           ) : selected && sanctions ? (
-            <SanctionsAnalytics row={selected} onResearch={() => setTab('ai')} />
+            <SanctionsAnalytics row={selected} onResearch={() => openAiResearch({ row: selected, attachFeed: true })} />
           ) : selected && aid ? (
             <GlobalAidAnalytics
               row={selected}
               rows={feed?.rows || []}
               onSelect={onSelect}
-              onResearch={() => setTab('ai')}
+              onResearch={() => openAiResearch({ row: selected, attachFeed: true })}
             />
           ) : selected && nuclear ? (
             <NuclearAnalytics
               row={selected}
               rows={feed?.rows || []}
               onSelect={onSelect}
-              onResearch={() => setTab('ai')}
+              onResearch={() => openAiResearch({ row: selected, attachFeed: true })}
             />
           ) : selected && !indicators ? (
             <>
@@ -172,7 +168,6 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
             </>
           )}
         </div>
-      )}
     </aside>
   );
 }

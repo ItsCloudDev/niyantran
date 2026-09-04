@@ -10,6 +10,7 @@ import {
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
+import { openAiResearch, rowDragProps } from '../lib/aiDrop.js';
 
 export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const theatres = useMemo(() => theatresFromFeed(feed), [feed]);
@@ -240,6 +241,7 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
                     type="button"
                     className={`c2-q${c.id === selectedId ? ' on' : ''}`}
                     onClick={() => pick(c.id)}
+                    {...rowDragProps(c.row, { title: c.name, feature: feed?.feature })}
                   >
                     <i style={{ background: s.color }} />
                     <span>
@@ -277,7 +279,7 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
         <div className="c2-reg-head">
           <b>Theatre register</b>
           <span>{view.length} records</span>
-          <span className="note">Click any row to inspect · qualifiers retained</span>
+          <span className="note">Drag a theatre onto AI research · click to inspect</span>
         </div>
         <div className="c2-tablewrap">
           {ranked.length === 0 ? (
@@ -310,7 +312,12 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
                 {ranked.map((c) => {
                   const s = statusOf(c.status);
                   return (
-                    <tr key={c.id} className={c.id === selectedId ? 'on' : ''} onClick={() => pick(c.id)}>
+                    <tr
+                      key={c.id}
+                      className={c.id === selectedId ? 'on' : ''}
+                      onClick={() => pick(c.id)}
+                      {...rowDragProps(c.row, { title: c.name, feature: feed?.feature })}
+                    >
                       <td>
                         <span className="c2-state">
                           <i style={{ background: s.color }} />
@@ -318,7 +325,7 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
                         </span>
                       </td>
                       <td className="theatre">
-                        <button type="button">{c.name}</button>
+                        <span>{c.name}</span>
                       </td>
                       <td>{regionGroup(c.region)}</td>
                       <td>{c.since}</td>
@@ -326,8 +333,18 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
                       <td title={c.displaced}>{c.displaced || 'Not reported'}</td>
                       <td title={c.latest}>{c.latest}</td>
                       <td className="c2-ai-cell">
-                        <button type="button" className="c2-ai-request" disabled title="AI route not configured">
-                          Request AI Analysis
+                        <button
+                          type="button"
+                          className="c2-ai-request"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openAiResearch({
+                              row: c.row,
+                              prompt: `Go through the attached record and every linked source for ${c.name}. What does the dossier actually document, which sources support it, and where is the evidence thin?`,
+                            });
+                          }}
+                        >
+                          Ask AI
                         </button>
                       </td>
                     </tr>

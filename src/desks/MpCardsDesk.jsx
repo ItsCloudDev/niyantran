@@ -3,6 +3,7 @@ import { LS18_FACTS } from '../data/nationalCurated.js';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
+import { rowDragProps } from '../lib/aiDrop.js';
 
 export default function MpCardsDesk({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const rows = feed?.rows || [];
@@ -52,7 +53,7 @@ export default function MpCardsDesk({ feed, selected, onSelect, vizFilter, onCle
           const on = selected === r;
           const committees = r.committees && String(r.committees).trim();
           return (
-            <button key={r.id || `${name}|${i}`} type="button" className={`nat-mp-card${on ? ' on' : ''}`} onClick={() => onSelect?.(r)}>
+            <button key={r.id || `${name}|${i}`} type="button" className={`nat-mp-card${on ? ' on' : ''}`} onClick={() => onSelect?.(r)} {...rowDragProps(r, { title: name, feature: 'MP Report Cards' })}>
               <strong>{name}</strong>
               <span>{[r.party, r.constituency || r.state].filter(Boolean).join(' · ') || r.house || '—'}</span>
               <em>

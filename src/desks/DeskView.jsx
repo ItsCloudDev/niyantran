@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { fetchFeature } from '../lib/featureFeed.js';
+import { openAiResearch, rowDragProps } from '../lib/aiDrop.js';
 import { cellText, feedKindLabel, filterRows, isArticleHref, sortRows } from '../lib/normalise.js';
 import { isGithubCsvRow } from '../lib/githubCsv.js';
 import { cellOf, feedColumns } from '../lib/columns.js';
@@ -191,7 +192,7 @@ export default function DeskView({
         {err && <p className="banner warn">{err}</p>}
         <div className={`alliances-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label="Loading chokepoint dossier…" />}
-          {!loading && <ChokepointsDesk feed={feed} selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />}
+          {!loading && <ChokepointsDesk feed={feed} selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} onAsk={(q) => openAiResearch({ prompt: q, attachFeed: true, row: selected })} />}
         </div>
       </div>
     );
@@ -203,7 +204,7 @@ export default function DeskView({
         {err && <p className="banner warn">{err}</p>}
         <div className={`alliances-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label="Loading energy dossier…" />}
-          {!loading && <EnergyDesk feed={feed} selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />}
+          {!loading && <EnergyDesk feed={feed} selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} onAsk={(q) => openAiResearch({ prompt: q, attachFeed: true, row: selected })} />}
         </div>
       </div>
     );
@@ -438,6 +439,10 @@ export default function DeskView({
                         key={rowId}
                         className={rowClass}
                         onClick={() => onSelect(on ? null : row)}
+                        {...rowDragProps(row, {
+                          feature: featureName,
+                          title: cellOf(row, cols[0] || { key: 'title' }) || row.title || row.name || 'Row',
+                        })}
                       >
                         {cols.map((c, ci) => {
                           const text = c.key === '_closes' ? tenderCloseBand(row).label : cellOf(row, c);

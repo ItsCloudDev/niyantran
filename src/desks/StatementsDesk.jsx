@@ -3,6 +3,7 @@ import { STATEMENT_LEADERS } from '../data/nationalCurated.js';
 import { Sparkline, VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
+import { rowDragProps } from '../lib/aiDrop.js';
 
 function gdeltDoc(q) {
   return `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(`"${q}" sourcecountry:IN`)}&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=40`;
@@ -162,7 +163,7 @@ export default function StatementsDesk({ onSelect, onFeed, vizFilter, onClearViz
               </tr>
             ) : (
               shown.map((r, n) => (
-                <tr key={r.source_url || n} onClick={() => onSelect?.(r)}>
+                <tr key={r.source_url || n} onClick={() => onSelect?.(r)} {...rowDragProps(r, { title: r.title, feature: 'Statements' })}>
                   <td>
                     {r.source_url ? (
                       <a href={r.source_url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>

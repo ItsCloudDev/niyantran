@@ -14,6 +14,8 @@ import { isNationalFullscreen, isImpactRecordFeature } from '../lib/national.js'
 import { isGithubCsvRow } from '../lib/githubCsv.js';
 import { firstFeature, parseDeskHash, resolveDeskRoute, writeDeskHash } from '../lib/deskRoute.js';
 import { kickHomeRefreshIfDue } from '../lib/homeCache.js';
+import { canOpenDesk, clearSessionUser, sessionUser, tabsForType, userTypeOf } from '../lib/userStore.js';
+import AiDock from '../ai/AiDock.jsx';
 
 export default function TerminalShell({ onLogout }) {
   const start = parseDeskHash();
@@ -27,8 +29,13 @@ export default function TerminalShell({ onLogout }) {
   const [reload, setReload] = useState(0);
   const [loading, setLoading] = useState(false);
   const [vizFilter, setVizFilter] = useState(null);
+  const [aiOpen, setAiOpen] = useState(false);
+  const user = sessionUser();
+  const typeId = userTypeOf(user?.type).id;
+  const typeMeta = userTypeOf(typeId);
+  const deskTabs = tabsForType(typeId);
 
-  const active = TABS.find((t) => t.id === tab) || TABS[0];
+  const active = deskTabs.find((t) => t.id === tab) || TABS.find((t) => t.id === tab) || TABS[0];
   const hi = lang === 'hi';
   const onFeed = useCallback((body) => setFeed(body), []);
   const onSelect = useCallback((row) => setSelected(row), []);
@@ -78,15 +85,31 @@ export default function TerminalShell({ onLogout }) {
   }, []);
 
   useEffect(() => {
-    const r = parseDeskHash();
-    if (r.tab === 'home' && !(typeof location !== 'undefined' && location.hash)) return undefined;
+    const land = sessionStorage.getItem('niyantranLand');
+    if (land) sessionStorage.removeItem('niyantranLand');
+    const hash = typeof location !== 'undefined' ? location.hash : '';
+    const emptyHash = !hash || hash === '#' || hash === '#/';
+    let r = parseDeskHash();
+    if (land && canOpenDesk(typeId, land) && emptyHash) {
+      r = resolveDeskRoute(land, land === 'home' ? '' : firstFeature(land));
+    } else if (!canOpenDesk(typeId, r.tab)) {
+      const fallback = userTypeOf(typeId).startTab || 'home';
+      r = resolveDeskRoute(fallback, fallback === 'home' ? '' : firstFeature(fallback));
+    }
+    setTab(r.tab);
+    setFeatureName(r.feature);
+    if (r.tab === 'home' && emptyHash && r.tab === parseDeskHash().tab) return;
     writeDeskHash(r.tab, r.feature, { replace: true });
-    return undefined;
-  }, []);
+  }, [typeId]);
 
   useEffect(() => {
     function onPop() {
-      const r = parseDeskHash();
+      let r = parseDeskHash();
+      if (!canOpenDesk(typeId, r.tab)) {
+        const fallback = userTypeOf(typeId).startTab || 'home';
+        r = resolveDeskRoute(fallback, fallback === 'home' ? '' : firstFeature(fallback));
+        writeDeskHash(r.tab, r.feature, { replace: true });
+      }
       setTab(r.tab);
       setFeatureName(r.feature);
       setSelected(null);
@@ -98,17 +121,24 @@ export default function TerminalShell({ onLogout }) {
       window.removeEventListener('popstate', onPop);
       window.removeEventListener('hashchange', onPop);
     };
-  }, []);
+  }, [typeId]);
+
+  const allowedTiers = useMemo(
+    () => new Set(deskTabs.map((t) => t.tier)),
+    [deskTabs],
+  );
 
   const hits = useMemo(() => {
     const n = q.trim().toLowerCase();
     if (n.length < 2) return [];
     return catalogModules()
+      .filter((m) => allowedTiers.has(m.htmlTier))
       .filter((m) => `${m.htmlFeature} ${m.bucket} ${m.htmlTier}`.toLowerCase().includes(n))
       .slice(0, 12);
-  }, [q]);
+  }, [q, allowedTiers]);
 
   function onDesk(id) {
+    if (!canOpenDesk(typeId, id)) return;
     const r = resolveDeskRoute(id, id === 'home' ? '' : firstFeature(id));
     setTab(r.tab);
     setFeatureName(r.feature);
@@ -126,6 +156,7 @@ export default function TerminalShell({ onLogout }) {
   }
 
   function onOpen({ tab: nextTab, feature }) {
+    if (!canOpenDesk(typeId, nextTab)) return;
     const r = resolveDeskRoute(nextTab, feature);
     setTab(r.tab);
     setFeatureName(r.feature);
@@ -135,11 +166,20 @@ export default function TerminalShell({ onLogout }) {
   }
 
   function openHit(mod) {
-    const dest = TABS.find((t) => t.tier === mod.htmlTier);
-    onOpen({ tab: dest?.id || 'national', feature: mod.htmlFeature });
+    const dest = deskTabs.find((t) => t.tier === mod.htmlTier);
+    if (!dest) return;
+    onOpen({ tab: dest.id, feature: mod.htmlFeature });
   }
 
   const billRecordOpen = (isImpactRecordFeature(featureName) || isGithubCsvRow(selected)) && selected;
+  const showRail =
+    !aiOpen &&
+    tab !== 'home' &&
+    !isConflictsFeature(featureName) &&
+    !isChokepointsFeature(featureName) &&
+    !isEnergyFeature(featureName) &&
+    !isGeoResourceDossier(featureName) &&
+    !isNationalFullscreen(featureName);
 
   return (
     <div className={`terminal theme-${theme}`}>
@@ -202,14 +242,15 @@ export default function TerminalShell({ onLogout }) {
           >
             <Icon name="info" />
           </button>
-          <span className="avatar" title="analyst@niyantran">
-            A
+          <span className="user-chip" title={`${user?.email || ''} · ${typeMeta.label}`}>
+            <span className="avatar">{(user?.name || 'A').charAt(0).toUpperCase()}</span>
+            <span className="user-type">{typeMeta.short}</span>
           </span>
           <button
             type="button"
             className="logout-btn"
             onClick={() => {
-              sessionStorage.removeItem('niyantranAuthed');
+              clearSessionUser();
               if (typeof location !== 'undefined') location.hash = '#/';
               onLogout?.();
             }}
@@ -218,8 +259,8 @@ export default function TerminalShell({ onLogout }) {
           </button>
         </div>
       </header>
-      <DeskNav tab={tab} featureName={featureName} lang={lang} onDesk={onDesk} onFeature={onFeature} />
-      <div className={`workspace${tab === 'home' ? ' home' : ''}${isConflictsFeature(featureName) ? ' conflicts-holistic' : ''}${isChokepointsFeature(featureName) || isEnergyFeature(featureName) || isNationalFullscreen(featureName) ? ' choke-holistic' : ''}${isGeoResourceDossier(featureName) ? ' geo-holistic' : ''}${isTransitFeature(featureName) ? ' transit-map' : ''}${isNationalFullscreen(featureName) ? ' pig-holistic' : ''}${billRecordOpen ? ' bill-record' : ''}`}>
+      <DeskNav tab={tab} featureName={featureName} lang={lang} onDesk={onDesk} onFeature={onFeature} tabs={deskTabs} />
+      <div className={`workspace${tab === 'home' ? ' home' : ''}${isConflictsFeature(featureName) ? ' conflicts-holistic' : ''}${isChokepointsFeature(featureName) || isEnergyFeature(featureName) || isNationalFullscreen(featureName) ? ' choke-holistic' : ''}${isGeoResourceDossier(featureName) ? ' geo-holistic' : ''}${isTransitFeature(featureName) ? ' transit-map' : ''}${isNationalFullscreen(featureName) ? ' pig-holistic' : ''}${billRecordOpen ? ' bill-record' : ''}${aiOpen ? ' ai-open' : ''}`}>
         <main className="main-col">
           {tab === 'home' ? (
             <HomeDesk onOpen={onOpen} onFeed={onFeed} onSelect={onSelect} onLoading={onLoading} reload={reload} />
@@ -238,9 +279,10 @@ export default function TerminalShell({ onLogout }) {
             />
           )}
         </main>
-        {tab !== 'home' && !isConflictsFeature(featureName) && !isChokepointsFeature(featureName) && !isEnergyFeature(featureName) && !isGeoResourceDossier(featureName) && !isNationalFullscreen(featureName) && (
+        {showRail && (
           <RightRail feed={feed} selected={selected} onSelect={onSelect} lang={lang} loading={loading} vizFilter={vizFilter} />
         )}
+        <AiDock feed={feed} selected={selected} tab={tab} featureName={featureName} lang={lang} onOpenChange={setAiOpen} />
       </div>
     </div>
   );
