@@ -189,14 +189,18 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
 
   return (
     <div className="nh">
-      <div className="nh-strip">
-        {quotes.map((q) => (
-          <div key={q.name} className="nh-q">
-            <b>{q.name}</b>
-            <span>{fmtPx(q.last)}</span>
-            <span className={chClass(q.d1)}>{chText(q.d1)}</span>
-          </div>
-        ))}
+      <div className="nh-strip" aria-label="Market quotes">
+        <div className="nh-strip-track">
+          {[0, 1].map((copy) =>
+            quotes.map((q) => (
+              <div key={`${copy}-${q.name}`} className="nh-q" aria-hidden={copy === 1 || undefined}>
+                <b>{q.name}</b>
+                <span>{fmtPx(q.last)}</span>
+                <span className={chClass(q.d1)}>{chText(q.d1)}</span>
+              </div>
+            )),
+          )}
+        </div>
       </div>
 
       <div className="nh-grid">
