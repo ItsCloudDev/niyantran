@@ -15,19 +15,6 @@ import { liveApiEnabled } from './apiMode.js';
 
 const CONCURRENCY = 3;
 
-function isLiveCapable(row) {
-  const adapter = String(row?.adapter || '');
-  const impl = String(row?.implementation || row?.implementationState || '');
-  const url = String(row?.url || row?.primaryFeedUrl || '');
-  return (
-    row?.status === 'live' ||
-    adapter === 'api' ||
-    adapter === 'news-search' ||
-    /LIVE API|LIVE SEARCH/i.test(impl) ||
-    /^https?:\/\//i.test(url)
-  );
-}
-
 function outcome(body, row) {
   const rows = Array.isArray(body?.rows) ? body.rows : [];
   const real = hasRealRows(body);
@@ -39,7 +26,8 @@ function outcome(body, row) {
       note,
     );
   // Static Vercel has no /api/feature-feed. Loading the shipped pack is not a live failure.
-  if (!liveApiEnabled() && real && isLiveCapable(row) && row?.status !== 'archive') {
+  // Never promote Inactive / Archive connectors just because a URL exists.
+  if (!liveApiEnabled() && real && row?.status === 'live') {
     return { ok: true, fallback: false, rows: n, status: 'live', error: null };
   }
   if (real && (!body?.fallback || liveAlt)) {
@@ -91,14 +79,17 @@ export function decorateApis(classified = classifyApis()) {
     // Ignore stale false-negatives + mislabelled archive for live news-search wires.
     let probe = p;
     // Production static host: probes that only loaded /data must not demote Live → Archive.
+    // Do not promote Inactive or Archive into Live.
     if (
       !liveApiEnabled() &&
       p &&
-      isLiveCapable(r) &&
-      r.status !== 'archive' &&
+      r.status === 'live' &&
       (p.status === 'archive' || p.status === 'inactive' || p.status === 'local')
     ) {
       probe = { ...p, status: 'live', fallback: false, error: null };
+    }
+    if (!liveApiEnabled() && p && (r.status === 'inactive' || r.status === 'archive') && p.status === 'live') {
+      probe = { ...p, status: r.status, fallback: r.status === 'archive' };
     }
     if (p && (r.status === 'live' || r.adapter === 'api' || r.adapter === 'news-search')) {
       const err = String(p.error || '');
@@ -156,12 +147,10 @@ export function healStaticHostProbes() {
   for (const r of classified) {
     const p = probes[r.key];
     if (!p) continue;
-    if (
-      isLiveCapable(r) &&
-      r.status !== 'archive' &&
-      (p.status === 'archive' || p.status === 'inactive' || p.status === 'local')
-    ) {
+    if (r.status === 'live' && (p.status === 'archive' || p.status === 'inactive' || p.status === 'local')) {
       patch[r.key] = { ...p, status: 'live', fallback: false, error: null };
+    } else if ((r.status === 'inactive' || r.status === 'archive') && p.status === 'live') {
+      patch[r.key] = { ...p, status: r.status, fallback: r.status === 'archive' };
     }
   }
   if (Object.keys(patch).length) saveProbes(patch);
