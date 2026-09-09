@@ -436,10 +436,12 @@ html.mkt-doc #root {
   top: 46%;
   width: min(560px, 48vw);
   height: min(560px, 48vw);
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) rotate(0deg);
+  transform-origin: center center;
   pointer-events: none;
   z-index: 0;
-  animation: mktPrOrbitSpin 48s linear infinite;
+  animation: mktHeroOrbitSpin 60s linear infinite;
+  will-change: transform;
 }
 .mkt-orb-fx {
   position: absolute;
@@ -506,9 +508,13 @@ html.mkt-doc #root {
   top: 46%;
   width: min(620px, 52vw);
   max-width: none;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) rotate(0deg);
+  transform-origin: center center;
   pointer-events: none;
   user-select: none;
+  animation: mktHeroGlobeSpin 90s linear infinite;
+  will-change: transform;
+  opacity: 0.92;
 }
 .mkt-chip {
   position: absolute;
@@ -618,6 +624,15 @@ html.mkt-doc #root {
   from { opacity: 0; transform: translateY(18px); }
   to { opacity: 1; transform: none; }
 }
+/* Keep translate centering while spinning — bare rotate() was sliding the orbits sideways. */
+@keyframes mktHeroOrbitSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes mktHeroGlobeSpin {
+  from { transform: translate(-50%, -50%) rotate(0deg); }
+  to { transform: translate(-50%, -50%) rotate(-360deg); }
+}
 @keyframes mktWordShine {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
@@ -641,6 +656,7 @@ html.mkt-doc #root {
   .mkt-hero h1 .gov,
   .mkt-hero h1 .pol,
   .mkt-hero-orbits,
+  .mkt-globe,
   .mkt-hero .mkt-pr-scan,
   .mkt-hero .mkt-pr-sh,
   .mkt-preview-scan,
