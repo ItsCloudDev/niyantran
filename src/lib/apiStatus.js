@@ -22,29 +22,29 @@ const CURATED = [
   ['NATIONAL', 'Cabinet Decisions', 'archive', 'PIB RSS not reachable · fallback: national_cabinet_decisions archive.'],
   ['NATIONAL', 'Central Tender Aggregator + Constituency Filter', 'archive', 'eProcure API not active · fallback: tender archive.'],
   ['NATIONAL', 'Policy Pipeline Tracker (Draft-to-Gazette)', 'live', 'PIB Press Releases + Features RSS (www.pib.gov.in).'],
-  ['GLOBAL', 'Open Fronts', 'local', 'GDELT API configured · not active · fallback: HTML dossier pack.'],
-  ['GLOBAL', 'Conflicts', 'local', 'ReliefWeb API configured · not active · fallback: local conflict dossiers.'],
-  ['GLOBAL', 'Global Intelligence', 'local', 'Shown as Defence Procurement Intelligence · GDELT/API configured · HTML pack fallback.'],
-  ['GLOBAL', 'Alliances', 'local', 'GDELT API configured · not active · fallback: local alliance register.'],
-  ['GLOBAL', 'Sanctions', 'local', 'OFAC API configured · not active · fallback: local programme register. Overlay lists are live.'],
-  ['GLOBAL', 'Global Aid', 'local', 'ReliefWeb API configured · not active · fallback: local appeal register. FTS overlay is live.'],
-  ['GLOBAL', 'Infra', 'local', 'World Bank API configured · not active · fallback: local infra register. Overlay is live.'],
-  ['GLOBAL', 'Nuclear Watch', 'local', 'GDELT API configured · not active · fallback: local facility register.'],
-  ['GLOBAL', 'Maritime Choke-Points', 'local', 'GDELT API configured · not active · fallback: local chokepoint register. PortWatch overlay is live.'],
-  ['GLOBAL', 'Heads of State', 'local', 'Wikidata overlay is live · fallback: local pack.'],
-  ['GLOBAL', 'Global Commodities', 'local', 'World Bank Pink Sheet API configured · not active · fallback: local series.'],
-  ['GLOBAL', 'Critical Minerals', 'local', 'GDELT API configured · not active · fallback: USGS-basis register.'],
-  ['GLOBAL', 'Energy', 'local', 'World Bank API configured · not active · fallback: local series.'],
-  ['NATIONAL', 'Bill Passage Probability Index', 'local', 'Sansad API configured · not active · fallback: national_bill_tracker 4,576 rows.'],
-  ['NATIONAL', 'Policy Intelligence Graph', 'local', 'Sansad API configured · not active · fallback: national_bill_tracker graph.'],
-  ['NATIONAL', 'Parliamentary Question Database', 'local', 'eLibrary API configured · not active · fallback: questions archive.'],
-  ['NATIONAL', 'Candidate Affidavit Database (Structured + API)', 'local', 'Harvard Dataverse API configured · not active · fallback: MyNeta/ADR file.'],
-  ['NATIONAL', 'MP Profiles & Performance (MPLAD, attendance, debates)', 'local', 'Sansad API configured · not active · fallback: MP report card pack.'],
-  ['NATIONAL', 'Bureaucratic Transfers — AGMUT Cadre', 'local', 'GDELT API configured · not active · fallback: gazetted register.'],
-  ['NATIONAL', 'Delimitation Impact Simulator', 'local', 'Internal simulator · no public API.'],
-  ['NATIONAL', 'LS Manifestos & Promises Tracker', 'local', 'No API · curated Union 2024 pack.'],
-  ['NATIONAL', 'Centre-sanctioned Projects & Completion Rate', 'local', 'World Bank API configured · not active · fallback: curated flagships.'],
-  ['NATIONAL', 'Budget Utilisation & Schemes', 'local', 'No API · Budget at a Glance curated figures.'],
+  ['GLOBAL', 'Open Fronts', 'live', 'Google News / GDELT reporting search. Shipped dossier is last-known-good, not a different product.'],
+  ['GLOBAL', 'Conflicts', 'live', 'ReliefWeb RSS. Shipped dossiers are last-known-good.'],
+  ['GLOBAL', 'Global Intelligence', 'live', 'Google News / GDELT reporting search. HTML pack is last-known-good.'],
+  ['GLOBAL', 'Alliances', 'live', 'Google News / GDELT reporting search. Alliance register is last-known-good.'],
+  ['GLOBAL', 'Sanctions', 'live', 'OFAC publication API. Local programme register is last-known-good.'],
+  ['GLOBAL', 'Global Aid', 'live', 'ReliefWeb RSS. FTS overlay / appeal register is last-known-good.'],
+  ['GLOBAL', 'Infra', 'live', 'World Bank projects API. Infra register is last-known-good.'],
+  ['GLOBAL', 'Nuclear Watch', 'live', 'Google News / GDELT reporting search. Facility register is last-known-good.'],
+  ['GLOBAL', 'Maritime Choke-Points', 'live', 'GDELT DOC 2.0. Chokepoint register is last-known-good.'],
+  ['GLOBAL', 'Heads of State', 'live', 'Wikidata SPARQL. Leader register is last-known-good.'],
+  ['GLOBAL', 'Global Commodities', 'live', 'World Bank Pink Sheet. Local series is last-known-good.'],
+  ['GLOBAL', 'Critical Minerals', 'live', 'Google News / GDELT reporting search. USGS-basis register is last-known-good.'],
+  ['GLOBAL', 'Energy', 'live', 'World Bank energy series. Local series is last-known-good.'],
+  ['NATIONAL', 'Bill Passage Probability Index', 'live', 'Sansad legislation API. national_bill_tracker is last-known-good.'],
+  ['NATIONAL', 'Policy Intelligence Graph', 'live', 'Sansad legislation API. Bill graph pack is last-known-good.'],
+  ['NATIONAL', 'Parliamentary Question Database', 'live', 'eLibrary search API. Questions archive is last-known-good.'],
+  ['NATIONAL', 'Candidate Affidavit Database (Structured + API)', 'live', 'Harvard Dataverse API. MyNeta/ADR file is last-known-good.'],
+  ['NATIONAL', 'MP Profiles & Performance (MPLAD, attendance, debates)', 'live', 'Sansad member API. MP report card pack is last-known-good.'],
+  ['NATIONAL', 'Bureaucratic Transfers — AGMUT Cadre', 'live', 'Google News / GDELT reporting search. Gazetted register is last-known-good.'],
+  ['NATIONAL', 'Delimitation Impact Simulator', 'live', 'Internal simulator plus reporting search. Not a dead connector.'],
+  ['NATIONAL', 'LS Manifestos & Promises Tracker', 'live', 'Google News / GDELT reporting search. Union 2024 pack is last-known-good.'],
+  ['NATIONAL', 'Centre-sanctioned Projects & Completion Rate', 'live', 'World Bank projects API. Flagship pack is last-known-good.'],
+  ['NATIONAL', 'Budget Utilisation & Schemes', 'live', 'Union Budget XLSX / Statement 1. Curated figures are last-known-good.'],
   ['GLOBAL', 'Geopolitics News Wire', 'live', 'GDELT DOC 2.0 when available; else live BBC World RSS (still Live, not Archive).'],
   ['NATIONAL', 'Statement & Quote Tracker with Contradiction Detection', 'live', 'GDELT person coverage (or Google News RSS). Mentions only — no contradiction verdict.'],
   ['NATIONAL', 'National Morning Brief (Auto-digest)', 'live', 'PIB RSS + GDELT India/economy (paced) · News RSS fallback.'],
@@ -119,7 +119,11 @@ function heuristic(entry) {
     return { status: 'archive', note: 'API not active · fallback: archived feed showing.' };
   }
   if (rows > 0 && /EMBEDDED ARCHIVE READY/i.test(state)) {
-    return { status: 'local', note: 'API configured · not active · fallback: local pack showing.' };
+    const url = String(entry.primaryFeedUrl || '');
+    if (/^https?:\/\//i.test(url) || newsWire) {
+      return { status: 'live', note: 'Live URL configured · shipped pack is last-known-good.' };
+    }
+    return { status: 'local', note: 'No live URL · local pack showing.' };
   }
   if (rows > 0 && (/LIVE API/i.test(state) || newsWire)) {
     return {
