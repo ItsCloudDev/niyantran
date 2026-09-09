@@ -197,7 +197,7 @@ function seatBrief(s) {
   const gap = num(s.gap);
   const inp = num(s.inPlayPct);
   const lead = num(s.leadPct);
-  const brief = `${s.name} has ${fmt(el)} electors across ${fmt(s.booths)} booths in ${s.district} (${s.taluka} taluka). The leading community bloc is ${s.bloc} at ${lead}% of the roll, and the seat entered 2022 rated "${s.status}".`;
+  const brief = `${s.name} has ${fmt(el)} electors across ${fmt(s.booths)} booths in ${s.district} (${s.taluka} taluka). The largest estimated community share on the modelled roll is ${s.bloc} at ${lead}% — an estimate, not a census count — and the seat entered 2022 rated "${s.status}".`;
   const why = `BJP polled ${s.ac22}% here at the 2022 Assembly against ${s.ls24}% at the 2024 Lok Sabha — a split-ticket gap of ${gap} points. ${fmt(s.inPlay)} electors (${inp}% of the seat) sit in booths classified as in play.`;
   const watch =
     `The seat has had ${s.distinct} distinct winners across the last four polls; booths here flip ${s.flips} times on average. ` +
@@ -214,7 +214,7 @@ function boothBrief(b) {
     `Booth ${b.booth} of AC ${b.ac}${b.station ? ` — ${b.station}` : ''}`,
     b.electors != null && b.electors !== '' ? `holds ${fmt(b.electors)} electors` : '',
     b.households ? `in ${fmt(b.households)} households` : '',
-    b.bloc ? `Leading bloc: ${b.bloc}${b.leadPct != null && b.leadPct !== '' ? ` at ${b.leadPct}%` : ''}` : '',
+    b.bloc ? `Largest estimated bloc: ${b.bloc}${b.leadPct != null && b.leadPct !== '' ? ` at ${b.leadPct}%` : ''} (modelled, not census)` : '',
     b.ops ? `Ops class ${b.ops}` : '',
     b.status ? `status "${b.status}"` : '',
   ].filter(Boolean);

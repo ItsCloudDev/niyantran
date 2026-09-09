@@ -3,13 +3,67 @@ import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import { rowDragProps } from '../lib/aiDrop.js';
+import { dedupeNewsRows } from '../lib/newsDedup.js';
+import { applyRecordChecklistToFeed } from '../lib/recordChecklist.js';
+import { liveApiEnabled } from '../lib/apiMode.js';
 
-function parseRssItems(xml) {
+const GDELT_GAP_MS = 5500;
+
+function parseRssItems(xml, source = 'RSS') {
   const doc = new DOMParser().parseFromString(xml, 'text/xml');
-  return [...doc.querySelectorAll('item')].map((it) => {
-    const g = (k) => it.querySelector(k)?.textContent?.trim() || '';
-    return { title: g('title'), source_url: g('link'), date: g('pubDate'), source: 'PIB' };
-  }).filter((x) => x.title);
+  return [...doc.querySelectorAll('item')]
+    .map((it) => {
+      const g = (k) => it.querySelector(k)?.textContent?.trim() || '';
+      return { title: g('title'), source_url: g('link'), date: g('pubDate'), source };
+    })
+    .filter((x) => x.title);
+}
+
+function gdelt(query) {
+  return `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(query)}&mode=artlist&format=json&sort=datedesc&timespan=3d&maxrecords=12`;
+}
+
+function newsSearch(q) {
+  return `https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-IN&gl=IN&ceid=IN:en`;
+}
+
+function sleep(ms, signal) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'));
+      return;
+    }
+    const t = setTimeout(resolve, ms);
+    signal?.addEventListener(
+      'abort',
+      () => {
+        clearTimeout(t);
+        reject(new DOMException('Aborted', 'AbortError'));
+      },
+      { once: true },
+    );
+  });
+}
+
+async function proxyText(url, signal) {
+  if (!liveApiEnabled()) throw new Error('unreachable');
+  const res = await fetch(`/api/rss?url=${encodeURIComponent(url)}`, { signal });
+  const text = await res.text();
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if (/please limit requests|too many requests/i.test(text)) throw new Error('GDELT rate limited');
+  return text;
+}
+
+function mapArts(j) {
+  return dedupeNewsRows(
+    (j?.articles || []).map((a) => ({
+      title: a.title,
+      date: a.seendate,
+      source_url: a.url,
+      source: a.domain || a.sourceCountry || 'GDELT',
+      reporting_search: 'GDELT DOC 2.0 — news reporting search, not an official dataset',
+    })),
+  );
 }
 
 export default function MorningBriefDesk({ onSelect, onFeed, vizFilter, onClearViz }) {
@@ -17,99 +71,172 @@ export default function MorningBriefDesk({ onSelect, onFeed, vizFilter, onClearV
   const [pib, setPib] = useState({ rows: [], err: '' });
   const [eco, setEco] = useState({ rows: [], err: '' });
   const [q, setQ] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const ac = new AbortController();
-    const gdelt = (q) =>
-      `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(q)}&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=12`;
-    const mapArts = (j) =>
-      (j?.articles || []).map((a) => ({
-        title: a.title,
-        date: a.seendate,
-        source_url: a.url,
-        reporting_search: 'GDELT DOC 2.0 — news reporting search, not an official dataset',
-      }));
+    if (!liveApiEnabled()) {
+      const msg = 'Live RSS proxy is not deployed on this host.';
+      setTop({ rows: [], err: msg });
+      setPib({ rows: [], err: msg });
+      setEco({ rows: [], err: msg });
+      setLoading(false);
+      return () => ac.abort();
+    }
 
-    fetch(`/api/rss?url=${encodeURIComponent(gdelt('sourcecountry:IN (India OR government OR parliament)'))}`, { signal: ac.signal })
-      .then((r) => r.text())
-      .then((t) => setTop({ rows: mapArts(JSON.parse(t)), err: '' }))
-      .catch(() => setTop({ rows: [], err: 'GDELT wire unreachable from this network — it will retry automatically.' }));
-
-    fetch(`/api/rss?url=${encodeURIComponent('https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3')}`, { signal: ac.signal })
-      .then((r) => {
-        if (!r.ok) throw new Error('offline');
-        return r.text();
-      })
-      .then((xml) => {
-        const rows = parseRssItems(xml);
+    (async () => {
+      setLoading(true);
+      // 1) PIB first (not GDELT) — avoids burning the rate budget.
+      try {
+        const xml = await proxyText('https://www.pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3', ac.signal);
+        const rows = dedupeNewsRows(parseRssItems(xml, 'PIB'));
         if (!rows.length) throw new Error('empty');
         setPib({ rows, err: '' });
-      })
-      .catch(() => setPib({ rows: [], err: 'PIB releases arrive through the backend (/api/rss) and it is not reachable.' }));
+      } catch (e) {
+        if (e?.name === 'AbortError') return;
+        setPib({
+          rows: [],
+          err: 'PIB releases arrive through the backend (/api/rss) and it is not reachable.',
+        });
+      }
 
-    fetch(`/api/rss?url=${encodeURIComponent(gdelt('(economy OR RBI OR rupee OR markets) sourcecountry:IN'))}`, { signal: ac.signal })
-      .then((r) => r.text())
-      .then((t) => setEco({ rows: mapArts(JSON.parse(t)), err: '' }))
-      .catch(() => setEco({ rows: [], err: 'GDELT wire unreachable from this network — it will retry automatically.' }));
+      // 2) Top of Day — one GDELT call, then News RSS if needed.
+      try {
+        const text = await proxyText(gdelt('sourcecountry:IN (India OR government OR parliament)'), ac.signal);
+        const rows = mapArts(JSON.parse(text));
+        if (!rows.length) throw new Error('empty');
+        setTop({ rows, err: '' });
+      } catch (e) {
+        if (e?.name === 'AbortError') return;
+        try {
+          const xml = await proxyText(newsSearch('India government OR parliament when:3d'), ac.signal);
+          const rows = dedupeNewsRows(parseRssItems(xml, 'Google News'));
+          if (!rows.length) throw new Error('empty');
+          setTop({ rows, err: '' });
+        } catch (e2) {
+          if (e2?.name === 'AbortError') return;
+          setTop({ rows: [], err: 'GDELT wire unreachable from this network — it will retry automatically.' });
+        }
+      }
+
+      // 3) Economy — wait for GDELT gap, then one call (or News RSS).
+      try {
+        await sleep(GDELT_GAP_MS, ac.signal);
+        const text = await proxyText(gdelt('(economy OR RBI OR rupee OR markets) sourcecountry:IN'), ac.signal);
+        const rows = mapArts(JSON.parse(text));
+        if (!rows.length) throw new Error('empty');
+        setEco({ rows, err: '' });
+      } catch (e) {
+        if (e?.name === 'AbortError') return;
+        try {
+          const xml = await proxyText(newsSearch('India (RBI OR economy OR markets OR rupee) when:3d'), ac.signal);
+          const rows = dedupeNewsRows(parseRssItems(xml, 'Google News'));
+          if (!rows.length) throw new Error('empty');
+          setEco({ rows, err: '' });
+        } catch (e2) {
+          if (e2?.name === 'AbortError') return;
+          setEco({ rows: [], err: 'GDELT wire unreachable from this network — it will retry automatically.' });
+        }
+      }
+
+      if (!ac.signal.aborted) setLoading(false);
+    })();
 
     return () => ac.abort();
   }, []);
 
   useEffect(() => {
-    const rows = [...top.rows, ...pib.rows, ...eco.rows];
-    onFeed?.({
-      ok: true,
-      tier: 'national',
-      feature: 'National Morning Brief (Auto-digest)',
-      rows,
-      source: { adapter: pib.err ? 'news-search' : 'live', gdelt: true, note: 'Panel, not a table. PIB labelled offline when unreachable.' },
-      coverage: { through: '7d' },
-      fallback: Boolean(top.err || pib.err),
-      meta: {
-        heading: 'MORNING BRIEF',
-        items: rows.length,
-        pib: pib.err ? 'OFFLINE' : String(pib.rows.length),
-        ministries: pib.rows.length ? 'PIB window' : 'PIB offline',
-      },
-    });
+    const rows = dedupeNewsRows([...top.rows, ...pib.rows, ...eco.rows]);
+    const anyLive = rows.length > 0;
+    onFeed?.(
+      applyRecordChecklistToFeed({
+        ok: true,
+        tier: 'national',
+        feature: 'National Morning Brief (Auto-digest)',
+        rows,
+        source: {
+          adapter: 'news-search',
+          gdelt: !top.err || !eco.err,
+          note: anyLive
+            ? `Morning Brief live — Top ${top.rows.length} · PIB ${pib.rows.length} · Economy ${eco.rows.length}.`
+            : 'Panel offline. PIB labelled offline when unreachable.',
+        },
+        coverage: { through: '3d' },
+        fallback: false,
+        meta: {
+          heading: 'MORNING BRIEF',
+          items: rows.length,
+          pib: pib.err ? 'OFFLINE' : String(pib.rows.length),
+          ministries: pib.rows.length ? 'PIB window' : 'PIB offline',
+          status: anyLive ? 'LIVE' : 'OFFLINE',
+        },
+      }),
+    );
   }, [top, pib, eco, onFeed]);
 
   function match(r) {
     if (!applyVizFilter(r, vizFilter)) return false;
     if (!q.trim()) return true;
-    return `${r.title || ''} ${r.source || ''}`.toLowerCase().includes(q.trim().toLowerCase());
+    return `${r.title || ''} ${r.source || ''} ${r.outlet || ''}`.toLowerCase().includes(q.trim().toLowerCase());
   }
 
-  function Block({ title, pack }) {
-    const rows = (pack.rows || []).filter(match);
+  function Block({ title, section, pack, why }) {
+    const rows = dedupeNewsRows(pack.rows || []).filter(match);
     return (
       <section className="nat-brief-sec">
         <h2>{title}</h2>
+        <p className="desk-note">{why}</p>
         {pack.err ? <p className="banner warn">{pack.err}</p> : null}
+        {!pack.err && !rows.length ? (
+          <p className="banner">No items in this section right now. Cached/offline banners appear when a source fails.</p>
+        ) : null}
         <ul>
-          {rows.slice(0, 12).map((r, i) => (
-            <li key={r.source_url || i}>
-              <button type="button" onClick={() => onSelect?.(r)} {...rowDragProps(r, { title: r.title, feature: title })}>
-                {r.title}
-              </button>
-              <span>{r.date || r.source || ''}</span>
-            </li>
-          ))}
+          {rows.slice(0, 12).map((r, i) => {
+            const source = r.outlet || r.source || (r.source_url ? 'Link' : '—');
+            const published = r.published || r.date || '—';
+            return (
+              <li key={r.source_url || i}>
+                <button
+                  type="button"
+                  onClick={() =>
+                    onSelect?.({
+                      ...r,
+                      section,
+                      headline: r.title,
+                      topic: section,
+                      region: r.region || 'India',
+                    })
+                  }
+                  {...rowDragProps(r, { title: r.title, feature: title })}
+                >
+                  <span className="nat-brief-kicker">
+                    {section} · {source} · {published}
+                    {r.related_count > 0 ? ` · +${r.related_count} related` : ''}
+                  </span>
+                  <span className="nat-brief-headline">{r.title}</span>
+                </button>
+              </li>
+            );
+          })}
         </ul>
       </section>
     );
   }
 
-  const items = top.rows.length + pib.rows.length + eco.rows.length;
+  const merged = dedupeNewsRows([...top.rows, ...pib.rows, ...eco.rows]);
+  const items = merged.length;
+  const offlineBits = [top.err && 'Top of the Day', pib.err && 'PIB', eco.err && 'Economy'].filter(Boolean);
 
   return (
     <div className="nat-panel">
       <div className="feed-head">
         <h1>MORNING BRIEF</h1>
-        <span className="live-feed">{items ? `${items} ITEMS` : 'OFFLINE'}</span>
+        <span className={`live-feed${items ? ' on' : ''}`}>
+          {loading ? 'LOADING' : items ? `${items} ITEMS` : 'OFFLINE'}
+        </span>
         <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
         <TableFilterPop
-          feed={{ feature: 'National Morning Brief (Auto-digest)', rows: [...top.rows, ...pib.rows, ...eco.rows] }}
+          feed={{ feature: 'National Morning Brief (Auto-digest)', rows: merged }}
           q={q}
           onQ={setQ}
           searchPlaceholder="Search headlines"
@@ -118,12 +245,32 @@ export default function MorningBriefDesk({ onSelect, onFeed, vizFilter, onClearV
         />
       </div>
       <p className="desk-note">
-        Three sections: Top of the Day (India), Government Wire (PIB), Economy (India). Nothing classifies a story into Politics / Sports /
-        Tech today. Sports already has its own tier.
+        Each item shows Section · Headline · Source · Published. Repeat headlines are collapsed. Items appear because they matched
+        this section’s wire (India government / PIB / economy) — not a personalised ranking.
       </p>
-      <Block title="Top of the Day — India" pack={top} />
-      <Block title="Government Wire — PIB" pack={pib} />
-      <Block title="Economy — India" pack={eco} />
+      {offlineBits.length ? (
+        <p className="banner warn">
+          Offline or unreachable right now: {offlineBits.join(', ')}. Other sections still show what arrived.
+        </p>
+      ) : null}
+      <Block
+        title="Top of the Day — India"
+        section="Top of the Day"
+        pack={top}
+        why="Selected from the India government / parliament GDELT window (last 3 days), with News RSS if GDELT is paced out."
+      />
+      <Block
+        title="Government Wire — PIB"
+        section="Government Wire"
+        pack={pib}
+        why="Selected from the Press Information Bureau RSS when the proxy can reach it."
+      />
+      <Block
+        title="Economy — India"
+        section="Economy"
+        pack={eco}
+        why="Selected from the India economy / markets GDELT window (last 3 days), paced ≥5s after Top of Day."
+      />
     </div>
   );
 }

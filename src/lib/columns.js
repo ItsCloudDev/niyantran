@@ -14,34 +14,37 @@ const PRESETS = [
     ],
   },
   {
-    test: /global intelligence/i,
+    test: /global intelligence|defence procurement/i,
     cols: [
       { key: 'program_name', label: 'PROGRAMME', fallback: 'title', dot: true },
+      { key: 'country', label: 'COUNTRY', fallback: 'vendor_or_origin' },
       { key: 'category', label: 'CATEGORY' },
       { key: 'stage', label: 'STAGE', pill: true },
-      { key: 'vendor_or_origin', label: 'VENDOR / ORIGIN' },
+      { key: 'value', label: 'VALUE', fallback: 'amount' },
+      { key: 'decision_date', label: 'DECISION DATE', fallback: 'date', date: true },
+      { key: 'source_label', label: 'SOURCE', fallback: 'source_url' },
     ],
   },
   {
     test: /^alliances$/i,
     cols: [
-      { key: 'title', label: 'ALLIANCE / BLOC', fallback: 'name', dot: true },
-      { key: 'category', label: 'STRUCTURE' },
+      { key: 'title', label: 'ALLIANCE', fallback: 'name', dot: true },
       { key: 'region', label: 'REGION' },
-      { key: 'memberCount', label: 'ROSTER' },
+      { key: 'category', label: 'STRUCTURE' },
+      { key: 'memberCount', label: 'MEMBERS' },
       { key: 'obligation_class', label: 'OBLIGATION', pill: true },
-      { key: 'latestDate', label: 'LATEST RECORD' },
+      { key: 'latestDate', label: 'LATEST VERIFIED', date: true },
     ],
   },
   {
     test: /^sanctions$/i,
     cols: [
-      { key: 'title', label: 'PROGRAMME', fallback: 'name', dot: true },
-      { key: 'issuer', label: 'ISSUERS' },
-      { key: 'region', label: 'REGION' },
-      { key: 'regime_type', label: 'TYPE', fallback: 'type' },
+      { key: 'title', label: 'PROGRAMME / TARGET', fallback: 'name', dot: true },
+      { key: 'issuer', label: 'ISSUER' },
+      { key: 'regime_type', label: 'SCOPE', fallback: 'type' },
+      { key: 'entities', label: 'LISTED ENTITIES' },
       { key: 'programme_status', label: 'STATUS', fallback: 'status', pill: true },
-      { key: 'entities', label: 'LISTED SCOPE' },
+      { key: 'last_update', label: 'LAST UPDATE', fallback: 'updated', date: true },
     ],
   },
   {
@@ -51,6 +54,8 @@ const PRESETS = [
       { key: 'sector', label: 'SECTOR' },
       { key: 'region', label: 'REGION' },
       { key: 'status', label: 'STATUS', pill: true },
+      { key: 'cost', label: 'COST', fallback: 'value' },
+      { key: 'completion', label: 'COMPLETION / PHASE', fallback: 'phase' },
     ],
   },
   {
@@ -59,71 +64,79 @@ const PRESETS = [
       { key: 'title', label: 'FACILITY', fallback: 'name', dot: true },
       { key: 'country', label: 'COUNTRY' },
       { key: 'facility_kind', label: 'CLASS', fallback: 'kind' },
-      { key: 'status', label: 'STATUS', pill: true },
-      { key: 'latest', label: 'LATEST RECORD', fallback: 'note' },
+      { key: 'status', label: 'OPERATIONAL STATUS', pill: true },
+      { key: 'safeguards', label: 'SAFEGUARDS / SECURITY', fallback: 'security_status' },
+      { key: 'latest', label: 'LATEST VERIFIED', fallback: 'note', date: true },
     ],
   },
   {
     test: /^satellite infrastructure$/i,
     cols: [
-      { key: 'title', label: 'LAUNCH', fallback: 'name', dot: true },
-      { key: 'provider', label: 'PROVIDER' },
-      { key: 'pad', label: 'PAD' },
-      { key: 'net', label: 'NET (UTC)', fallback: 'expected' },
+      { key: 'title', label: 'ASSET / CONSTELLATION', fallback: 'name', dot: true },
+      { key: 'provider', label: 'OPERATOR', fallback: 'operator' },
+      { key: 'country', label: 'COUNTRY' },
+      { key: 'pad', label: 'ORBIT / PAD', fallback: 'orbit' },
+      { key: 'function', label: 'FUNCTION' },
       { key: 'status', label: 'STATUS', pill: true },
+      { key: 'net', label: 'LAUNCH / COMMISSIONED', fallback: 'expected', date: true },
     ],
   },
   {
     test: /^maritime choke-?points$/i,
     cols: [
-      { key: 'title', label: 'ASSET', fallback: 'name', dot: true },
+      { key: 'title', label: 'CHOKEPOINT', fallback: 'name', dot: true },
       { key: 'region', label: 'REGION' },
-      { key: 'operators', label: 'OPERATORS' },
-      { key: 'oil', label: 'OIL / CARGO' },
-      { key: 'status', label: 'STATUS', pill: true },
+      { key: 'oil', label: 'SHARE OF FLOW', fallback: 'share' },
+      { key: 'status', label: 'CURRENT RISK', pill: true },
+      { key: 'trend', label: 'TREND', pill: true },
+      { key: 'latest_incident', label: 'LATEST INCIDENT', fallback: 'latest' },
     ],
   },
   {
     test: /^global aid$/i,
     cols: [
       { key: 'title', label: 'PROGRAMME', fallback: 'name', dot: true },
-      { key: 'agency', label: 'INSTITUTION' },
-      { key: 'region', label: 'REGION' },
+      { key: 'agency', label: 'INSTITUTION / REGION', fallback: 'region' },
       { key: 'requirement', label: 'REQUIREMENT' },
-      { key: 'appeal_status', label: 'STATUS', fallback: 'status', pill: true },
-      { key: 'dataThrough', label: 'DATA THROUGH' },
+      { key: 'funded', label: 'FUNDED', fallback: 'funding' },
+      { key: 'gap', label: 'GAP' },
+      { key: 'people_targeted', label: 'PEOPLE TARGETED', fallback: 'people' },
+      { key: 'dataThrough', label: 'DATA THROUGH', date: true },
     ],
   },
   {
     test: /^transit$/i,
     cols: [
-      { key: 'title', label: 'NAME', fallback: 'name', dot: true },
+      { key: 'title', label: 'IDENTIFIER', fallback: 'name', dot: true },
       { key: 'type', label: 'TYPE', pill: true },
-      { key: 'location', label: 'LOCATION' },
+      { key: 'flag', label: 'FLAG', fallback: 'country' },
+      { key: 'route', label: 'ORIGIN → DESTINATION', fallback: 'destination' },
+      { key: 'last_ping', label: 'LAST PING', fallback: 'updated', date: true },
       { key: 'speed', label: 'SPEED' },
-      { key: 'destination', label: 'DESTINATION' },
+      { key: 'alert', label: 'ALERT', pill: true },
     ],
   },
   {
     test: /open fronts/i,
     cols: [
-      { key: 'conflict_name', label: 'CONFLICT', fallback: 'title', dot: true },
-      { key: 'region', label: 'REGION' },
-      { key: 'conflict_type', label: 'TYPE' },
-      { key: 'current_stage', label: 'STATUS', pill: true },
-      { key: 'intensity', label: 'INTENSITY', pill: true },
-      { key: 'trend', label: 'TREND', pill: true },
+      { key: 'conflict_name', label: 'CONFLICT', fallback: 'title', dot: true, keep: true },
+      { key: 'region', label: 'REGION', keep: true },
+      { key: 'conflict_type', label: 'TYPE', keep: true },
+      { key: 'current_stage', label: 'STATUS', pill: true, keep: true },
+      { key: 'intensity', label: 'INTENSITY', pill: true, keep: true },
+      { key: 'trend', label: 'TREND', pill: true, keep: true },
+      { key: 'last_verified', label: 'LAST VERIFIED', fallback: 'updated', date: true },
     ],
   },
   {
     test: /bill passage/i,
     cols: [
-      { key: 'bill_name', label: 'BILL', fallback: 'title' },
+      { key: 'bill_name', label: 'BILL', fallback: 'title', dot: true },
       { key: 'house', label: 'HOUSE' },
       { key: 'sector', label: 'SECTOR' },
       { key: 'current_stage', label: 'STAGE', pill: true },
-      { key: 'date_introduced', label: 'INTRODUCED', fallback: 'date' },
-      { key: 'probability_score', label: 'PASSAGE', num: true },
+      { key: 'date_introduced', label: 'INTRODUCED', fallback: 'date', date: true },
+      { key: 'probability_score', label: 'PASSAGE SCORE', num: true },
     ],
   },
   {
@@ -132,17 +145,23 @@ const PRESETS = [
       { key: 'policy_name', label: 'POLICY', fallback: 'title', dot: true },
       { key: 'ministry', label: 'MINISTRY' },
       { key: 'stage', label: 'STAGE', pill: true },
-      { key: 'date_reported', label: 'REPORTED', fallback: 'date' },
+      { key: 'date_reported', label: 'LAST OFFICIAL ACTION', fallback: 'date', date: true },
+      { key: 'next_milestone', label: 'NEXT MILESTONE' },
+      { key: 'consultation_deadline', label: 'CONSULTATION DEADLINE', date: true },
+      { key: 'updated', label: 'UPDATED', date: true },
     ],
   },
   {
     test: /parliamentary question/i,
     cols: [
-      { key: 'subject', label: 'QUESTION', fallback: 'title', dot: true },
-      { key: 'mp_name', label: 'MEMBER' },
-      { key: 'ministry', label: 'MINISTRY' },
+      { key: 'subject', label: 'QUESTION', fallback: 'title', dot: true, keep: true },
+      { key: 'mp_name', label: 'MEMBER', keep: true },
+      { key: 'ministry', label: 'MINISTRY', keep: true },
       { key: 'question_type', label: 'TYPE', pill: true },
-      { key: 'date', label: 'TABLED' },
+      { key: 'date', label: 'TABLED', date: true },
+      { key: 'house', label: 'HOUSE' },
+      { key: 'session', label: 'SESSION', default: false },
+      { key: 'has_answer', label: 'HAS ANSWER', default: false },
     ],
   },
   {
@@ -151,7 +170,9 @@ const PRESETS = [
       { key: 'title', label: 'INSTRUMENT', fallback: 'name', dot: true },
       { key: 'regulator', label: 'REGULATOR' },
       { key: 'action_type', label: 'TYPE', pill: true },
-      { key: 'date', label: 'DATE' },
+      { key: 'date', label: 'DATE', date: true },
+      { key: 'effective_date', label: 'EFFECTIVE', date: true },
+      { key: 'instrument_status', label: 'STATUS', fallback: 'status', pill: true },
     ],
   },
   {
@@ -162,18 +183,22 @@ const PRESETS = [
       { key: 'party', label: 'PARTY' },
       { key: 'criminal_cases', label: 'CASES', num: true },
       { key: 'education', label: 'EDUCATION' },
-      { key: 'total_assets', label: 'ASSETS' },
-      { key: 'liabilities', label: 'LIABILITIES' },
+      { key: 'total_assets', label: 'ASSETS (₹ CR)', inr: true },
+      { key: 'liabilities', label: 'LIABILITIES (₹ CR)', inr: true },
     ],
   },
   {
     test: /central tender/i,
     cols: [
+      { key: 'tender_id', label: 'TENDER ID', fallback: 'id' },
+      { key: 'authority', label: 'AUTHORITY', fallback: 'organisation' },
       { key: 'tender_title', label: 'TENDER', fallback: 'title', dot: true },
-      { key: 'status', label: 'STATUS', pill: true },
-      { key: 'deadline', label: 'DEADLINE' },
-      { key: '_closes', label: 'CLOSES' },
-      { key: 'value_inr', label: 'VALUE' },
+      { key: 'category', label: 'CATEGORY' },
+      { key: 'location', label: 'LOCATION' },
+      { key: 'value_inr', label: 'VALUE (₹)', inr: true },
+      { key: 'deadline', label: 'DEADLINE', date: true },
+      { key: 'status', label: 'STATUS', pill: true, default: false },
+      { key: '_closes', label: 'CLOSES', default: false },
     ],
   },
   {
@@ -190,8 +215,12 @@ const PRESETS = [
     test: /cabinet decisions/i,
     cols: [
       { key: 'topic', label: 'DECISION', fallback: 'title', dot: true },
-      { key: 'priority', label: 'PRIORITY', pill: true },
-      { key: 'date', label: 'DATE' },
+      { key: 'ministry', label: 'MINISTRY', fallback: 'department' },
+      { key: 'priority', label: 'OPERATIONAL ATTENTION', pill: true },
+      { key: 'date', label: 'DATE', date: true },
+      { key: 'financial_outlay', label: 'OUTLAY', fallback: 'outlay' },
+      { key: 'implementation_status', label: 'IMPLEMENTATION', fallback: 'status', pill: true },
+      { key: 'source_label', label: 'SOURCE', fallback: 'source_url' },
     ],
   },
   {
@@ -242,13 +271,15 @@ const PRESETS = [
   {
     test: /growth indicator/i,
     cols: [
-      { key: 'country', label: 'ECONOMY', fallback: 'title', dot: true },
-      { key: 'year', label: 'YEAR', fallback: 'date', num: true },
-      { key: 'gdp_growth', label: 'GDP GROWTH %', num: true },
-      { key: 'inflation', label: 'INFLATION %', num: true },
-      { key: 'unemployment', label: 'UNEMPLOYMENT %', num: true },
-      { key: 'indicator', label: 'INDICATOR' },
-      { key: 'value', label: 'VALUE', num: true },
+      { key: 'economy', label: 'ECONOMY', fallback: 'country', dot: true, keep: true },
+      { key: 'gdp_growth', label: 'REAL GDP GROWTH (%)', num: true },
+      { key: 'inflation', label: 'INFLATION (%)', num: true },
+      { key: 'unemployment', label: 'UNEMPLOYMENT (%)', num: true },
+      { key: 'fiscal_balance', label: 'FISCAL BALANCE (%)', num: true },
+      { key: 'period', label: 'PERIOD', fallback: 'year' },
+      { key: 'period_type', label: 'TYPE' },
+      { key: 'revision', label: 'REVISION', default: false },
+      { key: 'source', label: 'SOURCE', default: false },
     ],
   },
   {
@@ -261,11 +292,14 @@ const PRESETS = [
   {
     test: /^heads of state$/i,
     cols: [
-      { key: 'country', label: 'COUNTRY', fallback: 'title', dot: true },
-      { key: 'head_of_state', label: 'HEAD OF STATE' },
-      { key: 'head_of_government', label: 'HEAD OF GOVERNMENT' },
-      { key: 'role', label: 'ROLE' },
-      { key: 'since', label: 'SINCE' },
+      { key: 'country', label: 'COUNTRY', fallback: 'title', dot: true, keep: true },
+      { key: 'name', label: 'NAME', fallback: 'head_of_state' },
+      { key: 'office', label: 'OFFICE', fallback: 'role' },
+      { key: 'status', label: 'STATUS' },
+      { key: 'term_start', label: 'TERM START', fallback: 'since' },
+      { key: 'next_transition', label: 'NEXT TRANSITION' },
+      { key: 'last_verified', label: 'LAST VERIFIED', default: false },
+      { key: 'authority', label: 'AUTHORITY', default: false },
     ],
   },
   {
@@ -280,8 +314,13 @@ const PRESETS = [
   {
     test: /^geopolitics news wire$/i,
     cols: [
-      { key: 'title', label: 'HEADLINE', fallback: 'name', dot: true },
-      { key: 'date', label: 'SEEN' },
+      { key: 'title', label: 'HEADLINE', fallback: 'name', dot: true, keep: true },
+      { key: 'region', label: 'REGION' },
+      { key: 'topic', label: 'TOPIC' },
+      { key: 'outlet', label: 'SOURCE', fallback: 'source' },
+      { key: 'published', label: 'PUBLISHED', fallback: 'date' },
+      { key: 'verification', label: 'VERIFICATION' },
+      { key: 'related_count', label: 'RELATED', num: true },
     ],
   },
   {
@@ -296,9 +335,14 @@ const PRESETS = [
   {
     test: /^critical minerals$/i,
     cols: [
-      { key: 'mineral', label: 'MINERAL', fallback: 'title', dot: true },
-      { key: 'producers', label: 'LEADING PRODUCERS' },
-      { key: 'note', label: 'STRATEGIC NOTE' },
+      { key: 'mineral', label: 'MINERAL', fallback: 'title', dot: true, keep: true },
+      { key: 'producers', label: 'LEADING PRODUCERS', keep: true },
+      { key: 'top3_share', label: 'TOP-3 PROD. SHARE' },
+      { key: 'top_processor', label: 'TOP PROCESSOR' },
+      { key: 'import_dependency', label: 'IMPORT DEPENDENCY' },
+      { key: 'risk', label: 'RISK' },
+      { key: 'data_year', label: 'DATA YEAR' },
+      { key: 'note', label: 'STRATEGIC NOTE', default: false },
     ],
   },
   {
@@ -309,7 +353,7 @@ const PRESETS = [
       { key: 'district', label: 'DISTRICT' },
       { key: 'electors', label: 'ELECTORS', num: true },
       { key: 'booths', label: 'BOOTHS', num: true },
-      { key: 'bloc', label: 'LEADING BLOC' },
+      { key: 'bloc', label: 'LEADING BLOC (EST.)' },
       { key: 'leadPct', label: 'LEAD %', num: true },
       { key: 'status', label: 'STATUS 2022', pill: true },
     ],
@@ -340,6 +384,8 @@ const PRESETS = [
       { key: 'obc', label: 'HINDU OBC %', num: true },
       { key: 'general', label: 'HINDU GEN %', num: true },
       { key: 'sc', label: 'HINDU SC %', num: true },
+      { key: 'other', label: 'OTHER / RESIDUAL %', num: true, default: false },
+      { key: 'bloc', label: 'LEADING BLOC (EST.)', default: false },
     ],
   },
   {
@@ -402,7 +448,7 @@ const PRESETS = [
       { key: 'households', label: 'HOUSEHOLDS', num: true },
       { key: 'ops', label: 'OPS CLASS', pill: true },
       { key: 'status', label: 'STATUS', pill: true },
-      { key: 'bloc', label: 'LEADING BLOC' },
+      { key: 'bloc', label: 'LEADING BLOC (EST.)' },
     ],
   },
   {
@@ -424,13 +470,15 @@ const PRESETS = [
     cols: [
       { key: 'boothNo', label: 'BOOTH', fallback: 'title', dot: true, keep: true },
       { key: 'station', label: 'STATION', keep: true },
-      { key: 'catholic', label: 'CATHOLIC', num: true },
-      { key: 'muslim', label: 'MUSLIM', num: true },
-      { key: 'st', label: 'HINDU ST', num: true },
-      { key: 'obc', label: 'HINDU OBC', num: true },
-      { key: 'general', label: 'HINDU GEN', num: true },
-      { key: 'sc', label: 'HINDU SC', num: true },
-      { key: 'bloc', label: 'LEADING BLOC', pill: true },
+      { key: 'catholic', label: 'CATHOLIC %', num: true },
+      { key: 'muslim', label: 'MUSLIM %', num: true },
+      { key: 'st', label: 'HINDU ST %', num: true },
+      { key: 'obc', label: 'HINDU OBC %', num: true },
+      { key: 'general', label: 'HINDU GEN %', num: true },
+      { key: 'sc', label: 'HINDU SC %', num: true },
+      { key: 'other', label: 'OTHER / RESIDUAL %', num: true, default: false },
+      { key: 'bloc', label: 'LEADING BLOC (EST.)', pill: true },
+      { key: 'electors', label: 'ELECTORS', num: true, default: false },
     ],
   },
   {
@@ -469,7 +517,7 @@ const PRESETS = [
       { key: 'l22', label: '2022' },
       { key: 'l24', label: '2024' },
       { key: 'margin24', label: '2024 MARGIN', num: true },
-      { key: 'bloc', label: 'LEADING BLOC' },
+      { key: 'bloc', label: 'LEADING BLOC (EST.)' },
     ],
   },
   {
@@ -478,7 +526,7 @@ const PRESETS = [
       { key: 'boothNo', label: 'BOOTH', fallback: 'title', dot: true, keep: true },
       { key: 'station', label: 'STATION', keep: true },
       { key: 'electors', label: 'ELECTORS', num: true },
-      { key: 'bloc', label: 'LEADING BLOC' },
+      { key: 'bloc', label: 'LEADING BLOC (EST.)' },
       { key: 'leadPct', label: 'LEAD %', num: true },
       { key: 'enc', label: 'ENC', num: true },
     ],
@@ -489,7 +537,7 @@ const PRESETS = [
       { key: 'boothNo', label: 'BOOTH', fallback: 'title', dot: true, keep: true },
       { key: 'station', label: 'STATION', keep: true },
       { key: 'electors', label: 'ELECTORS', num: true },
-      { key: 'bloc', label: 'LEADING BLOC' },
+      { key: 'bloc', label: 'LEADING BLOC (EST.)' },
       { key: 'leadPct', label: 'LEAD %', num: true },
     ],
   },
@@ -512,18 +560,17 @@ const PRESETS = [
     cols: [
       { key: 'case_title', label: 'CASE', fallback: 'title', dot: true, keep: true },
       { key: 'diary_no', label: 'DIARY' },
-      { key: 'date', label: 'ORDER DATE' },
-      { key: 'topic', label: 'TOPIC', pill: true },
+      { key: 'date', label: 'ORDER DATE', fallback: 'order_date' },
+      // D14: topic was 95% "Other / Unclassified" — not a useful facet; dropped.
       { key: 'court', label: 'COURT' },
     ],
   },
   {
     test: /^order archive by topic/i,
     cols: [
-      { key: 'topic', label: 'TOPIC', pill: true, keep: true },
       { key: 'case_title', label: 'CASE', fallback: 'title', dot: true, keep: true },
       { key: 'diary_no', label: 'DIARY' },
-      { key: 'date', label: 'ORDER DATE' },
+      { key: 'date', label: 'ORDER DATE', fallback: 'order_date' },
       { key: 'court', label: 'COURT' },
     ],
   },
@@ -599,6 +646,16 @@ const PRESETS = [
     ],
   },
   {
+    test: /^economic simulator$/i,
+    cols: [
+      { key: 'year', label: 'YEAR', num: true, keep: true },
+      { key: 'country', label: 'COUNTRY', keep: true },
+      { key: 'indicator', label: 'SERIES', keep: true },
+      { key: 'gdp_growth_pct', label: 'GDP GROWTH %', fallback: 'value', num: true, keep: true },
+      { key: 'unit', label: 'UNIT' },
+    ],
+  },
+  {
     test: /^prediction market political odds$/i,
     cols: [
       { key: 'question', label: 'MARKET', fallback: 'title', dot: true, keep: true },
@@ -667,16 +724,22 @@ const PRESETS = [
     test: /^climate newswire$/i,
     cols: [
       { key: 'title', label: 'HEADLINE', fallback: 'title', dot: true, keep: true },
-      { key: 'outlet', label: 'OUTLET', pill: true },
-      { key: 'date', label: 'DATE' },
+      { key: 'outlet', label: 'SOURCE', fallback: 'source', pill: true },
+      { key: 'region', label: 'REGION' },
+      { key: 'topic', label: 'TOPIC' },
+      { key: 'published', label: 'PUBLISHED', fallback: 'date' },
+      { key: 'verification', label: 'VERIFICATION' },
+      { key: 'related_count', label: 'RELATED', num: true },
     ],
   },
   {
     test: /^cricket wire$|^football wire$|^indian sports wire$/i,
     cols: [
       { key: 'title', label: 'HEADLINE', fallback: 'title', dot: true, keep: true },
-      { key: 'outlet', label: 'OUTLET', pill: true },
-      { key: 'date', label: 'DATE' },
+      { key: 'outlet', label: 'SOURCE', fallback: 'source', pill: true },
+      { key: 'published', label: 'PUBLISHED', fallback: 'date' },
+      { key: 'verification', label: 'VERIFICATION' },
+      { key: 'related_count', label: 'RELATED', num: true },
     ],
   },
   {
@@ -728,8 +791,10 @@ const PRESETS = [
     test: /^entertainment news wire$|^bollywood & film wire$/i,
     cols: [
       { key: 'title', label: 'HEADLINE', fallback: 'title', dot: true, keep: true },
-      { key: 'outlet', label: 'OUTLET', pill: true },
-      { key: 'date', label: 'DATE' },
+      { key: 'outlet', label: 'SOURCE', fallback: 'source', pill: true },
+      { key: 'published', label: 'PUBLISHED', fallback: 'date' },
+      { key: 'verification', label: 'VERIFICATION' },
+      { key: 'related_count', label: 'RELATED', num: true },
     ],
   },
   {
@@ -761,7 +826,7 @@ const PRESETS = [
 export function feedColumns(feature, rows) {
   const preset = PRESETS.find((p) => p.test.test(feature || ''));
   if (preset) {
-    return preset.cols.filter((c) => {
+    const available = preset.cols.filter((c) => {
       if (c.keep) return true;
       return rows.some((r) => {
         const v = r[c.key];
@@ -771,6 +836,8 @@ export function feedColumns(feature, rows) {
         return f != null && String(f).trim() !== '';
       });
     });
+    // Mark first 7 as default; extras available via column chooser.
+    return available.map((c, i) => ({ ...c, default: c.default !== false && i < 7 }));
   }
   const keys = displayColumns(rows).filter((k) => k !== 'source_url' && k !== 'reporting_search');
   return keys.map((k, i) => ({
@@ -778,12 +845,20 @@ export function feedColumns(feature, rows) {
     label: k.replace(/_/g, ' ').toUpperCase(),
     fallback: k === 'title' ? 'name' : '',
     dot: i === 0,
+    default: i < 7,
   }));
 }
 
 export function cellOf(row, col) {
   const v = row[col.key];
   if (v != null && String(v).trim() !== '') return String(v);
-  if (col.fallback && row[col.fallback] != null) return String(row[col.fallback]);
+  if (col.fallback && row[col.fallback] != null && String(row[col.fallback]).trim() !== '') {
+    return String(row[col.fallback]);
+  }
   return '';
+}
+
+/** All columns for a feature including optional ones (for the chooser). */
+export function feedAllColumns(feature, rows) {
+  return feedColumns(feature, rows);
 }

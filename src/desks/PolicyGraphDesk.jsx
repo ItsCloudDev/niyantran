@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { PIG_SEC_META } from '../data/nationalCurated.js';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
@@ -19,11 +19,38 @@ export default function PolicyGraphDesk({ feed, selected, onSelect, vizFilter, o
   const [picked, setPicked] = useState('india');
   const [query, setQuery] = useState('');
   const [yearRange, setYearRange] = useState(null);
+  const [stageFilter, setStageFilter] = useState('all');
   const [drag, setDrag] = useState(null);
-  const vis = useMemo(() => pigLayout(model, expanded, yearRange), [model, expanded, yearRange]);
   const { years, counts, maxC } = useMemo(() => pigYearCounts(model), [model]);
+  const vis = useMemo(() => pigLayout(model, expanded, yearRange), [model, expanded, yearRange]);
   const node = model.nodes[picked];
   const q = query.trim().toLowerCase();
+
+  const stageOpts = useMemo(() => {
+    const set = new Set();
+    rows.forEach((r) => {
+      const s = String(r.current_stage || r.stage || '').trim();
+      if (s) set.add(s);
+    });
+    return ['all', ...[...set].sort()];
+  }, [rows]);
+
+  useEffect(() => {
+    if (!years.length || years.length <= 8) return;
+    setYearRange((prev) => {
+      if (prev) return prev;
+      const hi = years[years.length - 1];
+      const lo = years[Math.max(0, years.length - 6)];
+      return [lo, hi];
+    });
+  }, [years]);
+
+  function stageOk(n) {
+    if (stageFilter === 'all') return true;
+    if (n.level !== 3) return true;
+    const s = String(n.stage || n.raw?.current_stage || n.raw?.stage || '').trim();
+    return s === stageFilter;
+  }
 
   function clickNode(id) {
     const n = model.nodes[id];
@@ -61,6 +88,7 @@ export default function PolicyGraphDesk({ feed, selected, onSelect, vizFilter, o
     setPicked('india');
     setQuery('');
     setYearRange(null);
+    setStageFilter('all');
     onSelect?.(null);
   }
 
@@ -96,6 +124,25 @@ export default function PolicyGraphDesk({ feed, selected, onSelect, vizFilter, o
         <button type="button" className="pig-chip" onClick={reset}>
           Reset view
         </button>
+      </div>
+      <p className="desk-note pig-method">
+        Edges mean sector → domain → bill from the bill register (sourced rows). Colour is stage tone only — not a hidden score.
+        Start with a recent year window; Reset view clears filters and collapse.
+      </p>
+      <div className="nls-chips pig-stage-chips">
+        <span className="desk-note" style={{ padding: 0, margin: 0 }}>
+          Stage
+        </span>
+        {stageOpts.slice(0, 10).map((s) => (
+          <button
+            key={s}
+            type="button"
+            className={`nls-chip${stageFilter === s ? ' on' : ''}`}
+            onClick={() => setStageFilter(s)}
+          >
+            {s === 'all' ? 'All stages' : s}
+          </button>
+        ))}
       </div>
       <div className="pig-body">
         <div className="pig-left">
@@ -157,7 +204,8 @@ export default function PolicyGraphDesk({ feed, selected, onSelect, vizFilter, o
                 const st = pigNodeStyle(n);
                 const dim =
                   (q && n.level === 3 && !n.label.toLowerCase().includes(q) && !(n.raw?.bill_name || '').toLowerCase().includes(q)) ||
-                  (n.raw && !applyVizFilter(n.raw, vizFilter));
+                  (n.raw && !applyVizFilter(n.raw, vizFilter)) ||
+                  !stageOk(n);
                 const showLabel = n.level <= 2 || picked === id;
                 const label = n.level === 3 ? (n.label.length > 26 ? `${n.label.slice(0, 24)}…` : n.label) : n.label;
                 return (
@@ -198,6 +246,7 @@ export default function PolicyGraphDesk({ feed, selected, onSelect, vizFilter, o
                 <i style={{ background: '#982F2F' }} />
                 unlikely / dead
               </span>
+              <span className="pig-legend-edge">Lines = register path (sector → domain → bill)</span>
             </div>
           </div>
           <div className="pig-timeline">

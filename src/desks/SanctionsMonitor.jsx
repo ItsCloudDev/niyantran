@@ -4,6 +4,7 @@ import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import { rowDragProps } from '../lib/aiDrop.js';
+import { liveApiEnabled } from '../lib/apiMode.js';
 
 export default function SanctionsMonitor({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const list = useMemo(
@@ -55,6 +56,10 @@ export default function SanctionsMonitor({ feed, selected, onSelect, vizFilter, 
 
   useEffect(() => {
     if (!liveOpen) return undefined;
+    if (!liveApiEnabled()) {
+      setLiveErr('Live OpenSanctions API is not deployed on this host.');
+      return undefined;
+    }
     const ac = new AbortController();
     setLiveErr('');
     fetch('/api/opensanctions', { signal: ac.signal })
@@ -90,7 +95,7 @@ export default function SanctionsMonitor({ feed, selected, onSelect, vizFilter, 
           aria-pressed={liveOpen}
           title="Open live OpenSanctions lists"
         >
-          ✓ LIVE FEED
+          ✓ LATEST
         </button>
         <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
         <TableFilterPop

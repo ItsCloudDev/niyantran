@@ -34,7 +34,11 @@ function BillRecord({ row, onClear, onAskAi, liveCount, desk }) {
 
 function MpRecord({ row, onClear }) {
   const committees = field(row, ['committees']);
-  const attendance = field(row, ['attendance_pct']);
+  const attendance = field(row, ['attendance_pct', 'attendance']);
+  const questions = field(row, ['questions_asked', 'questions']);
+  const debates = field(row, ['debates', 'debate_count']);
+  const mplads = field(row, ['mplads', 'mplads_utilization', 'fund_utilization']);
+  const coverage = field(row, ['coverage_through', 'as_of']) || '2024 election register';
   return (
     <div className="nat-rec">
       <header>
@@ -47,18 +51,55 @@ function MpRecord({ row, onClear }) {
         {[field(row, ['party']), field(row, ['constituency']), field(row, ['state'])].filter(Boolean).join(' · ')}
       </p>
       <div className="nat-tiles">
-        <Tile k="Questions raised" v={field(row, ['questions_asked']) || 'Not recorded in this dataset'} />
-        <Tile k="Committee membership" v={committees || 'not recorded in this dataset'} />
-        <Tile k="Attendance" v={attendance || 'Not in this dataset'} />
-        <Tile k="MPLADS / projects" v="No column, no source" />
+        <Tile k="Attendance" v={attendance || 'Not reported'} />
+        <Tile k="Questions" v={questions || 'Not reported'} />
+        <Tile k="Debates" v={debates || 'Not reported'} />
+        <Tile k="MPLADS utilization" v={mplads || 'Not reported'} />
+        <Tile k="Committee work" v={committees || 'Not reported'} />
+        <Tile k="Coverage through" v={coverage} />
       </div>
       <p className="desk-note">
-        Empty attendance is not “did not attend”. MPLADS fund utilisation is a recorded genuine absence in Indian public data. The other
-        170 committee blanks must read “not recorded in this dataset”, never “none”.
+        Missing metrics say Not reported — not zero. This card is not a ranking. Trends and statements need richer sources than
+        this register.
       </p>
       <div className="nat-rec-actions">
         <SourceBtn href={row.source_url} label="↗ Source" />
       </div>
+    </div>
+  );
+}
+
+function BudgetRecord({ row, onClear }) {
+  const title = field(row, ['scheme', 'measure', 'title']);
+  const isKey = row.type === 'key_number';
+  return (
+    <div className="nat-rec">
+      <header>
+        <h2>{title}</h2>
+        <button type="button" onClick={onClear}>
+          All measures
+        </button>
+      </header>
+      <p className="muted">{field(row, ['fy']) || 'FY'} · curated Budget Estimate view</p>
+      <div className="nat-tiles">
+        {isKey ? (
+          <>
+            <Tile k="Value" v={field(row, ['value'])} />
+            <Tile k="Note" v={field(row, ['note'])} />
+          </>
+        ) : (
+          <>
+            <Tile k="BE (₹ cr)" v={row.be_cr != null ? `~${Number(row.be_cr).toLocaleString('en-IN')}` : 'Not reported'} />
+            <Tile k="RE" v="Not reported" />
+            <Tile k="Actual" v="Not reported" />
+            <Tile k="Utilization %" v="Not reported" />
+          </>
+        )}
+        <Tile k="Source" v={field(row, ['source']) || 'indiabudget.gov.in'} />
+      </div>
+      <p className="desk-note">
+        Value and Note live here in the side panel. BE is not compared to Actuals — those series are not in this dataset.
+      </p>
     </div>
   );
 }
@@ -149,11 +190,14 @@ function QuestionRecord({ row, onClear }) {
         <Tile k="Ministry" v={field(row, ['ministry'])} />
         <Tile k="Asked by" v={[field(row, ['mp_name']), field(row, ['party']), field(row, ['house'])].filter(Boolean).join(' · ')} />
         <Tile k="Type" v={field(row, ['question_type'])} />
-        <Tile k="Reported" v={field(row, ['date'])} />
+        <Tile k="Tabled" v={field(row, ['date'])} />
+        <Tile k="House" v={field(row, ['house'])} />
+        <Tile k="Session" v={field(row, ['session'])} />
+        <Tile k="Has answer" v={field(row, ['has_answer']) || 'Not reported'} />
       </div>
       <p className="desk-note">
-        No answer text on this row — that is the gap, not volume. Authored analysis covers 0.4% of the register, so it does not lead this
-        pane.
+        Answer text is not on this archive row. The Has-answer field stays Not reported until Sansad answer status is wired — that is a
+        source gap, not missing volume.
       </p>
       <div className="nat-rec-actions">
         <SourceBtn href={row.source_url} label="↗ Source" />
@@ -252,5 +296,6 @@ export default function NationalRecord({ row, feature, onClear, onAskAi, liveCou
   if (/policy pipeline/i.test(f)) return <BillRecord row={row} onClear={onClear} onAskAi={onAskAi} liveCount={liveCount} desk="pipeline" />;
   if (/cabinet/i.test(f)) return <GenericRecord row={row} onClear={onClear} noun="decisions" />;
   if (/manifestos/i.test(f)) return <ManifestoRecord row={row} onClear={onClear} onAskAi={onAskAi} />;
+  if (/budget/i.test(f)) return <BudgetRecord row={row} onClear={onClear} />;
   return <GenericRecord row={row} onClear={onClear} noun="records" />;
 }

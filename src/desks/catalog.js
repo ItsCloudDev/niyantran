@@ -67,10 +67,19 @@ const LOCAL_DESKS = [
 const STATE_DESK_SET = new Set(STATE_DESKS);
 const LOCAL_DESK_SET = new Set(LOCAL_DESKS);
 
+/** Registry mapping with no shipped view — must never borrow a sibling desk's rows. */
+export function isHtmlOnlyModule(mod) {
+  return String(mod?.mapping || '').toUpperCase() === 'HTML-ONLY';
+}
+
 export function modulesForTier(tier) {
   const list = features.filter((f) => f.htmlTier === tier);
-  if (tier === 'state') return list.filter((f) => STATE_DESK_SET.has(f.htmlFeature));
-  if (tier === 'local') return list.filter((f) => LOCAL_DESK_SET.has(f.htmlFeature));
+  if (tier === 'state') {
+    return list.filter((f) => STATE_DESK_SET.has(f.htmlFeature) || isHtmlOnlyModule(f));
+  }
+  if (tier === 'local') {
+    return list.filter((f) => LOCAL_DESK_SET.has(f.htmlFeature) || isHtmlOnlyModule(f));
+  }
   return list;
 }
 
@@ -111,11 +120,18 @@ const BUCKET_REMAP = {
     'Audit & Oversight': 'Public Finance',
     'Electoral Data & Analytics': 'State of Play',
     'Representative Intelligence': 'State of Play',
+    'Political Operations Intelligence': 'State of Play',
+    'Comparative Analytics': 'Districts',
   },
   local: {
-    'Audit & Oversight': 'Public Finance',
-    'Development Indicators': 'Service Delivery',
-    'News & Media Monitoring': 'Hyperlocal Intelligence',
+    'Audit & Oversight': 'Panchayats',
+    'Development Indicators': 'Municipality',
+    'News & Media Monitoring': 'Local Wires',
+    'Hyperlocal Intelligence': 'Local Wires',
+    'Electoral Data & Analytics': 'Contest Analysis',
+    'Public Finance': 'Municipality',
+    'Service Delivery': 'Municipality',
+    'Representative Intelligence': 'Representatives',
   },
   judiciary: { 'Legal Research': 'Judicial Analytics' },
   finance: {
@@ -349,7 +365,6 @@ export function bucketsFor(mods, tier) {
     let label;
     if (FEATURE_ORDER[tier]) {
       label = Object.keys(featOrderByBucket).find((k) => featOrderByBucket[k].includes(m.htmlFeature));
-      if (!label && (tier === 'state' || tier === 'local' || tier === 'judiciary' || tier === 'finance' || tier === 'climate' || tier === 'sports' || tier === 'entertainment')) continue;
     }
     if (!label) label = bucketLabel(m.bucket || 'Desk', tier);
     if (!merged.has(label)) merged.set(label, { name: m.bucket, label, items: [] });
@@ -360,10 +375,13 @@ export function bucketsFor(mods, tier) {
     .map((b) => {
       const featOrder = featOrderByBucket[b.label];
       if (!featOrder) return b;
-      const items = [...b.items]
-        .filter((m) => featOrder.includes(m.htmlFeature))
-        .sort((a, c) => featOrder.indexOf(a.htmlFeature) - featOrder.indexOf(c.htmlFeature));
-      return { ...b, items };
+      // Keep curated order first; append HTML-ONLY / unlisted modules — never drop them
+      // (dropping forced the router to fall through to a sibling desk's rows — D1).
+      const ordered = featOrder
+        .map((name) => b.items.find((m) => m.htmlFeature === name))
+        .filter(Boolean);
+      const extras = b.items.filter((m) => !featOrder.includes(m.htmlFeature));
+      return { ...b, items: [...ordered, ...extras] };
     })
     .filter((b) => b.items.length);
   if (!order) return list;

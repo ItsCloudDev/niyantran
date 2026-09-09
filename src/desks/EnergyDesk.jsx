@@ -5,6 +5,7 @@ import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import { aiDragProps } from '../lib/aiDrop.js';
+import { downloadJson, withExportProvenance } from '../lib/exportProvenance.js';
 
 const AI_SUMMARY =
   'The geoeconomic story is refining concentration, not just mining: China controls ~90% of rare-earth processing and near-monopoly on gallium/germanium — direct leverage in the chip war. Energy prices carry a persistent Middle-East risk premium. Uranium is re-rating on the nuclear revival.';
@@ -58,15 +59,12 @@ export default function EnergyDesk({ feed, selected, onSelect, onAsk, vizFilter,
   });
 
   function exportJson() {
-    const blob = new Blob(
-      [JSON.stringify({ asOf, stats, commodities, minerals }, null, 2)],
-      { type: 'application/json' },
-    );
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'niyantran-energy-minerals.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
+    downloadJson('niyantran-energy-minerals.json', {
+      asOf,
+      stats,
+      commodities: withExportProvenance(commodities, { feature: feed?.feature || 'Energy' }),
+      minerals: withExportProvenance(minerals, { feature: feed?.feature || 'Energy' }),
+    });
   }
 
   if (!rawMinerals.length) return <div className="alw-empty-page">Energy register is unavailable.</div>;
@@ -89,12 +87,12 @@ export default function EnergyDesk({ feed, selected, onSelect, onAsk, vizFilter,
       </div>
       <div className="geo-kpis">
         {[
-          [stats.brent || '—', 'Brent', 'warn'],
-          [stats.wti || '—', 'WTI', 'warn'],
-          [stats.ttfGas || '—', 'EU gas (TTF)', 'warn'],
-          [minerals.length, 'Critical minerals', 'acc'],
-          [weaponised, 'Weaponised', 'bad'],
-          ['China', 'Refining leader', 'bad'],
+          [stats.brent || '—', 'Brent (price)', 'warn'],
+          [stats.wti || '—', 'WTI (price)', 'warn'],
+          [stats.ttfGas || '—', 'EU gas TTF (price)', 'warn'],
+          [minerals.length, 'Minerals tracked', 'acc'],
+          [weaponised, 'Supply risk flags', 'bad'],
+          [String(asOf), 'As of', ''],
         ].map(([v, k, tone]) => (
           <div key={k} className="geo-kpi">
             <div className={`geo-kpi-v${tone ? ` ${tone}` : ''}`}>{v}</div>
@@ -102,6 +100,10 @@ export default function EnergyDesk({ feed, selected, onSelect, onAsk, vizFilter,
           </div>
         ))}
       </div>
+      <p className="desk-note" style={{ padding: '0 16px 8px' }}>
+        Prices, capacity/production notes, and supply-risk minerals are shown in separate sections so unlike quantities are not
+        treated as one comparable board. Unit and as-of sit on each price row when present.
+      </p>
       <GeoDotsMap
         points={mapPts}
         legend={[
@@ -121,35 +123,48 @@ export default function EnergyDesk({ feed, selected, onSelect, onAsk, vizFilter,
         <div>
           <section className="geo-panel">
             <div className="geo-panel-h">
-              <span>Commodity prices</span>
+              <span>Market prices · unit + as-of</span>
             </div>
             <div className="geo-panel-b">
-              {commodities.map((c) => {
-                const up = String(c.chg || '').startsWith('+');
-                return (
-                  <div key={c.k} className="geo-bar">
-                    <span className="geo-bar-l">{c.k}</span>
-                    <span className="geo-bar-t">
-                      <i
-                        style={{
-                          width: `${Math.max(2, Math.min(100, c.pct || 2))}%`,
-                          background: up ? '#48d17f' : '#ff6f6f',
-                        }}
-                      />
-                    </span>
-                    <span className="geo-bar-v">
-                      {c.v}  {c.chg}
-                    </span>
-                  </div>
-                );
-              })}
+              {!commodities.length ? (
+                <p className="desk-note">No price benchmarks in this feed.</p>
+              ) : (
+                commodities.map((c) => {
+                  const up = String(c.chg || '').startsWith('+');
+                  const unit = c.unit || c.u || '';
+                  return (
+                    <div key={c.k} className="geo-bar">
+                      <span className="geo-bar-l">
+                        {c.k}
+                        {unit ? ` (${unit})` : ''}
+                      </span>
+                      <span className="geo-bar-t">
+                        <i
+                          style={{
+                            width: `${Math.max(2, Math.min(100, c.pct || 2))}%`,
+                            background: up ? '#48d17f' : '#ff6f6f',
+                          }}
+                        />
+                      </span>
+                      <span className="geo-bar-v">
+                        {c.v}
+                        {c.chg ? `  ${c.chg}` : ''}
+                        <small style={{ display: 'block', opacity: 0.7 }}>As of {c.as_of || asOf}</small>
+                      </span>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </section>
           <section className="geo-panel">
             <div className="geo-panel-h">
-              <span>Critical minerals · supply leverage</span>
+              <span>Capacity / production / policy risk</span>
             </div>
             <div className="geo-panel-b">
+              <p className="desk-note" style={{ padding: 0, marginBottom: 8 }}>
+                These are supply-risk and refining notes — not prices. Do not read intensity as a market quote.
+              </p>
               {minerals.map((m) => {
                 const s = energyStatusOf(m.status);
                 const on = openId === m.id || m.id === selectedId;
@@ -169,19 +184,27 @@ export default function EnergyDesk({ feed, selected, onSelect, onAsk, vizFilter,
                       <span className="geo-card-st" style={{ background: `${s.c}22`, color: s.c }}>
                         {s.l}
                       </span>
-                      <span className="geo-card-int">{m.intensity}</span>
+                      <span className="geo-card-int" title="Relative supply-risk intensity, not a price">
+                        risk {m.intensity ?? '—'}
+                      </span>
                     </button>
                     {on && openId === m.id && (
                       <div className="geo-card-b">
                         <dl className="geo-fields">
                           <dt>Use</dt>
-                          <dd>{m.use}</dd>
+                          <dd>{m.use || 'Not reported'}</dd>
+                          <dt>Region</dt>
+                          <dd>{m.region || 'Not reported'}</dd>
                           <dt>Top producers</dt>
-                          <dd>{m.topProducers}</dd>
+                          <dd>{m.topProducers || 'Not reported'}</dd>
                           <dt>China share</dt>
-                          <dd>{m.chinaShare}</dd>
+                          <dd>{m.chinaShare || 'Not reported'}</dd>
+                          <dt>As of</dt>
+                          <dd>{asOf}</dd>
+                          <dt>Source</dt>
+                          <dd>{Array.isArray(m.sources) && m.sources[0] ? m.sources[0][0] : 'See sources list'}</dd>
                         </dl>
-                        <div className="geo-card-latest">{m.note || m.latest}</div>
+                        <div className="geo-card-latest">{m.note || m.latest || ''}</div>
                         {Array.isArray(m.sources) && m.sources.length ? (
                           <div className="geo-src">
                             {m.sources.map((pair) => (
@@ -238,7 +261,10 @@ export default function EnergyDesk({ feed, selected, onSelect, onAsk, vizFilter,
                   </a>
                 ))}
               </div>
-              <p className="gld-src-note">{stats.note || 'Illustrative levels — swaps to EIA/Trading Economics live.'} {asOf}.</p>
+              <p className="gld-src-note">
+                Prices and supply-risk minerals are separate. {stats.note || 'Illustrative levels — swaps to EIA/Trading Economics live.'}{' '}
+                As of {asOf}.
+              </p>
             </div>
           </section>
         </div>

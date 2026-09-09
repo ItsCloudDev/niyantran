@@ -5,9 +5,26 @@ import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
 import { rowDragProps } from '../lib/aiDrop.js';
 
+const ASSUMPTIONS = [
+  'Population figures are projections (NCP 2011–36 path), not a live census count.',
+  'Allocation method: largest remainder (Hamilton), with a minimum of 1 seat.',
+  'Source year for population path: 2011 baseline → 2036 projection window; seat freeze history cited from 1971/1976 context.',
+  'This is illustrative — not an official delimitation order.',
+];
+
 export default function DelimitationDesk({ selected, onSelect, onFeed, vizFilter, onClearViz }) {
   const [house, setHouse] = useState(753);
-  const rows = useMemo(() => allocateSeats(house), [house]);
+  const rows = useMemo(
+    () =>
+      allocateSeats(house).map((r) => ({
+        ...r,
+        population_label: 'Projected',
+        allocation_method: 'Largest remainder (Hamilton)',
+        source_year: 'NCP 2011–36 projections',
+        uncertainty: 'Illustrative only · projection uncertainty not quantified in this build',
+      })),
+    [house],
+  );
   const shown = useMemo(() => rows.filter((r) => applyVizFilter(r, vizFilter)), [rows, vizFilter]);
   const sum = rows.reduce((s, r) => s + r.proj, 0);
   const gain = rows.filter((r) => r.d > 0).length;
@@ -17,12 +34,17 @@ export default function DelimitationDesk({ selected, onSelect, onFeed, vizFilter
 
   useEffect(() => {
     publish(house);
-    // publish the baseline once so analytics is not "unwired"
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function publish(nextHouse) {
-    const next = allocateSeats(nextHouse);
+    const next = allocateSeats(nextHouse).map((r) => ({
+      ...r,
+      population_label: 'Projected',
+      allocation_method: 'Largest remainder (Hamilton)',
+      source_year: 'NCP 2011–36 projections',
+      uncertainty: 'Illustrative only · projection uncertainty not quantified in this build',
+    }));
     setHouse(nextHouse);
     onFeed?.({
       ok: true,
@@ -43,6 +65,7 @@ export default function DelimitationDesk({ selected, onSelect, onFeed, vizFilter
         heading: 'DELIMITATION SIMULATOR',
         kind: 'simulator',
         house: nextHouse,
+        assumptions: ASSUMPTIONS,
       },
     });
   }
@@ -60,53 +83,76 @@ export default function DelimitationDesk({ selected, onSelect, onFeed, vizFilter
         />
       </div>
       <div className="desk-strip">
-        <span>SEAT REALLOCATION — POPULATION-PROPORTIONAL</span>
-        <span>LARGEST REMAINDER · NCP 2011–36 · ILLUSTRATIVE</span>
+        <span>OUTPUTS · SCENARIO HOUSE SIZE {house}</span>
+        <span>METHOD · LARGEST REMAINDER · SOURCE · NCP 2011–36 · ILLUSTRATIVE</span>
       </div>
-      <div className="nls-chips">
-        {DELIM_SIZES.map(([h, lab]) => (
-          <button key={h} type="button" className={`nls-chip${house === h ? ' on' : ''}`} onClick={() => publish(h)}>
-            {lab}
-          </button>
-        ))}
-      </div>
-      <p className="desk-note">
-        House of {house} · allocation check Σ = {sum} · {gain} states gain, {lose} lose · seats frozen on the 1971 census since 1976.
-        Select a row for the full state record. Analytics read this simulator output — they are not a second dataset.
-      </p>
-      <div className="nat-kpi-row">
-        <article>
-          <h3>Seats before</h3>
-          <strong>543</strong>
-        </article>
-        <article>
-          <h3>Seats after</h3>
-          <strong>{house}</strong>
-        </article>
-        <article className={house >= 543 ? 'ok' : 'bad'}>
-          <h3>Net change</h3>
-          <strong>{house >= 543 ? '+' : ''}{house - 543}</strong>
-        </article>
-        <article>
-          <h3>Largest gainer</h3>
-          <strong>{gainer?.name || '—'}</strong>
-          <span>{gainer ? `+${gainer.d}` : ''}</span>
-        </article>
-        <article>
-          <h3>Largest loser</h3>
-          <strong>{loser?.name || '—'}</strong>
-          <span>{loser ? String(loser.d) : ''}</span>
-        </article>
-      </div>
+
+      <section className="nat-sim-block">
+        <h3 className="nat-subh">Inputs</h3>
+        <p className="desk-note">Choose a target house size. Everything below recalculates from locked assumptions.</p>
+        <div className="nls-chips">
+          {DELIM_SIZES.map(([h, lab]) => (
+            <button key={h} type="button" className={`nls-chip${house === h ? ' on' : ''}`} onClick={() => publish(h)}>
+              {lab}
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="nat-sim-block">
+        <h3 className="nat-subh">Locked assumptions</h3>
+        <ul className="nat-assume">
+          {ASSUMPTIONS.map((a) => (
+            <li key={a}>{a}</li>
+          ))}
+        </ul>
+      </section>
+
+      <section className="nat-sim-block">
+        <h3 className="nat-subh">Scenario summary</h3>
+        <p className="desk-note">
+          House of {house} · allocation check Σ = {sum} · {gain} states gain, {lose} lose · seats frozen on the 1971 census since
+          1976 (historical context). Select a row for the state record.
+        </p>
+        <div className="nat-kpi-row">
+          <article>
+            <h3>Baseline seats</h3>
+            <strong>543</strong>
+          </article>
+          <article>
+            <h3>Scenario seats</h3>
+            <strong>{house}</strong>
+          </article>
+          <article className={house >= 543 ? 'ok' : 'bad'}>
+            <h3>Net change</h3>
+            <strong>
+              {house >= 543 ? '+' : ''}
+              {house - 543}
+            </strong>
+          </article>
+          <article>
+            <h3>Largest gainer</h3>
+            <strong>{gainer?.name || '—'}</strong>
+            <span>{gainer ? `+${gainer.d}` : ''}</span>
+          </article>
+          <article>
+            <h3>Largest loser</h3>
+            <strong>{loser?.name || '—'}</strong>
+            <span>{loser ? String(loser.d) : ''}</span>
+          </article>
+        </div>
+      </section>
+
+      <h3 className="nat-subh">Outputs by State / UT</h3>
       <div className="table-wrap">
         <table className="feed-table">
           <thead>
             <tr>
               <th>State / UT</th>
-              <th>2026 pop. (M, proj.)</th>
+              <th>Projected population (M)</th>
               <th>Seats now</th>
-              <th>Projected</th>
-              <th>Δ</th>
+              <th>Scenario seats</th>
+              <th>Change</th>
             </tr>
           </thead>
           <tbody>

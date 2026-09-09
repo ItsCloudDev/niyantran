@@ -284,15 +284,17 @@ function geoBoothOverview(feature, rows, base) {
   if (/^booth bloc composition$/i.test(f)) {
     const t = { catholic: 0, muslim: 0, st: 0, obc: 0, general: 0, sc: 0 };
     rows.forEach((r) => {
+      const raw = r._blocRaw || r;
       Object.keys(t).forEach((k) => {
-        t[k] += nnum(r[k]);
+        t[k] += nnum(raw[k]);
       });
     });
     const hindu = t.st + t.obc + t.general + t.sc;
     const elec = sumKey(rows, 'electors');
     const uncl = Math.max(0, elec - hindu - t.catholic - t.muslim);
     base.title = 'BLOC STRIPS';
-    base.note = "Religion and caste composition of each booth's roll.";
+    base.note =
+      'Religion and caste mix from surname tags on the booth roll — estimated shares, not a census. Tiny cells and thin booths are blanked.';
     base.kpis = [
       { label: 'HINDU', value: inr(hindu), sub: `${elec ? Math.round((hindu / elec) * 100) : 0}% of electors` },
       { label: 'CATHOLIC', value: inr(t.catholic), sub: `${elec ? Math.round((t.catholic / elec) * 100) : 0}% of electors` },
@@ -925,8 +927,31 @@ export function tableFilterGroups(feed) {
   return groups;
 }
 
+const KPI_LABELS = {
+  ROWS: 'RECORDS',
+  LIVE: 'FEED STATE',
+  ADAPTER: 'FEED TYPE',
+  FIELDS: 'COLUMNS',
+  'LARGEST GROUP': 'TOP CATEGORY',
+  SOURCE: 'DATA SOURCE',
+  COVERAGE: 'COVERAGE',
+};
+
+function humanizeKpi(k) {
+  let label = String(k?.label || '').trim();
+  if (!label) return k;
+  if (KPI_LABELS[label]) label = KPI_LABELS[label];
+  else if (/_/.test(label) || /^[A-Z]\d{2,}$/.test(label)) {
+    label = label.replace(/_/g, ' ').replace(/\b\w+/g, (w) => w.toUpperCase());
+  }
+  return { ...k, label };
+}
+
+/** Cap at four decision-useful KPIs; never surface raw schema tokens as labels. */
 export function feedOverview(feed) {
-  return stampOverviewFilters(computeFeedOverview(feed));
+  const ov = stampOverviewFilters(computeFeedOverview(feed));
+  ov.kpis = (ov.kpis || []).slice(0, 4).map(humanizeKpi);
+  return ov;
 }
 
 function computeFeedOverview(feed) {
@@ -1046,22 +1071,27 @@ function computeFeedOverview(feed) {
   if (/^growth indicators$/i.test(feature)) {
     const withGdp = rows.filter((r) => val(r, 'gdp_growth')).length;
     const year = [...new Set(rows.map((r) => val(r, 'year')).filter(Boolean))][0] || '—';
-    base.title = 'KEY INDICATORS';
+    base.note =
+      feed?.meta?.boardNote ||
+      'Units are percent. Fiscal balance and revisions stay Not reported until those series are connected.';
     base.kpis = [
       { label: 'ECONOMIES', value: n, sub: 'World Bank set' },
       { label: 'WITH GDP', value: withGdp, sub: 'most recent year' },
-      { label: 'YEAR', value: year, sub: 'indicator vintage' },
-      { label: 'SOURCE', value: 'LIVE', sub: 'World Bank' },
+      { label: 'YEAR', value: year, sub: 'latest comparable period' },
+      { label: 'SOURCE', value: 'World Bank', sub: 'WDI' },
     ];
     return base;
   }
 
   if (/^heads of state$/i.test(feature)) {
     const withHog = rows.filter((r) => val(r, 'head_of_government') && val(r, 'head_of_government') !== '—').length;
+    const verified = rows.filter((r) => val(r, 'name') && !/^not verified$/i.test(val(r, 'name'))).length;
     base.title = 'KEY INDICATORS';
+    base.note =
+      'Cards use Country · Name · Office · Status · Term start · Next transition · Last verified. Placeholder titles show as Not verified — not a ranking.';
     base.kpis = [
       { label: 'STATES', value: n, sub: 'in this table' },
-      { label: 'WITH HoG', value: withHog || n, sub: withHog ? 'head of government named' : 'profiles' },
+      { label: 'NAMED', value: verified || withHog || n, sub: 'verified display names' },
       { label: 'SOURCE', value: feed?.fallback ? 'REGISTER' : 'LIVE', sub: feed?.fallback ? 'curated pack' : 'Wikidata' },
       { label: 'COVERAGE', value: feed?.fallback ? (feed?.meta?.asOf || '—') : 'UN', sub: feed?.fallback ? 'as of' : 'member states' },
     ];
@@ -1106,6 +1136,9 @@ function computeFeedOverview(feed) {
 
   if (/^critical minerals$/i.test(feature)) {
     base.title = 'KEY INDICATORS';
+    base.note =
+      feed?.meta?.boardNote ||
+      'Producer lists may be prose. Top-3 share, processor, import dependency, and risk stay Not reported until structured fields arrive.';
     base.kpis = [
       { label: 'MINERALS', value: n, sub: 'in this register' },
       { label: 'BASIS', value: 'USGS', sub: 'commodity summaries' },

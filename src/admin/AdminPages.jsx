@@ -13,7 +13,7 @@ import {
   saveRefreshCfg,
   subscribeRefresh,
 } from '../lib/refreshStore.js';
-import { cancelSweep, decorateApis, refreshOne, sweepApis } from '../lib/refreshFeeds.js';
+import { cancelSweep, decorateApis, healStaleInactiveProbes, refreshOne, sweepApis } from '../lib/refreshFeeds.js';
 
 const DESKS = ['ALL', 'GLOBAL', 'NATIONAL', 'STATE', 'LOCAL', 'LAW', 'ECONOMICS', 'CARBON', 'SPORTS', 'ENTERTAINMENT'];
 
@@ -134,6 +134,9 @@ function RefreshBar({ compact }) {
 
 export function OverviewPage({ users }) {
   useRefreshTick();
+  useEffect(() => {
+    healStaleInactiveProbes().catch(() => {});
+  }, []);
   const rows = decorateApis(classifyApis());
   const stats = apiStats(rows);
   const total = stats.total || 1;
@@ -210,12 +213,38 @@ export function ApisPage() {
   const [desk, setDesk] = useState('ALL');
   const [status, setStatus] = useState('all');
   const [busy, setBusy] = useState('');
-  const shown = rows.filter((r) => {
+
+  useEffect(() => {
+    healStaleInactiveProbes().catch(() => {});
+  }, []);
+
+  const qNorm = q.trim().toLowerCase();
+  const searched = !qNorm
+    ? rows
+    : rows.filter((r) =>
+        `${r.feature} ${r.desk} ${r.adapter} ${r.url} ${r.note} ${r.lastError || ''}`.toLowerCase().includes(qNorm),
+      );
+
+  const statusCounts = { all: 0, live: 0, archive: 0, local: 0, inactive: 0 };
+  for (const r of searched) {
+    if (desk !== 'ALL' && r.desk !== desk) continue;
+    statusCounts.all += 1;
+    if (statusCounts[r.status] != null) statusCounts[r.status] += 1;
+  }
+
+  const deskCounts = { ALL: 0 };
+  for (const d of DESKS) deskCounts[d] = 0;
+  for (const r of searched) {
+    if (status !== 'all' && r.status !== status) continue;
+    deskCounts.ALL += 1;
+    if (deskCounts[r.desk] != null) deskCounts[r.desk] += 1;
+    else deskCounts[r.desk] = 1;
+  }
+
+  const shown = searched.filter((r) => {
     if (desk !== 'ALL' && r.desk !== desk) return false;
     if (status !== 'all' && r.status !== status) return false;
-    if (!q.trim()) return true;
-    const n = q.trim().toLowerCase();
-    return `${r.feature} ${r.desk} ${r.adapter} ${r.url} ${r.note}`.toLowerCase().includes(n);
+    return true;
   });
 
   async function onOne(row) {
@@ -245,6 +274,7 @@ export function ApisPage() {
             onClick={() => setStatus(id)}
           >
             {id === 'all' ? 'All' : STATUS[id].label}
+            <span className="adm-chip-count">{statusCounts[id] || 0}</span>
           </button>
         ))}
       </div>
@@ -252,6 +282,7 @@ export function ApisPage() {
         {DESKS.map((d) => (
           <button key={d} type="button" className={`adm-chip${desk === d ? ' on' : ''}`} onClick={() => setDesk(d)}>
             {d}
+            <span className="adm-chip-count">{deskCounts[d] || 0}</span>
           </button>
         ))}
       </div>

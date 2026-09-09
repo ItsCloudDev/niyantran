@@ -88,7 +88,7 @@ export default function AlliancesMonitor({ feed, selected, onSelect, flags, vizF
           aria-pressed={liveOpen}
           title="Open latest verified alliance developments"
         >
-          ✓ LIVE FEED
+          ✓ LATEST
         </button>
         <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
         <TableFilterPop
@@ -238,7 +238,11 @@ export default function AlliancesMonitor({ feed, selected, onSelect, flags, vizF
                     <td className="alw-date" title={p.latest}>
                       {p.latestDate}
                     </td>
-                    <td className="alw-go">›</td>
+                    <td className="alw-go">
+                      <span className="alw-go-btn" aria-label="Open dossier">
+                        ›
+                      </span>
+                    </td>
                   </tr>
                 ))
               )}

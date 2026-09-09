@@ -1,7 +1,9 @@
 import { isArticleHref, displayUrl } from '../lib/normalise.js';
 import { dossierFor, impactCards, isOpenFronts } from '../lib/openFronts.js';
 import { isGithubCsvRow } from '../lib/githubCsv.js';
+import { formatDate, formatDateTime } from '../lib/format.js';
 import CsvTablePane from './CsvTablePane.jsx';
+import { sensitiveNoteFor } from '../lib/sensitiveData.js';
 
 const SKIP = new Set([
   'source_url',
@@ -20,6 +22,9 @@ const SKIP = new Set([
   'watch_for',
   'tags',
   'sizeBand',
+  '_blocRaw',
+  '_otherRaw',
+  'related_links',
 ]);
 const ENTITY_KEYS = /party|ministry|sector|region|state|constituency|vendor|origin|category|department|court|status|stage|company|sponsor|financier|country|cadre|scheme|type|trend|intensity/i;
 
@@ -93,6 +98,41 @@ function stripCells(row) {
   }).filter(Boolean);
 }
 
+function pickField(row, keys) {
+  for (const k of keys) {
+    const v = row?.[k];
+    if (v != null && String(v).trim() !== '') return { key: k, value: String(v).trim() };
+  }
+  return null;
+}
+
+function provenanceOf(row, feed) {
+  const source =
+    pickField(row, ['source_label', 'source', 'outlet', 'domain']) ||
+    (row?.source_url ? { key: 'source_url', value: row.source_url } : null) ||
+    (feed?.source?.note ? { key: 'adapter', value: feed.source.note } : null);
+  const sourceDate = pickField(row, [
+    'source_date',
+    'published',
+    'pub_date',
+    'date',
+    'as_of',
+    'updated',
+    'tabled',
+    'introduced',
+  ]);
+  const verified = pickField(row, ['last_verified', 'verified', 'latestDate', 'dataThrough', 'verified_at']);
+  return {
+    source,
+    sourceDate: sourceDate
+      ? { ...sourceDate, display: formatDateTime(sourceDate.value) || formatDate(sourceDate.value) || sourceDate.value }
+      : null,
+    verified: verified
+      ? { ...verified, display: formatDateTime(verified.value) || formatDate(verified.value) || verified.value }
+      : null,
+  };
+}
+
 function sourcePairs(row) {
   const out = [];
   const seen = new Set();
@@ -148,6 +188,9 @@ export default function RecordDetail({ row, feed, onClear }) {
   const extra = d && (d.hasDossier || d.verified) ? d : null;
   const impact = extra ? impactCards(d) : [];
   const named = extra ? (d.actors.length ? d.actors : d.entities) : [];
+  const provenance = provenanceOf(row, feed);
+  const sensitive = sensitiveNoteFor(feed?.feature);
+  const relatedLinks = Array.isArray(row.related_links) ? row.related_links.filter(Boolean) : [];
 
   return (
     <div className="rd">
@@ -174,6 +217,71 @@ export default function RecordDetail({ row, feed, onClear }) {
         <span className="tag">TRACKER</span>
         {csv ? <span className="tag">{csv}</span> : null}
       </div>
+
+      {sensitive && !csvFile ? (
+        <div className="banner warn desk-sensitive rd-sensitive" role="note">
+          <strong>{sensitive.title}</strong>
+          <span>{sensitive.body}</span>
+        </div>
+      ) : null}
+
+      {row.methodology && !csvFile ? (
+        <div className="rd-section">
+          <div className="rd-sec-label">SOURCES & METHODOLOGY</div>
+          <p className="rd-method">{row.methodology}</p>
+          {row.confidence ? <p className="rd-method-sub">Confidence: {row.confidence}</p> : null}
+        </div>
+      ) : null}
+
+      {(row.related_count > 0 || relatedLinks.length > 0) && !csvFile ? (
+        <div className="rd-section">
+          <div className="rd-sec-label">RELATED COVERAGE</div>
+          <p className="rd-method">
+            {row.related_count > 0
+              ? `${row.related_count} other headline${row.related_count === 1 ? '' : 's'} looked like the same story`
+              : 'Related links'}
+            {row.related_outlets ? ` (${row.related_outlets})` : ''}.
+          </p>
+          {relatedLinks.length > 0 ? (
+            <div className="rd-docs">
+              {relatedLinks.map((url) => (
+                <a key={url} className="rd-doc" href={url} target="_blank" rel="noreferrer">
+                  <span className="rd-doc-ic">↗</span>
+                  <span>{displayUrl(url)}</span>
+                </a>
+              ))}
+            </div>
+          ) : null}
+        </div>
+      ) : null}
+
+      {!csvFile && (
+        <div className="rd-section rd-provenance">
+          <div className="rd-sec-label">SOURCE · DATE · VERIFIED</div>
+          <div className="rd-prov-grid">
+            <div>
+              <span className="rd-prov-k">Source</span>
+              <span className="rd-prov-v">
+                {provenance.source?.key === 'source_url' && isUrl(provenance.source.value) ? (
+                  <a href={provenance.source.value} target="_blank" rel="noreferrer">
+                    {displayUrl(provenance.source.value)}
+                  </a>
+                ) : (
+                  provenance.source?.value || '—'
+                )}
+              </span>
+            </div>
+            <div>
+              <span className="rd-prov-k">Source date</span>
+              <span className="rd-prov-v">{provenance.sourceDate?.display || '—'}</span>
+            </div>
+            <div>
+              <span className="rd-prov-k">Last verified</span>
+              <span className="rd-prov-v">{provenance.verified?.display || '—'}</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {csvFile ? <CsvTablePane row={row} /> : null}
 

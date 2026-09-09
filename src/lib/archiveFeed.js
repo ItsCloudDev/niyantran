@@ -26,9 +26,73 @@ import { geoRows, geoNote, isGeoDesk } from './niyGeo.js';
 import { isLawExtract, isUsScotusDesk, lawNote, lawRows, lawSlice } from './lawPack.js';
 import { dgftRows, econNote, econSlice, isEconExtract, manifoldPoliticalRows, marketQuoteRows } from './econPack.js';
 import { carbonDataset, carbonNote, carbonRows, carbonSlice, isCarbonExtract } from './carbonPack.js';
-import { sportsNote, sportsSlice } from './sportsPack.js';
-import { entertainmentNote, entertainmentSlice } from './entertainmentPack.js';
+import {
+  CRICKET_RSS,
+  FOOTBALL_RSS,
+  INDIA_SPORTS_RSS,
+  ISL_ESPN,
+  WORLD_LEAGUES,
+  WD_ATHLETES_Q,
+  WD_LEAGUES_Q,
+  espnScoreboardRows,
+  rssWireRows,
+  sportsDbRows,
+  sportsNote,
+  sportsSlice,
+  wikidataAthleteRows,
+  wikidataLeagueRows,
+} from './sportsPack.js';
+import {
+  APPLE_IN,
+  APPLE_US,
+  BOLLYWOOD_NEWS_RSS,
+  BOLLYWOOD_RSS,
+  VARIETY_RSS,
+  WD_CELEB_Q,
+  WD_FILMS_Q,
+  WD_OTT_Q,
+  appleChartRows,
+  entertainmentNote,
+  entertainmentSlice,
+  rssWireRows as entRssRows,
+  wikidataCelebrityRows,
+  wikidataFilmRows,
+  wikidataOttRows,
+} from './entertainmentPack.js';
 import niyGeo from '../data/niy-geo.json';
+
+async function fetchJsonOk(url, signal) {
+  try {
+    const res = await fetch(url, { signal });
+    if (!res.ok) return null;
+    return res.json().catch(() => null);
+  } catch {
+    return null;
+  }
+}
+
+async function fetchTextOk(url, signal) {
+  try {
+    const res = await fetch(url, { signal });
+    if (!res.ok) return '';
+    return res.text();
+  } catch {
+    return '';
+  }
+}
+
+function parseRssItems(xml, outlet) {
+  if (!xml || typeof DOMParser === 'undefined') return [];
+  try {
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    return [...doc.querySelectorAll('item')].map((it) => {
+      const g = (k) => it.querySelector(k)?.textContent?.trim() || '';
+      return { title: g('title'), link: g('link'), date: g('pubDate'), outlet };
+    });
+  } catch {
+    return [];
+  }
+}
 
 const TIER_ALIAS = {
   home: 'home',
@@ -48,9 +112,12 @@ const TIER_ALIAS = {
 };
 
 const datasetToFile = {};
+const knownDatasetKeys = new Set();
 for (const row of manifest) {
   datasetToFile[row.key] = row.file;
   datasetToFile[row.key.replace(/\.csv$/i, '')] = row.file;
+  knownDatasetKeys.add(String(row.key).replace(/\.csv$/i, ''));
+  knownDatasetKeys.add(String(row.file || '').replace(/\.json$/i, ''));
 }
 
 function norm(s) {
@@ -169,6 +236,14 @@ function datasetFileName(dataset) {
 async function loadRawEmbedded(dataset, signal) {
   const file = datasetFileName(dataset);
   if (!file) return [];
+  const key = String(dataset || '')
+    .replace(/\.csv$/i, '')
+    .replace(/\.json$/i, '')
+    .trim();
+  // D10: never hit a path that will 404 — only fetch keys present in the manifest.
+  if (key && !knownDatasetKeys.has(key) && !datasetToFile[key] && !datasetToFile[`${key}.csv`]) {
+    return [];
+  }
   const res = await fetch(`/data/embedded_csv/${file}`, { signal });
   if (!res.ok) return [];
   const json = await res.json().catch(() => null);
@@ -243,6 +318,30 @@ export async function fetchArchiveFeature({ tier, feature, signal } = {}) {
 
   const dataset = entry?.dataset || feat.dataset || '';
   const name = feat.htmlFeature || '';
+  const role = String(entry?.role || feat.role || '').toLowerCase();
+
+  // D1: HTML-ONLY modules have no view of their own. Never fall through to a
+  // sibling desk's embedded dataset (Constituency Register / Local Governance Brief).
+  if (String(feat.mapping || '').toUpperCase() === 'HTML-ONLY') {
+    return envelope({
+      feature: feat,
+      rows: [],
+      adapter: 'planned',
+      note: 'Module planned. No adapter or dataset is shipped for this module yet.',
+      fallback: false,
+    });
+  }
+
+  // D11: discovery-only (GDELT) sources never paint as a primary register.
+  if (role === 'discovery' && !dataset) {
+    return envelope({
+      feature: feat,
+      rows: [],
+      adapter: 'planned',
+      note: 'Discovery source only (news search). No primary-of-record dataset is wired for this module.',
+      fallback: false,
+    });
+  }
 
   if (isGeoDesk(name, dataset)) {
     const rows = geoRows(niyGeo, name, dataset);
@@ -338,19 +437,89 @@ export async function fetchArchiveFeature({ tier, feature, signal } = {}) {
 
   const sport = sportsSlice(name);
   if (sport) {
+    // D15: browser-OK hosts — wire directly (no /api proxy required).
+    let rows = [];
+    if (sport === 'isl') {
+      const json = await fetchJsonOk(ISL_ESPN, signal);
+      rows = espnScoreboardRows(json, 'Indian Super League');
+    } else if (sport === 'fixtures') {
+      for (const league of WORLD_LEAGUES) {
+        const json = await fetchJsonOk(
+          `https://www.thesportsdb.com/api/v1/json/3/eventsnextleague.php?id=${league.id}`,
+          signal,
+        );
+        rows = rows.concat(sportsDbRows(json, league.name));
+      }
+    } else if (sport === 'cricket') {
+      rows = rssWireRows(parseRssItems(await fetchTextOk(CRICKET_RSS, signal), 'ESPNcricinfo'), 'ESPNcricinfo');
+    } else if (sport === 'football') {
+      rows = rssWireRows(parseRssItems(await fetchTextOk(FOOTBALL_RSS, signal), 'BBC Sport'), 'BBC Sport');
+    } else if (sport === 'india') {
+      rows = rssWireRows(parseRssItems(await fetchTextOk(INDIA_SPORTS_RSS, signal), 'Google News'), 'Google News');
+    } else if (sport === 'business') {
+      const url = `https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(WD_LEAGUES_Q)}`;
+      rows = wikidataLeagueRows(await fetchJsonOk(url, signal));
+    } else if (sport === 'athletes') {
+      const url = `https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(WD_ATHLETES_Q)}`;
+      rows = wikidataAthleteRows(await fetchJsonOk(url, signal));
+    }
+    if (rows.length) {
+      return envelope({
+        feature: feat,
+        rows,
+        kind: 'sports-pack',
+        note: sportsNote(sport),
+        fallback: false,
+      });
+    }
     return envelope({
       feature: feat,
       rows: [],
-      note: `${sportsNote(sport)} Live host only on the static archive.`,
+      note: `${sportsNote(sport)} No rows returned from the browser-reachable host.`,
     });
   }
 
   const ent = entertainmentSlice(name);
   if (ent) {
+    let rows = [];
+    const wd = async (q) => {
+      const url = `https://query.wikidata.org/sparql?format=json&query=${encodeURIComponent(q)}`;
+      return fetchJsonOk(url, signal);
+    };
+    if (ent === 'variety') {
+      rows = entRssRows(parseRssItems(await fetchTextOk(VARIETY_RSS, signal), 'Variety'), 'Variety');
+    } else if (ent === 'bollywood') {
+      rows = entRssRows(parseRssItems(await fetchTextOk(BOLLYWOOD_RSS, signal), 'NDTV Movies'), 'NDTV Movies');
+      if (!rows.length) {
+        rows = entRssRows(
+          parseRssItems(await fetchTextOk(BOLLYWOOD_NEWS_RSS, signal), 'Google News'),
+          'Google News',
+        );
+      }
+    } else if (ent === 'box') {
+      rows = wikidataFilmRows(await wd(WD_FILMS_Q));
+    } else if (ent === 'ott') {
+      rows = wikidataOttRows(await wd(WD_OTT_Q));
+    } else if (ent === 'celebrity') {
+      rows = wikidataCelebrityRows(await wd(WD_CELEB_Q));
+    } else if (ent === 'music-in' || ent === 'music-us') {
+      const url = ent === 'music-in' ? APPLE_IN : APPLE_US;
+      rows = appleChartRows(await fetchJsonOk(url, signal));
+    }
+    // tv (TVmaze) deliberately skipped here — intermittent per D15; stays Planned when empty.
+    if (rows.length) {
+      return envelope({
+        feature: feat,
+        rows,
+        kind: 'entertainment-pack',
+        note: entertainmentNote(ent),
+        fallback: false,
+      });
+    }
     return envelope({
       feature: feat,
       rows: [],
-      note: `${entertainmentNote(ent)} Live host only on the static archive.`,
+      note: `${entertainmentNote(ent)} No rows returned from the browser-reachable host.`,
     });
   }
 

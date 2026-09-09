@@ -8,19 +8,23 @@ export const STATUS = {
 };
 
 const CURATED = [
-  ['GLOBAL', 'Transit', 'live', 'OpenSky + Digitraffic returning aircraft and ships.'],
+  ['GLOBAL', 'Transit', 'live', 'OpenSky air via /api/air. Ships: Digitraffic Baltic (or AISSTREAM_KEY for global).'],
   ['GLOBAL', 'Satellite Infrastructure', 'live', 'Launch Library + CelesTrak upcoming objects.'],
   ['GLOBAL', 'World Constitutions', 'live', 'Constitute Project in-force constitutions.'],
   ['GLOBAL', 'Growth Indicators', 'live', 'World Bank WDI growth series.'],
   ['GLOBAL', 'Global Trade', 'live', 'World Bank trade / GDP series.'],
+  ['ECONOMICS', 'Top Financial & Business Players', 'live', 'Wikidata SPARQL · Indian enterprise CEOs (P169). Identity only — no rankings or market cap.'],
+  ['ECONOMICS', 'Economic Simulator', 'live', 'World Bank India GDP growth (NY.GDP.MKTP.KD.ZG). Historical baseline — not a forecast.'],
+  ['SPORTS', 'Indian Sports Wire', 'live', 'Google News RSS · India hockey/badminton/kabaddi/athletics/chess (7d).'],
+  ['SPORTS', 'Sports Business & Media Rights', 'live', 'Wikidata SPARQL · Indian leagues and owners. Not broadcast-rights valuations.'],
   ['NATIONAL', 'Industry Updates (Ministry Data)', 'live', 'World Bank India industry WDI rows.'],
   ['NATIONAL', 'Regulatory Body Watch (RBI/SEBI/TRAI/CCI)', 'archive', 'API not reachable · fallback: national_regulatory_watch archive.'],
   ['NATIONAL', 'Cabinet Decisions', 'archive', 'PIB RSS not reachable · fallback: national_cabinet_decisions archive.'],
   ['NATIONAL', 'Central Tender Aggregator + Constituency Filter', 'archive', 'eProcure API not active · fallback: tender archive.'],
-  ['NATIONAL', 'Policy Pipeline Tracker (Draft-to-Gazette)', 'archive', 'PIB API not active · fallback: policy pipeline archive.'],
+  ['NATIONAL', 'Policy Pipeline Tracker (Draft-to-Gazette)', 'live', 'PIB Press Releases + Features RSS (www.pib.gov.in).'],
   ['GLOBAL', 'Open Fronts', 'local', 'GDELT API configured · not active · fallback: HTML dossier pack.'],
   ['GLOBAL', 'Conflicts', 'local', 'ReliefWeb API configured · not active · fallback: local conflict dossiers.'],
-  ['GLOBAL', 'Global Intelligence', 'local', 'GDELT API configured · not active · fallback: HTML pack.'],
+  ['GLOBAL', 'Global Intelligence', 'local', 'Shown as Defence Procurement Intelligence · GDELT/API configured · HTML pack fallback.'],
   ['GLOBAL', 'Alliances', 'local', 'GDELT API configured · not active · fallback: local alliance register.'],
   ['GLOBAL', 'Sanctions', 'local', 'OFAC API configured · not active · fallback: local programme register. Overlay lists are live.'],
   ['GLOBAL', 'Global Aid', 'local', 'ReliefWeb API configured · not active · fallback: local appeal register. FTS overlay is live.'],
@@ -41,9 +45,9 @@ const CURATED = [
   ['NATIONAL', 'LS Manifestos & Promises Tracker', 'local', 'No API · curated Union 2024 pack.'],
   ['NATIONAL', 'Centre-sanctioned Projects & Completion Rate', 'local', 'World Bank API configured · not active · fallback: curated flagships.'],
   ['NATIONAL', 'Budget Utilisation & Schemes', 'local', 'No API · Budget at a Glance curated figures.'],
-  ['GLOBAL', 'Geopolitics News Wire', 'inactive', 'GDELT API configured · returned empty · no archive fallback.'],
-  ['NATIONAL', 'Statement & Quote Tracker with Contradiction Detection', 'inactive', '/api/rss returned HTTP 502 · 0 rows · no archive fallback.'],
-  ['NATIONAL', 'National Morning Brief (Auto-digest)', 'inactive', 'PIB + GDELT returned HTTP 502 · 0 rows · no archive fallback.'],
+  ['GLOBAL', 'Geopolitics News Wire', 'live', 'GDELT DOC 2.0 when available; else live BBC World RSS (still Live, not Archive).'],
+  ['NATIONAL', 'Statement & Quote Tracker with Contradiction Detection', 'live', 'GDELT person coverage (or Google News RSS). Mentions only — no contradiction verdict.'],
+  ['NATIONAL', 'National Morning Brief (Auto-digest)', 'live', 'PIB RSS + GDELT India/economy (paced) · News RSS fallback.'],
 ];
 
 function norm(s) {
@@ -62,12 +66,35 @@ function rowsOf(entry) {
   return Number.isFinite(n) ? n : 0;
 }
 
+/** Google News RSS / GDELT reporting-search feeds — live by design; embeddedRows are often 0. */
+function isNewsSearchFeed(entry) {
+  const adapter = String(entry.adapter || '');
+  if (adapter === 'news-search') return true;
+  const blob = [
+    entry.primaryFeedUrl,
+    entry.sourceUrls,
+    entry.domains,
+    entry.source,
+    entry.openLiveFallback,
+  ]
+    .filter(Boolean)
+    .join(' ');
+  return /news\.google\.com|gdeltproject\.org/i.test(blob);
+}
+
 function heuristic(entry) {
   const state = String(entry.implementationState || '');
   const rows = rowsOf(entry);
   const adapter = String(entry.adapter || '');
+  const newsWire = isNewsSearchFeed(entry);
 
   if (/SOURCE-LIBRARY STATUS FALLBACK/i.test(state) && rows <= 0) {
+    if (newsWire) {
+      return {
+        status: 'live',
+        note: 'Google News / GDELT reporting search configured · probe the desk to confirm current rows.',
+      };
+    }
     return { status: 'inactive', note: 'API configured · returned empty · no archive fallback.' };
   }
   if (/CREDENTIAL OR LICENCE REQUIRED/i.test(state) && rows <= 0) {
@@ -76,7 +103,16 @@ function heuristic(entry) {
   if (/CONNECTOR REQUIRES TERMS REVIEW/i.test(state) && rows <= 0) {
     return { status: 'inactive', note: 'API connector parked pending terms review · no data showing.' };
   }
-  if (/LIVE SEARCH/i.test(state) && rows <= 0) {
+  // LIVE SEARCH with 0 embedded rows used to force Inactive — wrong for News RSS / GDELT wires.
+  if ((/LIVE SEARCH/i.test(state) || newsWire) && rows <= 0) {
+    if (newsWire || /LIVE SEARCH|LIVE API/i.test(state)) {
+      return {
+        status: 'live',
+        note: newsWire
+          ? 'Live News RSS / reporting search configured · probe the desk to confirm current rows.'
+          : 'Live search API configured · probe the desk to confirm current rows.',
+      };
+    }
     return { status: 'inactive', note: 'Live search API configured · returned empty.' };
   }
   if (rows > 0 && (/CONNECTOR REQUIRES TERMS REVIEW/i.test(state) || /DOWNLOAD\/HTML/i.test(state))) {
@@ -85,11 +121,16 @@ function heuristic(entry) {
   if (rows > 0 && /EMBEDDED ARCHIVE READY/i.test(state)) {
     return { status: 'local', note: 'API configured · not active · fallback: local pack showing.' };
   }
-  if (rows > 0 && /LIVE API/i.test(state)) {
-    return { status: 'live', note: 'Live API returning rows · archive fallback ready.' };
+  if (rows > 0 && (/LIVE API/i.test(state) || newsWire)) {
+    return {
+      status: 'live',
+      note: newsWire
+        ? 'Live News RSS / reporting search · archive fallback ready.'
+        : 'Live API returning rows · archive fallback ready.',
+    };
   }
   if (rows > 0 && /LIVE SEARCH/i.test(state)) {
-    return { status: 'archive', note: 'API search not active · fallback: pack showing.' };
+    return { status: 'live', note: 'Live search feed configured · probe confirms rows when refreshed.' };
   }
   if (rows > 0 && /INTERNAL ROUTE/i.test(state)) {
     return { status: 'local', note: 'Internal route · fallback: managed archive showing.' };
@@ -97,7 +138,7 @@ function heuristic(entry) {
   if (rows > 0) {
     return { status: 'local', note: 'API not active · fallback: local/embedded rows showing.' };
   }
-  if (/LIVE API/i.test(state) || adapter === 'api') {
+  if (/LIVE API/i.test(state) || adapter === 'api' || newsWire) {
     return { status: 'live', note: 'Live API configured · probe the desk to confirm current rows.' };
   }
   if (/INTERNAL ROUTE/i.test(state)) {

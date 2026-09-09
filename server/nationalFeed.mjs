@@ -7,6 +7,7 @@ import {
   BUDGET_KEY,
   BUDGET_SCHEMES,
   FLAGSHIP_PROGRAMMES,
+  STATEMENT_LEADERS,
   UNION_PROMISES,
 } from '../src/data/nationalCurated.js';
 import { allocateSeats } from '../src/lib/nationalKpi.js';
@@ -16,7 +17,163 @@ const WB_IND = 'https://api.worldbank.org/v2/country/IND/indicator/NV.IND.TOTL.Z
 const RBI_NOTES = 'https://www.rbi.org.in/notifications_rss.xml';
 const RBI_PRESS = 'https://www.rbi.org.in/pressreleases_rss.xml';
 const SEBI_RSS = 'https://www.sebi.gov.in/sebirss.xml';
-const PIB_RSS = 'https://pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3';
+/** Real person query — never search the product name "Statement & Quote Tracker…". */
+function statementsGdeltUrl(person = STATEMENT_LEADERS[0]) {
+  const q = `"${person}" sourcecountry:IN`;
+  return (
+    'https://api.gdeltproject.org/api/v2/doc/doc?query=' +
+    encodeURIComponent(q) +
+    '&mode=artlist&format=json&sort=datedesc&timespan=3d&maxrecords=40'
+  );
+}
+function statementsNewsRss(person = STATEMENT_LEADERS[0]) {
+  return (
+    'https://news.google.com/rss/search?q=' +
+    encodeURIComponent(`"${person}" India`) +
+    '&hl=en-IN&gl=IN&ceid=IN:en'
+  );
+}
+/** Use www — bare pib.gov.in often ECONNRESET from Node. ViewRss.aspx is an index, not the feed. */
+const PIB_PRESS = 'https://www.pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3';
+const PIB_FEATURES = 'https://www.pib.gov.in/RssMain.aspx?ModId=18&Lang=1&Regid=3';
+const PIB_RSS = PIB_PRESS;
+const PIB_UA =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+/** PIB often serves Hindi RSS by geo/session; English release pages need an en cookie. */
+const PIB_EN_COOKIE = 'lang=1; Language=1; PIBLang=1; culture=en-US';
+
+function decodeBasicEntities(s) {
+  return String(s || '')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/<[^>]+>/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function isHindiText(s) {
+  return /[\u0900-\u097F]/.test(String(s || ''));
+}
+
+function pridOf(row) {
+  const blob = `${row?.source_url || ''} ${row?.link || ''} ${row?.url || ''} ${row?.id || ''}`;
+  return (String(blob).match(/PRID=(\d+)/i) || [])[1] || '';
+}
+
+async function fetchEnglishPibTitle(prid) {
+  const headers = {
+    'User-Agent': PIB_UA,
+    'Accept-Language': 'en-US,en;q=0.9',
+    Cookie: PIB_EN_COOKIE,
+    Accept: 'text/html,application/xhtml+xml',
+  };
+
+  async function load(pridOrUrl) {
+    const page = /^https?:/i.test(String(pridOrUrl))
+      ? String(pridOrUrl).replace(/^https?:\/\/pib\.gov\.in\//i, 'https://www.pib.gov.in/')
+      : `https://www.pib.gov.in/PressReleasePage.aspx?PRID=${pridOrUrl}&Lang=1`;
+    const ac = new AbortController();
+    const t = setTimeout(() => ac.abort(), 12_000);
+    try {
+      const res = await fetch(page, { signal: ac.signal, redirect: 'follow', headers });
+      if (!res.ok) return null;
+      const html = await res.text();
+      const og = (html.match(/property="og:title"\s+content="([^"]+)"/i) || [])[1] || '';
+      const h2 =
+        (html.match(/<h2[^>]*>\s*([^<]{20,500})\s*<\/h2>/i) || [])[1] ||
+        (html.match(/<h1[^>]*>\s*([^<]{20,500})\s*<\/h1>/i) || [])[1] ||
+        '';
+      const title = decodeBasicEntities(
+        (og || h2)
+          .replace(/\s*\|\s*Press Information Bureau.*/i, '')
+          .replace(/\s+/g, ' ')
+          .trim(),
+      );
+      const dateHint = (html.match(/Posted On:\s*([0-9]{1,2}\s+[A-Za-z]{3}\s+[0-9]{4})/i) || [])[1] || '';
+      let date = '';
+      if (dateHint) {
+        const d = new Date(dateHint);
+        if (!Number.isNaN(d.getTime())) date = d.toISOString().slice(0, 10);
+      }
+      // Hindi release pages expose an "English" sibling with a different PRID.
+      const enHref =
+        (html.match(/href=['"]([^'"]*PRID=\d+[^'"]*)['"][^>]*>\s*English\s*</i) || [])[1] || '';
+      const enPrid = (String(enHref).match(/PRID=(\d+)/i) || [])[1] || '';
+      return {
+        title,
+        date,
+        source_url: page,
+        hindi: isHindiText(title),
+        enPrid,
+      };
+    } catch {
+      return null;
+    } finally {
+      clearTimeout(t);
+    }
+  }
+
+  const first = await load(prid);
+  if (!first) return null;
+  if (!first.hindi && first.title) {
+    return { title: first.title, date: first.date, source_url: first.source_url };
+  }
+  if (first.enPrid && String(first.enPrid) !== String(prid)) {
+    const en = await load(first.enPrid);
+    if (en && !en.hindi && en.title) {
+      return { title: en.title, date: en.date || first.date, source_url: en.source_url };
+    }
+  }
+  return null;
+}
+
+async function mapPool(items, limit, fn) {
+  const out = new Array(items.length);
+  let i = 0;
+  async function worker() {
+    while (i < items.length) {
+      const idx = i;
+      i += 1;
+      out[idx] = await fn(items[idx], idx);
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, () => worker()));
+  return out;
+}
+
+/** RSS is often Hindi; resolve English titles from PressReleasePage with en cookie. */
+async function enrichPibEnglish(rows) {
+  const list = (Array.isArray(rows) ? rows : []).slice(0, 40);
+  const enriched = await mapPool(list, 4, async (row, idx) => {
+    const base = {
+      ...row,
+      id: row.id != null ? row.id : `pib-${idx}`,
+      stage: row.stage || 'PIB release',
+      source: row.source || 'Press Information Bureau',
+    };
+    const title = String(base.title || '');
+    const prid = pridOf(base);
+    if (!prid) return base;
+    if (!isHindiText(title) && title) {
+      return { ...base, source_url: base.source_url || `https://www.pib.gov.in/PressReleasePage.aspx?PRID=${prid}&Lang=1` };
+    }
+    const en = await fetchEnglishPibTitle(prid);
+    if (!en) return base;
+    return {
+      ...base,
+      title: en.title,
+      date: en.date || base.date || '',
+      source_url: en.source_url,
+      language: 'en',
+    };
+  });
+  const english = enriched.filter((r) => r?.title && !isHindiText(r.title));
+  return english.length ? english : enriched.filter(Boolean);
+}
 
 function featName(feat) {
   return String(feat?.htmlFeature || '');
@@ -68,18 +225,62 @@ export async function serveNational(ctx) {
   }
 
   if (/policy pipeline/i.test(name)) {
+    const live = await tryUrls([PIB_PRESS, PIB_FEATURES]);
+    const liveRows = await enrichPibEnglish(live.rows || []);
+    if (liveRows.length) {
+      const enCount = liveRows.filter((r) => !isHindiText(r.title)).length;
+      return envelope({
+        tier,
+        feature: feat,
+        rows: liveRows,
+        adapter: 'api',
+        links: [PIB_PRESS, PIB_FEATURES, 'https://www.pib.gov.in/ViewRss.aspx?reg=3&lang=1'],
+        coverage: { from: '', through: 'present', exhaustive: false },
+        fallback: false,
+        note:
+          enCount === liveRows.length
+            ? 'Live PIB RSS with English titles resolved from PressReleasePage (EN cookie). Draft-to-gazette stages are not in the RSS.'
+            : `Live PIB RSS — ${enCount}/${liveRows.length} English titles resolved; remainder still Hindi from the feed locale.`,
+        meta: {
+          section: 'POLICY PIPELINE — DRAFT TO GAZETTE',
+          status: 'LIVE · PIB RSS · EN',
+          heading: heading(feat),
+        },
+      });
+    }
     const rows = (archive || []).map((r, i) => ({ ...r, id: r.id != null ? r.id : String(i) }));
-    if (!rows.length) return null;
+    if (!rows.length) {
+      return envelope({
+        tier,
+        feature: feat,
+        rows: statusRow({
+          adapter: 'api',
+          url: PIB_PRESS,
+          reason: live.error || 'PIB RSS empty',
+          featureName: name,
+        }),
+        adapter: 'api',
+        links: [PIB_PRESS, 'https://www.pib.gov.in/ViewRss.aspx?reg=3&lang=1'],
+        coverage,
+        fallback: false,
+        note: 'PIB Press Releases RSS did not return rows and no archive is available.',
+        meta: { section: 'POLICY PIPELINE — DRAFT TO GAZETTE', status: 'OFFLINE', heading: heading(feat) },
+      });
+    }
     return envelope({
       tier,
       feature: feat,
       rows,
       adapter: 'embedded',
-      links: ['https://egazette.gov.in/'],
+      links: [PIB_PRESS, 'https://egazette.gov.in/'],
       coverage,
       fallback: true,
-      note: 'Eight-row register. news.google.com is the actual source of these rows and is impermissible to extend (ToS + robots.txt). Gazette of India is the correct source and is not wired.',
-      meta: { section: 'POLICY PIPELINE — DRAFT TO GAZETTE', status: 'ARCHIVE · DO NOT EXTEND GOOGLE NEWS', heading: heading(feat) },
+      note: `PIB RSS unavailable (${live.error || 'empty'}). Showing the ${rows.length}-row last-known-good register. news.google.com is not used.`,
+      meta: {
+        section: 'POLICY PIPELINE — DRAFT TO GAZETTE',
+        status: 'ARCHIVE · LAST-KNOWN-GOOD',
+        heading: heading(feat),
+      },
     });
   }
 
@@ -196,34 +397,139 @@ export async function serveNational(ctx) {
   }
 
   if (/statement/i.test(name)) {
+    const person = STATEMENT_LEADERS[0];
+    const gdeltUrl = statementsGdeltUrl(person);
+    const newsUrl = statementsNewsRss(person);
+    const live = await tryUrls([gdeltUrl]);
+    if (live.rows?.length) {
+      return envelope({
+        tier,
+        feature: feat,
+        rows: live.rows.map((r) => ({ ...r, person })),
+        adapter: 'news-search',
+        links: [gdeltUrl],
+        coverage: { from: '', through: '3d', exhaustive: false },
+        fallback: false,
+        gdelt: true,
+        kind: 'wire',
+        note: `Live GDELT DOC 2.0 media mentions for "${person}" (India). Coverage volume, not a statement archive — no contradiction verdict.`,
+        meta: {
+          section: 'MEDIA MENTIONS — GDELT 2.0',
+          status: 'LIVE · GDELT',
+          heading: heading(feat),
+          person,
+        },
+      });
+    }
+    const rss = await tryUrls([newsUrl]);
+    if (rss.rows?.length) {
+      return envelope({
+        tier,
+        feature: feat,
+        rows: rss.rows.map((r) => ({ ...r, person })),
+        adapter: 'news-search',
+        links: [newsUrl, gdeltUrl],
+        coverage: { from: '', through: 'present', exhaustive: false },
+        fallback: false,
+        gdelt: false,
+        kind: 'wire',
+        note: `Live Google News RSS for "${person}" (GDELT unavailable: ${live.error || 'empty/rate-limited'}). Coverage mentions only — no contradiction verdict.`,
+        meta: {
+          section: 'MEDIA MENTIONS — GOOGLE NEWS RSS',
+          status: 'LIVE · NEWS RSS',
+          heading: heading(feat),
+          person,
+        },
+      });
+    }
     return envelope({
       tier,
       feature: feat,
-      rows: [],
+      rows: statusRow({
+        adapter: 'news-search',
+        url: gdeltUrl,
+        reason: live.error || rss.error || 'empty coverage wire',
+        featureName: name,
+      }),
       adapter: 'news-search',
-      links: ['https://api.gdeltproject.org/'],
-      coverage: { through: '7d' },
-      fallback: true,
+      links: [gdeltUrl, newsUrl],
+      coverage: { through: '3d' },
+      fallback: false,
       gdelt: true,
       kind: 'wire',
-      note: 'Person selector drives a GDELT coverage chart in the desk. Coverage volume, not statements. No contradiction verdict.',
-      meta: { section: 'STATEMENT COVERAGE — GDELT 2.0', status: 'LIVE WIRE', heading: heading(feat) },
+      note: 'GDELT / News RSS returned no coverage rows. No contradiction verdicts are invented.',
+      meta: { section: 'MEDIA MENTIONS — GDELT 2.0', status: 'OFFLINE', heading: heading(feat), person },
     });
   }
 
   if (/morning brief/i.test(name)) {
+    const topUrl =
+      'https://api.gdeltproject.org/api/v2/doc/doc?query=' +
+      encodeURIComponent('sourcecountry:IN (India OR government OR parliament)') +
+      '&mode=artlist&format=json&sort=datedesc&timespan=3d&maxrecords=20';
+    const ecoUrl =
+      'https://api.gdeltproject.org/api/v2/doc/doc?query=' +
+      encodeURIComponent('(economy OR RBI OR rupee OR markets) sourcecountry:IN') +
+      '&mode=artlist&format=json&sort=datedesc&timespan=3d&maxrecords=20';
+    const topNews =
+      'https://news.google.com/rss/search?q=' +
+      encodeURIComponent('India government OR parliament when:3d') +
+      '&hl=en-IN&gl=IN&ceid=IN:en';
+    const ecoNews =
+      'https://news.google.com/rss/search?q=' +
+      encodeURIComponent('India (RBI OR economy OR markets OR rupee) when:3d') +
+      '&hl=en-IN&gl=IN&ceid=IN:en';
+
+    const pibLive = await tryUrls([PIB_PRESS]);
+    const pibRows = await enrichPibEnglish(pibLive.rows || []);
+    const topLive = await tryUrls([topUrl]);
+    const topRows = topLive.rows?.length ? topLive.rows : (await tryUrls([topNews])).rows || [];
+    const ecoLive = await tryUrls([ecoUrl]);
+    const ecoRows = ecoLive.rows?.length ? ecoLive.rows : (await tryUrls([ecoNews])).rows || [];
+
+    const tagged = [
+      ...topRows.map((r) => ({ ...r, section: 'Top of the Day', source: r.source || r.domain || 'GDELT/News' })),
+      ...pibRows.map((r) => ({ ...r, section: 'Government Wire', source: r.source || 'PIB' })),
+      ...ecoRows.map((r) => ({ ...r, section: 'Economy', source: r.source || r.domain || 'GDELT/News' })),
+    ];
+    if (tagged.length) {
+      return envelope({
+        tier,
+        feature: feat,
+        rows: tagged,
+        adapter: 'news-search',
+        links: [PIB_PRESS, topUrl, ecoUrl],
+        coverage: { from: '', through: '3d', exhaustive: false },
+        fallback: false,
+        gdelt: Boolean(topLive.rows?.length || ecoLive.rows?.length),
+        kind: 'panel',
+        note: `Morning Brief live panel — Top ${topRows.length} · PIB ${pibRows.length} · Economy ${ecoRows.length}. GDELT paced ≥5s; News RSS fills gaps. Not a personalised digest.`,
+        meta: {
+          section: 'MORNING BRIEF',
+          status: 'LIVE · PIB + WIRES',
+          heading: heading(feat),
+          items: tagged.length,
+          pib: String(pibRows.length),
+        },
+      });
+    }
     return envelope({
       tier,
       feature: feat,
-      rows: [],
+      rows: statusRow({
+        adapter: 'news-search',
+        url: topUrl,
+        reason: [pibLive.error, topLive.error, ecoLive.error].filter(Boolean).join(' | ') || 'all wires empty',
+        featureName: name,
+      }),
       adapter: 'news-search',
-      links: [PIB_RSS],
-      coverage: { through: '7d' },
-      fallback: true,
+      links: [PIB_PRESS, topUrl, ecoUrl],
+      coverage: { through: '3d' },
+      fallback: false,
       gdelt: true,
       kind: 'panel',
-      note: 'Panel: Top of the Day, Government Wire (PIB), Economy. PIB labelled offline when /api/rss is unreachable.',
-      meta: { section: 'MORNING BRIEF', status: 'LIVE WIRE', heading: heading(feat) },
+      note: 'Morning Brief wires returned no rows (GDELT rate limit / PIB unreachable). No digest was invented.',
+      meta: { section: 'MORNING BRIEF', status: 'OFFLINE', heading: heading(feat) },
     });
   }
 

@@ -122,7 +122,7 @@ export function wikidataLeagueRows(json) {
       title: league,
       league,
       owner: owner || '—',
-      source_url: b.league?.value || 'https://www.wikidata.org/',
+      source_url: String(b.league?.value || 'https://www.wikidata.org/').replace(/^http:\/\//i, 'https://'),
     });
   }
   return rows.sort((a, b) => String(a.league).localeCompare(String(b.league)));
@@ -143,7 +143,7 @@ export function wikidataAthleteRows(json) {
       title: person,
       person,
       sport: sport || '—',
-      source_url: b.person?.value || 'https://www.wikidata.org/',
+      source_url: String(b.person?.value || 'https://www.wikidata.org/').replace(/^http:\/\//i, 'https://'),
     });
   }
   return rows.sort((a, b) => String(a.person).localeCompare(String(b.person)));

@@ -145,11 +145,12 @@ export function DelimitationRecord({ row, rows, meta, onClear, onAskAi }) {
         </article>
       </div>
       <p className="brec-p">
-        2026 population (proj.): {popM} million. Largest gainer / loser are for this scenario, not a ranking of this state.
+        2026 population (proj.): {popM} million. Method: {field(row, ['allocation_method']) || 'largest remainder'}. Source:{' '}
+        {field(row, ['source_year']) || 'NCP 2011–36'}. Uncertainty: {field(row, ['uncertainty']) || 'illustrative only'}.
       </p>
       <p className="brec-p muted">
-        Population-projection year, freeze-year toggle, total-seats slider and apportionment method are not built. This pane reads the
-        baseline instrument already on the desk — it is not a second scenario engine.
+        Inputs (house size) sit on the desk chips. Assumptions are locked in the desk note. This panel is the selected-state
+        output — not a second scenario engine.
       </p>
       <div className="brec-actions">
         <span className="off" title="Not built — use the house-size chips on the desk">
@@ -194,19 +195,27 @@ export function ManifestoRecord({ row, onClear, onAskAi }) {
         <section>
           <h3>COMMITMENT</h3>
           <p>{promise}</p>
+          <p className="muted">{[field(row, ['party']), field(row, ['year', 'cycle'])].filter(Boolean).join(' · ')}</p>
         </section>
         <section>
           <h3>EVIDENCE TRAIL</h3>
           <span className="erec-chip">{status || 'No verifiable status in this row'}</span>
+          <p>{field(row, ['latest_evidence']) || 'No primary evidence link attached to this curated row yet.'}</p>
           <p>
-            Neutral evidence-status only. Fulfilled / Broken is deliberately absent — an automated verdict on a named party is an
-            editorial claim. The `_sarkariwaade_verdict` field is not shown.
+            Status answers “can this be checked?”, not “was it kept?”. Fulfilled / Broken is deliberately absent.
           </p>
         </section>
       </div>
+      <section className="erec-method">
+        <h3>SOURCES & METHODOLOGY</h3>
+        <p>
+          {field(row, ['methodology']) ||
+            'Curated Union 2024 tracker. Verify against Gazette / PIB and the manifesto library below.'}
+        </p>
+        <p className="muted">{field(row, ['verified']) || 'Curated status only'}</p>
+      </section>
       <p className="brec-p muted">
-        PDF of a named manifesto, sector-wise money, a key-offerings summary and a 16-step evidence ladder are not in this tracker.
-        State commitments (Punjab / Himachal / Gujarat / Goa) are not ingested — licence unresolved.
+        Per-promise primary evidence URLs and state manifesto cycles are not ingested in this build.
       </p>
       <div className="brec-actions">
         <button type="button" onClick={onClear}>

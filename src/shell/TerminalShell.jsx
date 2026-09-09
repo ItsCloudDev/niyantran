@@ -76,6 +76,8 @@ export default function TerminalShell({ onLogout }) {
 
   useEffect(() => {
     setVizFilter(null);
+    setFeed(null);
+    setSelected(null);
   }, [tab, featureName]);
 
   useEffect(() => {

@@ -4,6 +4,7 @@ import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import { rowDragProps } from '../lib/aiDrop.js';
+import { liveApiEnabled } from '../lib/apiMode.js';
 
 export default function GlobalAidMonitor({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const list = useMemo(
@@ -56,6 +57,10 @@ export default function GlobalAidMonitor({ feed, selected, onSelect, vizFilter, 
 
   useEffect(() => {
     if (!liveOpen) return undefined;
+    if (!liveApiEnabled()) {
+      setLiveErr('Live FTS API is not deployed on this host.');
+      return undefined;
+    }
     const ac = new AbortController();
     setLiveErr('');
     fetch(`/api/fts?year=${new Date().getFullYear()}`, { signal: ac.signal })
@@ -91,7 +96,7 @@ export default function GlobalAidMonitor({ feed, selected, onSelect, vizFilter, 
           aria-pressed={liveOpen}
           title="Open live UN OCHA FTS funding"
         >
-          ✓ LIVE FEED
+          ✓ LATEST
         </button>
         <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
         <TableFilterPop
@@ -162,22 +167,20 @@ export default function GlobalAidMonitor({ feed, selected, onSelect, vizFilter, 
           </div>
           <div className="alw-feedstats">
             <div className="alw-feedstat">
-              <strong>{stats.programmes}</strong>
-              <span>Programmes</span>
+              <strong>{money(stats.requirement)}</strong>
+              <span>Requirement</span>
             </div>
             <div className="alw-feedstat">
-              <strong>{stats.institutions}</strong>
-              <span>Institutions</span>
+              <strong>{money(stats.funded)}</strong>
+              <span>Funded</span>
             </div>
             <div className="alw-feedstat">
-              <strong>{stats.regions}</strong>
-              <span>Regions</span>
+              <strong>{money(stats.gap)}</strong>
+              <span>Funding gap</span>
             </div>
             <div className="alw-feedstat">
-              <strong>
-                {stats.programmes}/{stats.programmes}
-              </strong>
-              <span>Source-linked</span>
+              <strong>{compact(stats.people)}</strong>
+              <span>People targeted</span>
             </div>
           </div>
         </div>

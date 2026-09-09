@@ -1,9 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { fetchFeature } from '../lib/featureFeed.js';
 import { openAiResearch, rowDragProps } from '../lib/aiDrop.js';
-import { cellText, feedKindLabel, filterRows, isArticleHref, sortRows } from '../lib/normalise.js';
+import { cellText, filterRows, isArticleHref, sortRows } from '../lib/normalise.js';
+import { buildTableSearchIndex, searchTableRows, shouldIndexSearch } from '../lib/tableSearch.js';
+import { formatCell, formatDate, formatStatus, truncateTwoLines } from '../lib/format.js';
+import { isTerminalState, resolveDataState } from '../lib/dataState.js';
 import { isGithubCsvRow } from '../lib/githubCsv.js';
 import { cellOf, feedColumns } from '../lib/columns.js';
+import { prepareDeskFeed } from '../lib/prepareDeskFeed.js';
+import { sensitiveNoteFor } from '../lib/sensitiveData.js';
+import { qualityBannerText } from '../lib/recordChecklist.js';
 import { isConflictsFeature } from '../lib/conflictsMonitor.js';
 import { isTransitFeature } from '../lib/transit.js';
 import { isAlliancesFeature } from '../lib/alliances.js';
@@ -13,6 +19,7 @@ import { isChokepointsFeature, isNuclearWatchFeature } from '../lib/strategicAss
 import { isGlobalResourcesTable, isHeadsOfStateFeature, isGlobalCommoditiesFeature } from '../lib/globalResources.js';
 import { isEnergyFeature, isGeonomicsTable } from '../lib/geonomics.js';
 import {
+  featureMenuLabel,
   isBudgetFeature,
   isDelimitationFeature,
   isIndustryFeature,
@@ -29,14 +36,17 @@ import MpCardsDesk from './MpCardsDesk.jsx';
 import DelimitationDesk from './DelimitationDesk.jsx';
 import ManifestosDesk from './ManifestosDesk.jsx';
 import BudgetDesk from './BudgetDesk.jsx';
+import FundFlowDesk, { isFundFlowFeature } from './FundFlowDesk.jsx';
 import ProjectsDesk from './ProjectsDesk.jsx';
 import MorningBriefDesk from './MorningBriefDesk.jsx';
 import StatementsDesk from './StatementsDesk.jsx';
 import IndustryDesk from './IndustryDesk.jsx';
 import { tenderCloseBand, applyVizFilter } from '../lib/nationalKpi.js';
 import FeedLoader from '../shell/FeedLoader.jsx';
+import DeskStateShell from '../shell/DeskStateShell.jsx';
+import ColumnChooser from '../shell/ColumnChooser.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
-import TableFilterPop from '../shell/TableFilterPop.jsx';
+import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
 import ConflictsMonitor from './ConflictsMonitor.jsx';
 import TransitDesk from './TransitDesk.jsx';
 import AlliancesMonitor from './AlliancesMonitor.jsx';
@@ -47,6 +57,12 @@ import ChokepointsDesk from './ChokepointsDesk.jsx';
 import LeadersDesk from './LeadersDesk.jsx';
 import CommoditiesDesk from './CommoditiesDesk.jsx';
 import EnergyDesk from './EnergyDesk.jsx';
+
+const LARGE_PAGE = 100;
+
+function isParliamentaryQuestions(name) {
+  return /parliamentary question/i.test(String(name || ''));
+}
 
 export default function DeskView({
   tier,
@@ -60,15 +76,66 @@ export default function DeskView({
   onClearViz,
 }) {
   const [q, setQ] = useState('');
+  const deferredQ = useDeferredValue(q);
   const [sort, setSort] = useState({ key: '', dir: 'asc' });
   const [feed, setFeed] = useState(null);
   const [err, setErr] = useState('');
   const [loading, setLoading] = useState(true);
+  const [visibleKeys, setVisibleKeys] = useState(null);
+  const [reloadTick, setReloadTick] = useState(0);
+  const [page, setPage] = useState(0);
+  const [hasAnswerFilter, setHasAnswerFilter] = useState('');
+  const colsKey = featureName ? `niy-cols:${tier || ''}:${featureName}` : '';
+  const filtersKey = featureName ? `niy-filters:${tier || ''}:${featureName}` : '';
+  const questionsDesk = isParliamentaryQuestions(featureName);
 
   useEffect(() => {
     setQ('');
+    setPage(0);
+    setHasAnswerFilter('');
     onSelect(null);
-  }, [tier, featureName, onSelect]);
+    if (!colsKey) {
+      setVisibleKeys(null);
+      return;
+    }
+    try {
+      const raw = localStorage.getItem(colsKey);
+      setVisibleKeys(raw ? JSON.parse(raw) : null);
+    } catch {
+      setVisibleKeys(null);
+    }
+    if (filtersKey) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(filtersKey) || 'null');
+        if (saved && typeof saved === 'object') {
+          if (typeof saved.q === 'string') setQ(saved.q);
+          if (saved.hasAnswer != null) setHasAnswerFilter(saved.hasAnswer);
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [tier, featureName, onSelect, colsKey, filtersKey]);
+
+  useEffect(() => {
+    if (!filtersKey || !questionsDesk) return;
+    try {
+      localStorage.setItem(filtersKey, JSON.stringify({ q, hasAnswer: hasAnswerFilter }));
+    } catch {
+      /* ignore quota */
+    }
+  }, [filtersKey, questionsDesk, q, hasAnswerFilter]);
+
+  function persistVisibleKeys(keys) {
+    setVisibleKeys(keys);
+    if (!colsKey) return;
+    try {
+      if (!keys) localStorage.removeItem(colsKey);
+      else localStorage.setItem(colsKey, JSON.stringify(keys));
+    } catch {
+      /* ignore quota */
+    }
+  }
 
   useEffect(() => {
     if (!featureName) return undefined;
@@ -92,8 +159,9 @@ export default function DeskView({
     fetchFeature({ tier, feature: featureName, signal: ac.signal })
       .then((body) => {
         if (ac.signal.aborted) return;
-        setFeed(body);
-        onFeed(body);
+        const prepared = prepareDeskFeed(body);
+        setFeed(prepared);
+        onFeed(prepared);
         onSelect(null);
       })
       .catch((e) => {
@@ -108,21 +176,75 @@ export default function DeskView({
         onLoading?.(false);
       });
     return () => ac.abort();
-  }, [tier, featureName, onFeed, onSelect, onLoading, reload]);
+  }, [tier, featureName, onFeed, onSelect, onLoading, reload, reloadTick]);
+
+  const searchIndex = useMemo(() => {
+    const rows = feed?.rows || [];
+    if (!shouldIndexSearch(rows.length)) return null;
+    return buildTableSearchIndex(rows);
+  }, [feed]);
 
   const filtered = useMemo(() => {
-    let rows = filterRows(feed?.rows || [], q);
+    const base = feed?.rows || [];
+    let rows = shouldIndexSearch(base.length)
+      ? searchTableRows(base, searchIndex, deferredQ)
+      : filterRows(base, deferredQ);
     rows = rows.filter((r) => applyVizFilter(r, vizFilter));
+    if (questionsDesk && hasAnswerFilter) {
+      rows = rows.filter((r) => matchesChoice(hasAnswerFilter, r.has_answer_key || 'unknown'));
+    }
     return sortRows(rows, sort.key || undefined, sort.dir);
-  }, [feed, q, sort, vizFilter]);
+  }, [feed, deferredQ, sort, vizFilter, searchIndex, questionsDesk, hasAnswerFilter]);
 
-  const cols = useMemo(() => feedColumns(feed?.feature || featureName, filtered), [feed, featureName, filtered]);
+  useEffect(() => {
+    setPage(0);
+  }, [deferredQ, sort, vizFilter, hasAnswerFilter, featureName]);
+
+  const usePaging = filtered.length > LARGE_PAGE;
+  const pageCount = Math.max(1, Math.ceil(filtered.length / LARGE_PAGE));
+  const safePage = Math.min(page, pageCount - 1);
+  const pageRows = useMemo(() => {
+    if (!usePaging) return filtered;
+    const start = safePage * LARGE_PAGE;
+    return filtered.slice(start, start + LARGE_PAGE);
+  }, [filtered, usePaging, safePage]);
+
+  const allCols = useMemo(() => feedColumns(feed?.feature || featureName, filtered), [feed, featureName, filtered]);
+  const cols = useMemo(() => {
+    if (!allCols.length) return allCols;
+    const defaults = allCols.filter((c) => c.default !== false).slice(0, 7).map((c) => c.key);
+    const keys = Array.isArray(visibleKeys) && visibleKeys.length ? visibleKeys : defaults;
+    const picked = allCols.filter((c) => keys.includes(c.key));
+    return picked.length ? picked : allCols.slice(0, 7);
+  }, [allCols, visibleKeys]);
+
+  const questionFilterGroups = useMemo(() => {
+    if (!questionsDesk) return [];
+    return [
+      choiceGroup(
+        'Has answer',
+        [
+          { value: 'yes', label: 'Has answer' },
+          { value: 'no', label: 'No answer' },
+          { value: 'unknown', label: 'Not reported' },
+        ],
+        hasAnswerFilter,
+        setHasAnswerFilter,
+      ),
+    ];
+  }, [questionsDesk, hasAnswerFilter]);
+
   const statusRow = !loading && feed?.rows?.length === 1 && feed.rows[0]?.status === 'source_status' ? feed.rows[0] : null;
-  const kindLabel = loading ? 'LOADING' : feedKindLabel(feed) || '—';
-  const liveOn = kindLabel === 'LIVE FEED';
+  const dataState = resolveDataState(feed, { loading, error: err });
+  const liveOn = dataState.id === 'live';
+  const shellState = isTerminalState(dataState) || (err && !feed) || statusRow;
 
   function toggleSort(key) {
     setSort((s) => (s.key === key ? { key, dir: s.dir === 'asc' ? 'desc' : 'asc' } : { key, dir: 'asc' }));
+  }
+
+  function retry() {
+    setReloadTick((n) => n + 1);
   }
 
   if (isTransitFeature(featureName)) {
@@ -238,13 +360,41 @@ export default function DeskView({
     );
   }
 
+  if (isFundFlowFeature(featureName) && !statusRow) {
+    return (
+      <div className="desk desk-wide desk-res">
+        {err && <p className="banner warn">{err}</p>}
+        <div className={`alliances-wrap${loading ? ' is-loading' : ''}`}>
+          {loading && <FeedLoader label="Downloading Budget Statement 1…" />}
+          {!loading && (
+            <FundFlowDesk
+              feed={feed}
+              selected={selected}
+              onSelect={onSelect}
+              vizFilter={vizFilter}
+              onClearViz={onClearViz}
+            />
+          )}
+        </div>
+      </div>
+    );
+  }
+
   if (isBudgetFeature(featureName) && !statusRow) {
     return (
       <div className="desk desk-wide desk-res">
         {err && <p className="banner warn">{err}</p>}
         <div className={`alliances-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label="Loading budget figures…" />}
-          {!loading && <BudgetDesk selected={selected} onSelect={onSelect} vizFilter={vizFilter} onClearViz={onClearViz} />}
+          {!loading && (
+            <BudgetDesk
+              selected={selected}
+              onSelect={onSelect}
+              onFeed={onFeed}
+              vizFilter={vizFilter}
+              onClearViz={onClearViz}
+            />
+          )}
         </div>
       </div>
     );
@@ -347,58 +497,103 @@ export default function DeskView({
     );
   }
 
+  const displayTitle = featureMenuLabel({ htmlFeature: featureName }) || featureName || 'FEED';
+  const coverageLabel = (() => {
+    if (loading) return 'Fetching…';
+    if (shellState) return dataState.coverage || 'No live rows';
+    const n = filtered.length;
+    const total = feed?.rows?.length;
+    if (/open fronts/i.test(featureName || '')) {
+      const through = formatDate(feed?.coverage?.through) || feed?.coverage?.through || '';
+      return `${n} conflict${n === 1 ? '' : 's'}${through ? ` · archive through ${through}` : ''}`;
+    }
+    return `${n}${total && n !== total ? ` / ${total}` : ''} rows${feed?.coverage?.exhaustive ? ' · exhaustive' : ''}${
+      usePaging ? ` · page ${safePage + 1}/${pageCount}` : ''
+    }${dataState.lastSync ? ` · sync ${dataState.lastSync}` : ''}`;
+  })();
+
   return (
     <div className={`desk desk-wide${isGlobalResourcesTable(featureName) || isGeonomicsTable(featureName) || isNationalTable(featureName) ? ' desk-res' : ''}`}>
       <div className="feed-col compact">
         <div className="feed-head">
           <h1>
-            {(feed?.meta?.heading || featureName || 'FEED').toUpperCase()}
-            <span className={`live-feed ${liveOn ? 'on' : ''}`}>{kindLabel}</span>
+            {displayTitle.toUpperCase()}
+            <span className={`live-feed data-state-${dataState.id}${liveOn ? ' on' : ''}`}>{dataState.label}</span>
           </h1>
           <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
-          {!statusRow && (
+          {!shellState && (
             <TableFilterPop
               feed={feed}
               q={q}
               onQ={setQ}
-              searchPlaceholder="Search this table"
+              searchPlaceholder={questionsDesk ? 'Search questions, members, ministries…' : 'Search this table'}
               vizFilter={vizFilter}
               onClearViz={onClearViz}
               disabled={loading}
+              extraGroups={questionFilterGroups}
             />
           )}
-          <span className="muted">
-            {loading
-              ? 'Fetching…'
-              : statusRow
-                ? 'No live rows'
-                : `${filtered.length}${feed?.rows && filtered.length !== feed.rows.length ? ` / ${feed.rows.length}` : ''} rows${feed?.coverage?.exhaustive ? ' · exhaustive' : ''}`}
-          </span>
+          {!shellState && (
+            <ColumnChooser
+              allCols={allCols}
+              visibleKeys={cols.map((c) => c.key)}
+              onChange={persistVisibleKeys}
+              disabled={loading}
+            />
+          )}
+          <span className="muted">{coverageLabel}</span>
         </div>
-        {err && <p className="banner warn">{err}</p>}
-        {feed?.meta?.section && !statusRow && (
+        {feed?.fallback && dataState.id !== 'live' && !shellState && (
+          <p className="banner">{dataState.detail || 'Showing archived or cached rows. Not a live feed.'}</p>
+        )}
+        {(() => {
+          const note = sensitiveNoteFor(featureName);
+          if (!note || shellState) return null;
+          return (
+            <div className="banner warn desk-sensitive" role="note">
+              <strong>{note.title}</strong>
+              <span>{note.body}</span>
+            </div>
+          );
+        })()}
+        {feed?.meta?.newsDedupRemoved > 0 && !shellState && (
+          <p className="desk-note">
+            Showing {filtered.length} stories after removing {feed.meta.newsDedupRemoved} repeat
+            headline{feed.meta.newsDedupRemoved === 1 ? '' : 's'}.
+          </p>
+        )}
+        {feed?.meta?.boardNote && !shellState && (
+          <p className="desk-note desk-quality" role="note">
+            {feed.meta.boardNote}
+          </p>
+        )}
+        {(() => {
+          const qText = qualityBannerText(feed);
+          if (!qText || shellState) return null;
+          return (
+            <p className="desk-note desk-quality" role="status">
+              {qText}
+            </p>
+          );
+        })()}
+        {feed?.meta?.section && !shellState && (
           <div className="desk-strip">
             <span>{feed.meta.section}</span>
             {feed.meta.status ? <span>{feed.meta.status}</span> : null}
           </div>
         )}
-        {feed?.meta?.note && !statusRow && <p className="desk-note">{feed.meta.note}</p>}
+        {feed?.meta?.note && !feed?.meta?.sensitive && !shellState && (
+          <p className="desk-note">{feed.meta.note}</p>
+        )}
         <div className={`table-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label={`Loading ${featureName || 'feed'}…`} />}
-          {statusRow ? (
-            <div className="source-status-card">
-              <p className="source-status-kicker">Source status</p>
-              <h2>{statusRow.title}</h2>
-              <p>{statusRow.detail}</p>
-              {statusRow.fail_reason && <p className="muted">Reason: {statusRow.fail_reason}</p>}
-              {statusRow.host && <p className="muted">Configured host: {statusRow.host}</p>}
-              {feed?.source?.gdelt && (
-                <p className="muted">
-                  GDELT is a news reporting search, not an official dataset. Nothing was invented to fill this table.
-                </p>
-              )}
-              {feed?.source?.note && !feed.source.gdelt && <p className="muted">{feed.source.note}</p>}
-            </div>
+          {!loading && shellState ? (
+            <DeskStateShell
+              state={err && !feed ? { ...dataState, id: 'error', label: 'ERROR', detail: err } : dataState}
+              featureName={featureName}
+              onRetry={retry}
+              expectedSources={(feed?.source?.links || []).join(', ')}
+            />
           ) : (
             <table className="feed-table">
               <thead>
@@ -422,68 +617,112 @@ export default function DeskView({
                   </tr>
                 ) : filtered.length === 0 ? (
                   <tr>
-                    <td colSpan={cols.length || 1}>No rows in this view.</td>
+                    <td colSpan={cols.length || 1}>
+                      No rows in this view.
+                      {(q || vizFilter || hasAnswerFilter) && (
+                        <>
+                          {' '}
+                          <button
+                            type="button"
+                            className="ghost-btn tiny"
+                            onClick={() => {
+                              setQ('');
+                              setHasAnswerFilter('');
+                              onClearViz?.();
+                            }}
+                          >
+                            Clear filters
+                          </button>
+                        </>
+                      )}
+                    </td>
                   </tr>
                 ) : (
-                  filtered.slice(0, ['geo-pack', 'law-pack', 'finance-pack', 'carbon-pack'].includes(feed?.source?.kind) || feed?.tier === 'finance' || feed?.tier === 'climate' || feed?.tier === 'sports' || feed?.tier === 'entertainment' ? 2500 : 400).map((row, i) => {
-                    const rowId = `${cellOf(row, cols[0] || { key: 'title' })}|${i}`;
-                    const on =
-                      selected === row ||
-                      (selected &&
-                        (selected.conflict_name || selected.title) &&
-                        (selected.conflict_name || selected.title) === (row.conflict_name || row.title));
-                    const close = /central tender/i.test(featureName) ? tenderCloseBand(row) : null;
-                    const rowClass = [on ? 'on' : '', close?.tone ? `close-${close.tone}` : ''].filter(Boolean).join(' ');
-                    return (
-                      <tr
-                        key={rowId}
-                        className={rowClass}
-                        onClick={() => onSelect(on ? null : row)}
-                        {...rowDragProps(row, {
-                          feature: featureName,
-                          title: cellOf(row, cols[0] || { key: 'title' }) || row.title || row.name || 'Row',
-                        })}
-                      >
-                        {cols.map((c, ci) => {
-                          const text = c.key === '_closes' ? tenderCloseBand(row).label : cellOf(row, c);
-                          const href =
-                            isArticleHref(row.source_url) &&
-                            row.status !== 'source_status' &&
-                            !isGithubCsvRow(row)
-                              ? row.source_url
-                              : '';
-                          return (
-                            <td
-                              key={c.key}
-                              title={text}
-                              className={[c.num ? 'num' : '', c.key === 'station' ? 'station-cell' : ''].filter(Boolean).join(' ') || undefined}
-                            >
-                              {ci === 0 ? (
-                                <span className="name-cell">
-                                  <i className="status-dot" />
-                                  {href ? (
-                                    <a href={href} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
-                                      {cellText(text)}
-                                    </a>
-                                  ) : (
-                                    <span className="name-link">{cellText(text)}</span>
-                                  )}
-                                </span>
-                              ) : c.pill ? (
-                                <span className="soft-pill">{cellText(text)}</span>
-                              ) : (
-                                cellText(text)
-                              )}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })
+                  pageRows.map((row, i) => {
+                      const rowId = `${cellOf(row, cols[0] || { key: 'title' })}|${safePage}|${i}`;
+                      const on =
+                        selected === row ||
+                        (selected &&
+                          (selected.conflict_name || selected.title || selected.subject) &&
+                          (selected.conflict_name || selected.title || selected.subject) ===
+                            (row.conflict_name || row.title || row.subject));
+                      const close = /central tender/i.test(featureName) ? tenderCloseBand(row) : null;
+                      const rowClass = [on ? 'on' : '', close?.tone ? `close-${close.tone}` : ''].filter(Boolean).join(' ');
+                      return (
+                        <tr
+                          key={rowId}
+                          className={rowClass}
+                          onClick={() => onSelect(on ? null : row)}
+                          {...rowDragProps(row, {
+                            feature: featureName,
+                            title: cellOf(row, cols[0] || { key: 'title' }) || row.title || row.name || 'Row',
+                          })}
+                        >
+                          {cols.map((c, ci) => {
+                            const raw = c.key === '_closes' ? tenderCloseBand(row).label : cellOf(row, c);
+                            const text = formatCell(raw, c) || '—';
+                            const pillText = c.pill && text !== '—' ? formatStatus(raw) : text;
+                            const display = ci === 0 ? truncateTwoLines(text, 160) : cellText(c.pill ? pillText : text);
+                            const href =
+                              isArticleHref(row.source_url) && row.status !== 'source_status' && !isGithubCsvRow(row)
+                                ? row.source_url
+                                : '';
+                            return (
+                              <td
+                                key={c.key}
+                                title={raw || text}
+                                className={
+                                  [c.num || c.pct || c.inr ? 'num' : '', c.key === 'station' ? 'station-cell' : '']
+                                    .filter(Boolean)
+                                    .join(' ') || undefined
+                                }
+                              >
+                                {ci === 0 ? (
+                                  <span className="name-cell">
+                                    <i className="status-dot" />
+                                    {href ? (
+                                      <a href={href} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
+                                        {display}
+                                      </a>
+                                    ) : (
+                                      <span className="name-link">{display}</span>
+                                    )}
+                                  </span>
+                                ) : c.pill && text !== '—' ? (
+                                  <span className="soft-pill">{display}</span>
+                                ) : (
+                                  display
+                                )}
+                              </td>
+                            );
+                          })}
+                        </tr>
+                      );
+                    })
                 )}
               </tbody>
             </table>
           )}
+          {!loading && !shellState && usePaging ? (
+            <div className="desk-pager" role="navigation" aria-label="Table pages">
+              <button type="button" className="ghost-btn tiny" disabled={safePage <= 0} onClick={() => setPage((p) => Math.max(0, p - 1))}>
+                Previous
+              </button>
+              <span className="muted">
+                {safePage * LARGE_PAGE + 1}–{Math.min(filtered.length, (safePage + 1) * LARGE_PAGE)} of{' '}
+                {filtered.length.toLocaleString('en-IN')}
+                {shouldIndexSearch(feed?.rows?.length) ? ' · indexed search' : ''}
+              </span>
+              <button
+                type="button"
+                className="ghost-btn tiny"
+                disabled={safePage >= pageCount - 1}
+                onClick={() => setPage((p) => Math.min(pageCount - 1, p + 1))}
+              >
+                Next
+              </button>
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

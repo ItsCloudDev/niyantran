@@ -1,12 +1,15 @@
 import { Fragment } from 'react';
+import { downloadJson, withExportProvenance } from '../lib/exportProvenance.js';
 
 function exportJson(name, data) {
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `niyantran-${name}.json`;
-  a.click();
-  URL.revokeObjectURL(a.href);
+  downloadJson(`niyantran-${name}.json`, data);
+}
+
+export function exportRegisterRows(name, rows, meta = {}) {
+  downloadJson(
+    `niyantran-${name}.json`,
+    withExportProvenance(rows, { feature: meta.feature || name, filterNote: meta.filterNote || '' }),
+  );
 }
 
 export function GeoDossierChrome({
@@ -25,7 +28,7 @@ export function GeoDossierChrome({
     <div className="gld">
       <div className="gld-head">
         <h1>{title}</h1>
-        <span className="live-feed on">LIVE FEED</span>
+        <span className="live-feed">REGISTER</span>
         {tools}
         <nav className="gld-tabs" aria-label="Dossier views">
           <button type="button" className={tab === 'analytics' ? 'on' : ''} onClick={() => onTab('analytics')}>

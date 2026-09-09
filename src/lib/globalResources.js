@@ -27,19 +27,37 @@ export function isGlobalResourcesTable(name) {
 }
 
 export function flattenLeader(p) {
+  const name = String(p.name || '').trim();
+  const role = String(p.role || p.office || '').trim();
+  const placeholder =
+    !name ||
+    /^not verified$/i.test(name) ||
+    /^(us )?president$/i.test(name) ||
+    /^prime minister$/i.test(name) ||
+    (role && name.toLowerCase() === role.toLowerCase());
   return {
     id: p.id || '',
-    title: p.name || p.country || '',
-    name: p.name || '',
+    title: placeholder ? 'Not verified' : name || p.country || '',
+    name: placeholder ? 'Not verified' : name,
     country: p.country || '',
     flag: p.flag || '',
-    role: p.role || '',
+    office: role || p.office || '',
+    role: role || p.office || '',
+    status: p.status || (placeholder ? 'Not verified' : 'Tracked'),
+    term_start: p.term_start || p.since || '',
+    since: p.since || p.term_start || '',
+    next_transition: p.next_transition || p.next_election || 'Not reported',
+    last_verified: p.last_verified || p.as_of || '',
     party: p.party || '',
     ideology: p.ideology || '',
-    since: p.since || '',
     age: p.age == null ? '' : p.age,
     latest: p.latest || '',
-    source_url: 'https://www.wikidata.org/',
+    authority: p.authority || (p.acting ? 'Acting / interim' : 'De jure (as listed)'),
+    iso: String(p.id || '')
+      .replace(/\d+$/, '')
+      .slice(0, 2)
+      .toUpperCase(),
+    source_url: p.source_url || 'https://www.wikidata.org/',
   };
 }
 

@@ -19,6 +19,7 @@ import {
   viewBox,
   zoomLabel,
 } from '../lib/transit.js';
+import { liveApiEnabled } from '../lib/apiMode.js';
 
 const TILE = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile';
 
@@ -121,7 +122,7 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
   const viewRef = useRef({ z: 1, cx: null, cy: null, rid: null });
   const filterRef = useRef({ ...DEFAULT_FILTER });
   const regionRef = useRef(REGIONS[1]);
-  const modeRef = useRef('sea');
+  const modeRef = useRef('air');
   const pausedRef = useRef(false);
   const hoverRef = useRef(null);
   const focusRef = useRef(null);
@@ -136,7 +137,7 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
   const lastErrRef = useRef('');
   const abortRef = useRef(null);
 
-  const [mode, setMode] = useState('sea');
+  const [mode, setMode] = useState('air');
   const [regionId, setRegionId] = useState('india');
   const [paused, setPaused] = useState(false);
   const [wsState, setWsState] = useState('connecting');
@@ -149,13 +150,13 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
   const [showResults, setShowResults] = useState(false);
   const [tip, setTip] = useState(null);
   const [panel, setPanel] = useState(null);
-  const [foot, setFoot] = useState('LIVE AIS');
+  const [foot, setFoot] = useState('OPENSKY NETWORK');
   const [alert, setAlert] = useState('');
   const [tick, setTick] = useState(0);
 
   const region = useMemo(() => REGIONS.find((r) => r.id === regionId) || REGIONS[1], [regionId]);
   const liveOn = wsState === 'live';
-  const liveLabel = liveOn ? '✓ LIVE FEED' : wsState === 'connecting' ? 'CONNECTING' : wsState === 'paused' ? 'PAUSED' : 'FEED OFFLINE';
+  const liveLabel = liveOn ? '✓ LATEST' : wsState === 'connecting' ? 'CONNECTING' : wsState === 'paused' ? 'PAUSED' : 'FEED OFFLINE';
 
   const visibleList = useMemo(() => {
     const b = viewBox(regionRef.current, viewRef.current);
@@ -197,6 +198,13 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
     const sea = modeRef.current === 'sea';
     if (!shipsRef.current.size && !airRef.current.size) setWsState('connecting');
     try {
+      if (!liveApiEnabled()) {
+        lastErrRef.current = 'Live ship/air API is not deployed on this host.';
+        setWsState(shipsRef.current.size || airRef.current.size ? 'live' : 'offline');
+        setAlert(lastErrRef.current);
+        publishFeed('offline', 0, 'static-host');
+        return;
+      }
       const url = sea ? `/api/ships?${bboxQuery(b)}` : `/api/air?${bboxQuery(b)}`;
       const res = await fetch(url, { signal: ac.signal });
       const d = await res.json();
@@ -597,10 +605,35 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
             <span className="sb-dot">●</span>TRANSIT
           </span>
           <span className="sb-modes">
-            <button type="button" className={`sb-mode${mode === 'sea' ? ' active' : ''}`} data-mode="sea" onClick={() => setMode('sea')}>
+            <button
+              type="button"
+              className={`sb-mode${mode === 'sea' ? ' active' : ''}`}
+              data-mode="sea"
+              onClick={() => {
+                setMode('sea');
+                // Digitraffic (no AISSTREAM_KEY) only covers the Baltic — jump the map there.
+                if (regionId !== 'baltic') {
+                  setRegionId('baltic');
+                  viewRef.current = { z: 1, cx: null, cy: null, rid: null };
+                  setZLabel('1x');
+                }
+              }}
+            >
               ⚓ SHIPS
             </button>
-            <button type="button" className={`sb-mode${mode === 'air' ? ' active' : ''}`} data-mode="air" onClick={() => setMode('air')}>
+            <button
+              type="button"
+              className={`sb-mode${mode === 'air' ? ' active' : ''}`}
+              data-mode="air"
+              onClick={() => {
+                setMode('air');
+                if (regionId === 'baltic') {
+                  setRegionId('india');
+                  viewRef.current = { z: 1, cx: null, cy: null, rid: null };
+                  setZLabel('1x');
+                }
+              }}
+            >
               ✈ AIR
             </button>
           </span>
@@ -678,15 +711,27 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
             </button>
           </span>
         </div>
-        {alert && wsState === 'offline' && (
+        {alert && (wsState === 'offline' || (mode === 'sea' && count === 0)) && (
           <div className="sb-alert">
             <span className="sb-alert-msg">
               {mode === 'air'
                 ? `Air feed unavailable: ${alert}. OpenSky / adsb.fi / adsb.lol all failed from this network.`
-                : `Live vessel AIS is unavailable (${alert}). Baltic coverage is open via Digitraffic; India & chokepoints need an AISStream key on the server.`}
+                : alert.includes('Baltic') || alert.includes('AISSTREAM')
+                  ? alert
+                  : `Live vessel AIS is unavailable (${alert}). Baltic coverage is open via Digitraffic; India & chokepoints need an AISStream key on the server.`}
             </span>
-            <button className="sb-retry" type="button" onClick={poll}>
-              Retry now
+            <button
+              className="sb-retry"
+              type="button"
+              onClick={() => {
+                if (mode === 'sea' && regionId !== 'baltic') {
+                  setRegionId('baltic');
+                  viewRef.current = { z: 1, cx: null, cy: null, rid: null };
+                  setZLabel('1x');
+                } else poll();
+              }}
+            >
+              {mode === 'sea' && regionId !== 'baltic' ? 'Open Baltic' : 'Retry now'}
             </button>
           </div>
         )}

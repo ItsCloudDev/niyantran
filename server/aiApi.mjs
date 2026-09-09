@@ -1,7 +1,10 @@
 /**
  * Same-origin AI proxy.
- *   POST /api/ai/chat   { roleId, model, provider, key, messages, files }
+ *   POST /api/ai/chat   { roleId, model, provider, messages, files }
  *   GET  /api/ai/fetch?url=  text or base64 for pdf/image (CORS bypass)
+ *
+ * Keys come from server env (DEEPSEEK_API_KEY / GEMINI_API_KEY / NIYANTRAN_AI_KEY).
+ * Request-body `key` is ignored — never accept client-supplied credentials (D6).
  */
 const UA = 'Mozilla/5.0 (compatible; NiyantranTerminal/1.0; AI-research)';
 const FETCH_MS = 25_000;
@@ -215,10 +218,18 @@ export async function runAiFetch(target) {
 }
 
 export async function runAiChat(payload = {}) {
-  const key = String(payload.key || '').trim();
   const model = String(payload.model || '').trim();
-  const provider = String(payload.provider || (model.includes('gemini') ? 'gemini' : 'deepseek'));
-  if (!key) throw new Error('API key missing. Set it in Admin → AI models.');
+  const provider = String(payload.provider || (model.includes('gemini') ? 'gemini' : 'deepseek')).toLowerCase();
+  // D6: never trust a key from the browser. Server env only.
+  const key =
+    provider === 'gemini'
+      ? String(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || process.env.NIYANTRAN_AI_KEY || '').trim()
+      : String(process.env.DEEPSEEK_API_KEY || process.env.NIYANTRAN_AI_KEY || '').trim();
+  if (!key) {
+    throw new Error(
+      'API key missing on the server. Set DEEPSEEK_API_KEY or GEMINI_API_KEY (or NIYANTRAN_AI_KEY) in the host environment.',
+    );
+  }
   if (!model) throw new Error('Model missing.');
 
   const userMessages = Array.isArray(payload.messages) ? payload.messages : [];

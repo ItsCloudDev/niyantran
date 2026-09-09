@@ -9,17 +9,24 @@ import {
   saveHomeCache,
 } from '../lib/homeCache.js';
 import { homeLatestFromStatic, homeMarketsFromStatic, homePulseFromStatic } from '../lib/homeStatic.js';
+import { liveApiEnabled } from '../lib/apiMode.js';
 import { loadRefreshCfg } from '../lib/refreshStore.js';
 import { aiDragProps } from '../lib/aiDrop.js';
+import { dedupeNewsRows } from '../lib/newsDedup.js';
+import { applyRecordChecklistToFeed } from '../lib/recordChecklist.js';
+import { prepareHomeMarketQuotes } from '../lib/homeMarkets.js';
 
 async function getJson(path, signal) {
   const route = String(path).split('?')[0];
-  try {
-    const res = await fetch(path, { signal });
-    const body = await res.json().catch(() => null);
-    if (res.ok && body && (body.rows?.length || body.ok !== false)) return body;
-  } catch (err) {
-    if (err?.name === 'AbortError') throw err;
+  // D2: on static production, skip /api/home/* (404) and load archives directly.
+  if (liveApiEnabled()) {
+    try {
+      const res = await fetch(path, { signal });
+      const body = await res.json().catch(() => null);
+      if (res.ok && body && (body.rows?.length || body.ok !== false)) return body;
+    } catch (err) {
+      if (err?.name === 'AbortError') throw err;
+    }
   }
   if (route === '/api/home/markets') return homeMarketsFromStatic(signal);
   if (route === '/api/home/latest') return homeLatestFromStatic(signal);
@@ -83,6 +90,42 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
   const prevReload = useRef(reload);
 
   const featured = zine[0];
+  const latestShown = dedupeNewsRows(
+    (latest || []).map((r) => ({
+      title: r.title,
+      source_url: r.link,
+      date: r.pub || r.ago,
+      outlet: r.src,
+      link: r.link,
+      src: r.src,
+      ago: r.ago,
+      dek: r.dek,
+      pub: r.pub,
+    })),
+  ).map((r) => ({
+    title: r.title,
+    link: r.link || r.source_url,
+    src: r.src || r.outlet,
+    ago: r.ago,
+    dek: r.dek,
+    pub: r.pub || r.published || r.date,
+    related_count: r.related_count,
+  }));
+  const pulseShown = dedupeNewsRows(
+    (pulse || []).map((r) => ({
+      title: r.title,
+      source_url: r.link,
+      date: r.time,
+      region: r.region,
+      link: r.link,
+      time: r.time,
+      dek: r.dek,
+    })),
+  ).map((r) => ({
+    ...r,
+    link: r.link || r.source_url,
+    time: r.time || r.published || r.date,
+  }));
 
   useEffect(() => {
     if (!ads.length) return undefined;
@@ -100,19 +143,33 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
 
     function applyFeed(marketsBody, latestBody, pulseBody) {
       if (latestBody?.rows?.length) {
-        onFeed({
-          feature: 'Home',
-          rows: latestBody.rows.map((r) => ({ title: r.title, source_url: r.link, date: r.pub, status: '' })),
-          source: { adapter: 'rss', note: latestBody.note, gdelt: false },
-          fallback: Boolean(latestBody.archive),
-        });
+        const rows = dedupeNewsRows(
+          latestBody.rows.map((r) => ({ title: r.title, source_url: r.link, date: r.pub, status: '' })),
+        );
+        onFeed(
+          applyRecordChecklistToFeed({
+            feature: 'Home',
+            rows,
+            source: { adapter: 'rss', note: latestBody.note, gdelt: false },
+            fallback: Boolean(latestBody.archive),
+          }),
+        );
       } else if (pulseBody?.rows?.length) {
-        onFeed({
-          feature: 'Conflict Pulse',
-          rows: pulseBody.rows.map((r) => ({ title: r.title, source_url: r.link, date: r.time, status: '' })),
-          source: { adapter: pulseBody.gdelt ? 'news-search' : 'embedded', note: pulseBody.note, gdelt: Boolean(pulseBody.gdelt) },
-          fallback: Boolean(pulseBody.archive),
-        });
+        const rows = dedupeNewsRows(
+          pulseBody.rows.map((r) => ({ title: r.title, source_url: r.link, date: r.time, status: '' })),
+        );
+        onFeed(
+          applyRecordChecklistToFeed({
+            feature: 'Conflict Pulse',
+            rows,
+            source: {
+              adapter: pulseBody.gdelt ? 'news-search' : 'embedded',
+              note: pulseBody.note,
+              gdelt: Boolean(pulseBody.gdelt),
+            },
+            fallback: Boolean(pulseBody.archive),
+          }),
+        );
       }
       onSelect(null);
     }
@@ -186,7 +243,7 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
     return () => ac.abort();
   }, [onFeed, onSelect, onLoading, reload]);
 
-  const quotes = markets.length ? markets : TICKER_PLACEHOLDERS;
+  const quotes = prepareHomeMarketQuotes(markets.length ? markets : TICKER_PLACEHOLDERS);
 
   return (
     <div className="nh">
@@ -197,7 +254,14 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
               <div key={`${copy}-${q.name}`} className="nh-q" aria-hidden={copy === 1 || undefined}>
                 <b>{q.name}</b>
                 <span>{fmtPx(q.last)}</span>
-                <span className={chClass(q.d1)}>{chText(q.d1)}</span>
+                <span className={chClass(q.chg)} title={q.changeWindow ? `${q.changeWindow} change` : 'Change'}>
+                  {chText(q.chg)}
+                </span>
+                {(q.asOf || q.as_of) && (
+                  <span className="muted" style={{ fontSize: '0.65rem', marginLeft: 4 }} title={`As of ${q.asOf || q.as_of}`}>
+                    as of {String(q.asOf || q.as_of).slice(0, 10)}
+                  </span>
+                )}
               </div>
             )),
           )}
@@ -206,45 +270,85 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
 
       <div className="nh-grid">
         <div className="nh-main">
-          {ads.length > 0 && (
-            <div className="nh-ads">
-              <span className="ad-tag">SPONSORED</span>
-              {ads.map((a, i) => (
-                <a
-                  key={a.name}
-                  className={`ad-slide${i === ad ? ' on' : ''}`}
-                  href={a.url}
-                  target="_blank"
-                  rel="noopener noreferrer sponsored"
-                  aria-label={a.name}
-                >
-                  <img alt={a.name} src={a.img} />
-                </a>
-              ))}
-              <div className="ad-dots">
-                {ads.map((a, i) => (
-                  <i key={a.name} className={i === ad ? 'on' : ''} onClick={() => setAd(i)} />
-                ))}
-              </div>
-            </div>
-          )}
-
-          {featured && (
-            <article className="nh-hero">
-              <div className="nh-hero-copy">
-                <div className="nh-kicker">
-                  <span className="nh-tag inv">{featured.type}</span>
-                  {featured.interactive && <span className="nh-sim">INTERACTIVE</span>}
+          <div className="nh-main-top">
+            {featured && (
+              <article className="nh-hero">
+                <div className="nh-hero-copy">
+                  <div className="nh-kicker">
+                    <span className="nh-tag inv">{featured.type || 'Briefing'}</span>
+                    {featured.interactive && <span className="nh-sim">INTERACTIVE</span>}
+                  </div>
+                  <h2>{featured.title}</h2>
+                  <p>{featured.dek}</p>
+                  <div className="nh-story-meta">
+                    <span>{featured.source || 'Niyantran'}</span>
+                    {featured.published ? <span>· {featured.published}</span> : null}
+                  </div>
+                  <button type="button" className="nh-cta">
+                    Read + explore the data
+                  </button>
                 </div>
-                <h2>{featured.title}</h2>
-                <p>{featured.dek}</p>
-                <button type="button" className="nh-cta">
-                  Read + explore the data
-                </button>
-              </div>
-              {featured.thumb && <img className="nh-hero-img" alt="" src={featured.thumb} />}
-            </article>
-          )}
+                {featured.thumb && <img className="nh-hero-img" alt="" src={featured.thumb} />}
+              </article>
+            )}
+            <div className="nh-side-stack">
+              {ads.length > 0 && (
+                <div className="nh-ads" aria-label="Sponsored">
+                  <span className="ad-tag">SPONSORED</span>
+                  {ads.map((a, i) => (
+                    <a
+                      key={a.name}
+                      className={`ad-slide${i === ad ? ' on' : ''}`}
+                      href={a.url}
+                      target="_blank"
+                      rel="noopener noreferrer sponsored"
+                      aria-label={a.name}
+                    >
+                      <img alt={a.name} src={a.img} />
+                    </a>
+                  ))}
+                  <div className="ad-dots">
+                    {ads.map((a, i) => (
+                      <i key={a.name} className={i === ad ? 'on' : ''} onClick={() => setAd(i)} />
+                    ))}
+                  </div>
+                </div>
+              )}
+              <section className="nh-box">
+                <div className="bh">MY WATCHLIST</div>
+                <ul className="nh-watchlist">
+                  {[
+                    { tab: 'global', feature: 'Open Fronts', label: 'Open Fronts' },
+                    { tab: 'national', feature: 'Bill Passage Probability Index', label: 'Bill Passage' },
+                    { tab: 'economics', feature: 'NSE/BSE Delayed Market Feed', label: 'Markets' },
+                  ].map((w) => (
+                    <li key={w.feature}>
+                      <button type="button" onClick={() => onOpen({ tab: w.tab, feature: w.feature })}>
+                        {w.label}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+              <section className="nh-box">
+                <div className="bh">FEED HEALTH</div>
+                <div className="nh-health">
+                  <div>
+                    <span>Markets</span>
+                    <b>{meta.markets?.ageH != null ? `${Number(meta.markets.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
+                  </div>
+                  <div>
+                    <span>Latest wire</span>
+                    <b>{meta.latest?.ageH != null ? `${Number(meta.latest.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
+                  </div>
+                  <div>
+                    <span>Conflict pulse</span>
+                    <b>{meta.pulse?.ageH != null ? `${Number(meta.pulse.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
         </div>
 
         <aside className="nh-rail">
@@ -258,16 +362,27 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
                 Economics desk →
               </button>
             </div>
+            {(meta.markets?.as_of || meta.markets?.updated || quotes.find((q) => q.asOf || q.as_of)) && (
+              <p className="nh-asof muted" style={{ margin: '0 0 0.5rem', fontSize: '0.75rem' }}>
+                As of{' '}
+                {String(meta.markets?.as_of || meta.markets?.updated || quotes.find((q) => q.asOf || q.as_of)?.asOf || quotes.find((q) => q.as_of)?.as_of || '')
+                  .replace('T', ' ')
+                  .replace(/\.\d+Z$/, ' UTC')
+                  .replace(/Z$/, ' UTC')}
+              </p>
+            )}
             <table className="nh-moves">
               <tbody>
                 {quotes.map((q) => (
                   <tr key={`m-${q.name}`} {...aiDragProps({ kind: 'row', tab: 'economics', feature: 'NSE/BSE Delayed Market Feed', title: q.name, row: q })}>
                     <td>{q.name}</td>
                     <td className="spk">
-                      <Spark values={q.spark} up={(q.dM || 0) >= 0} />
+                      <Spark values={q.spark} up={(q.chg || 0) >= 0} />
                     </td>
                     <td className="px">{fmtPx(q.last)}</td>
-                    <td className={chClass(q.dM)}>{q.last == null ? '…' : chText(q.dM, 1)}</td>
+                    <td className={chClass(q.chg)} title={q.changeWindow ? `${q.changeWindow} change` : 'Change'}>
+                      {q.last == null ? '…' : chText(q.chg)}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -281,15 +396,16 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
             </div>
             <ul className="nh-latest">
               {loading && !latest.length && <li className="muted">Loading…</li>}
-              {!loading && !latest.length && <li className="muted">Wire quiet. Headlines arrive from RSS when the proxy can reach the publishers.</li>}
-              {latest.map((r, i) => (
+              {!loading && !latestShown.length && <li className="muted">Wire quiet. Headlines arrive from RSS when the proxy can reach the publishers.</li>}
+              {latestShown.map((r, i) => (
                 <li key={`${r.link}-${i}`} {...aiDragProps({ kind: 'row', title: r.title, row: { title: r.title, source_url: r.link, src: r.src } })}>
-                  <span className="t">{r.ago || ''}</span>
+                  <span className="nh-story-kicker">{r.src || 'Wire'}{r.ago ? ` · ${r.ago}` : ''}{r.related_count > 0 ? ` · +${r.related_count} related` : ''}</span>
                   <div>
                     <a href={r.link} target="_blank" rel="noreferrer">
                       {r.title}
                     </a>
-                    <span className="s">{r.src}</span>
+                    {r.dek ? <span className="nh-story-dek">{r.dek}</span> : null}
+                    <span className="s">{r.src}{r.ago ? ` · ${r.ago}` : ''}</span>
                   </div>
                 </li>
               ))}
@@ -304,7 +420,7 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
             </div>
             <ul className="nh-pulse">
               {loading && !pulse.length && <li className="muted">Loading…</li>}
-              {!loading && !pulse.length && (
+              {!loading && !pulseShown.length && (
                 <li className="muted">
                   Conflict wire quiet.{' '}
                   <button type="button" className="nh-inline" onClick={() => onOpen({ tab: 'global', feature: 'Open Fronts' })} {...aiDragProps({ kind: 'feature', tab: 'global', feature: 'Open Fronts', title: 'Open Fronts' })}>
@@ -312,11 +428,12 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
                   </button>
                 </li>
               )}
-              {pulse.slice(0, 5).map((r, i) => (
+              {pulseShown.slice(0, 5).map((r, i) => (
                 <li key={`${r.link || r.title}-${i}`} {...aiDragProps({ kind: 'row', tab: 'global', feature: 'Open Fronts', title: r.title, row: r })}>
-                  <span className="pt">
-                    {r.time}
-                    {r.region ? ` · ${r.region}` : ''}
+                  <span className="nh-story-kicker">
+                    {r.region || 'Theatre'}
+                    {r.time ? ` · ${r.time}` : ''}
+                    {r.related_count > 0 ? ` · +${r.related_count} related` : ''}
                   </span>
                   {r.link ? (
                     <a href={r.link} target="_blank" rel="noreferrer">
@@ -325,6 +442,7 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
                   ) : (
                     <span className="nh-ptitle">{r.title}</span>
                   )}
+                  {r.dek ? <span className="nh-story-dek">{r.dek}</span> : null}
                 </li>
               ))}
             </ul>

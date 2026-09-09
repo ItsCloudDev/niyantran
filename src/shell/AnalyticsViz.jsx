@@ -83,10 +83,12 @@ export function Heatmap({ matrix, onPick, active, rowFilterCol, colFilterCol, co
 }
 
 export function BarList({ items, onPick, active }) {
-  const max = Math.max(1, ...items.map((x) => Math.abs(x.value)));
+  const list = Array.isArray(items) ? items : [];
+  if (!list.length) return null;
+  const max = Math.max(1, ...list.map((x) => Math.abs(Number(x.value) || 0)));
   return (
     <ul className="bar-list">
-      {items.map((it) => {
+      {list.map((it) => {
         const clickable = Boolean(onPick && it.filterCol);
         const on = clickable && vizFilterOn(active, it.filterCol, it.filterValue || it.label, it.filterMap);
         return (
@@ -102,7 +104,7 @@ export function BarList({ items, onPick, active }) {
               {it.label}
             </button>
             <span className="bar-track">
-              <i className={`bar-fill tone-${it.tone || 'gradient'}`} style={{ width: `${(100 * Math.abs(it.value)) / max}%` }} />
+              <i className={`bar-fill tone-${it.tone || 'gradient'}`} style={{ width: `${(100 * Math.abs(Number(it.value) || 0)) / max}%` }} />
             </span>
             <span className="bar-n">{it.display != null ? it.display : it.value}</span>
           </li>

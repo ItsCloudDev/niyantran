@@ -106,7 +106,7 @@ function adsbAircraft(json) {
     .filter((a) => a.icao && a.lat != null && a.lon != null);
 }
 
-async function serveAir(b) {
+export async function serveAir(b) {
   const key = `${b.lamin.toFixed(2)}:${b.lamax.toFixed(2)}:${b.lomin.toFixed(2)}:${b.lomax.toFixed(2)}`;
   const hit = airCache.get(key);
   if (hit && Date.now() - hit.at < AIR_TTL) return hit.body;
@@ -279,6 +279,11 @@ async function serveShips(b) {
     }
   }
 
+  // Digitraffic AIS is Baltic / Gulf of Finland only — not India or global chokepoints.
+  const BALTIC = { lamin: 53, lamax: 66, lomin: 9, lomax: 31 };
+  const overlapsBaltic =
+    b.lamax >= BALTIC.lamin && b.lamin <= BALTIC.lamax && b.lomax >= BALTIC.lomin && b.lomin <= BALTIC.lomax;
+
   try {
     const [locs, meta] = await Promise.all([
       fetchJson('https://meri.digitraffic.fi/api/ais/v1/locations', {
@@ -288,8 +293,19 @@ async function serveShips(b) {
       loadVesselMeta().catch(() => ({})),
     ]);
     const ships = shipsFromDigitraffic(locs, meta, b);
-    const body = { ships, vessels: ships, source: 'digitraffic' };
-    shipCache = { key: cacheKey, at: Date.now(), body };
+    if (ships.length) {
+      const body = { ships, vessels: ships, source: 'digitraffic' };
+      shipCache = { key: cacheKey, at: Date.now(), body };
+      return body;
+    }
+    const error = aisKey
+      ? 'No vessels in this view from AISStream or Digitraffic.'
+      : overlapsBaltic
+        ? 'Digitraffic returned no vessels in this Baltic view.'
+        : 'Ship AIS without AISSTREAM_KEY is Baltic-only (Digitraffic). Switch region to Baltic · Gulf of Finland, or set AISSTREAM_KEY for India / global coverage.';
+    const body = { ships: [], vessels: [], source: 'digitraffic', error };
+    // Do not cache empty out-of-coverage responses for long — region switches need a fresh read.
+    shipCache = { key: cacheKey, at: Date.now() - SHIP_TTL + 5_000, body };
     return body;
   } catch (e) {
     return { ships: [], vessels: [], source: '', error: e.message || 'ship feed unavailable' };

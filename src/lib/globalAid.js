@@ -83,11 +83,25 @@ export function hydrateAppeal(row) {
 export function statsFor(list) {
   const agencies = new Set();
   const regions = new Set();
+  let requirement = 0;
+  let funded = 0;
+  let people = 0;
   list.forEach((p) => {
     if (p.agency) agencies.add(p.agency);
     if (p.region) regions.add(p.region);
+    if (Number.isFinite(Number(p.requirement))) requirement += Number(p.requirement);
+    if (Number.isFinite(Number(p.funded))) funded += Number(p.funded);
+    if (Number.isFinite(Number(p.target))) people += Number(p.target);
   });
-  return { programmes: list.length, institutions: agencies.size, regions: regions.size };
+  return {
+    programmes: list.length,
+    institutions: agencies.size,
+    regions: regions.size,
+    requirement,
+    funded,
+    gap: Math.max(0, requirement - funded),
+    people,
+  };
 }
 
 export function flattenAppeal(p) {
