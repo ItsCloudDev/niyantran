@@ -13,7 +13,8 @@ import {
   saveRefreshCfg,
   subscribeRefresh,
 } from '../lib/refreshStore.js';
-import { cancelSweep, decorateApis, healStaleInactiveProbes, refreshOne, sweepApis } from '../lib/refreshFeeds.js';
+import { liveApiEnabled } from '../lib/apiMode.js';
+import { cancelSweep, decorateApis, healStaleInactiveProbes, healStaticHostProbes, refreshOne, sweepApis } from '../lib/refreshFeeds.js';
 
 const DESKS = ['ALL', 'GLOBAL', 'NATIONAL', 'STATE', 'LOCAL', 'LAW', 'ECONOMICS', 'CARBON', 'SPORTS', 'ENTERTAINMENT'];
 
@@ -135,7 +136,8 @@ function RefreshBar({ compact }) {
 export function OverviewPage({ users }) {
   useRefreshTick();
   useEffect(() => {
-    healStaleInactiveProbes().catch(() => {});
+    healStaticHostProbes();
+    if (liveApiEnabled()) healStaleInactiveProbes().catch(() => {});
   }, []);
   const rows = decorateApis(classifyApis());
   const stats = apiStats(rows);
@@ -215,7 +217,8 @@ export function ApisPage() {
   const [busy, setBusy] = useState('');
 
   useEffect(() => {
-    healStaleInactiveProbes().catch(() => {});
+    healStaticHostProbes();
+    if (liveApiEnabled()) healStaleInactiveProbes().catch(() => {});
   }, []);
 
   const qNorm = q.trim().toLowerCase();
@@ -261,7 +264,8 @@ export function ApisPage() {
       <h1 className="adm-h1">API status</h1>
       <p className="adm-lede">
         Last refresh, live/archive/inactive state, and a fleet sweep. Live connectors re-probe on the saved cadence
-        (default 6 hours).
+        (default 6 hours). On the production static host, a shipped pack is last-known-good — it does not move a Live
+        connector into Archive or Local pack.
       </p>
       <RefreshBar />
       <div className="adm-filters">

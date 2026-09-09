@@ -124,18 +124,21 @@ export async function fetchFeature({ tier, feature, signal } = {}) {
   }
 
   // D2: do not call /api/feature-feed on hosts where it is not deployed (404 spam).
+  // Keep the pack's own live vs archive flag — loading /data on a static host is
+  // not "the live API failed". Forcing fallback:true here is what marked Live
+  // desks as Archive / Local pack on Vercel.
   if (!liveApiEnabled()) {
     const archive = await fetchArchiveFeature({ tier, feature, signal });
     if (archive && Array.isArray(archive.rows)) {
       return {
         ...archive,
         ok: true,
-        fallback: hasRealRows(archive),
+        fallback: Boolean(archive.fallback) && hasRealRows(archive),
         source: {
           ...(archive.source || {}),
           note:
             archive.source?.note ||
-            'Static archive on this host (live feature-feed not deployed).',
+            'Shipped pack on this host (live feature-feed not deployed).',
         },
       };
     }
