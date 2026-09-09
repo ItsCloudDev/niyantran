@@ -31,8 +31,14 @@ export function isMorningBriefFeature(name) {
 }
 
 export function isStatementsFeature(name) {
-  return /statement & quote|statements & contradictions/i.test(String(name || ''));
+  return /statement & quote|statements & contradictions|public-figure media mention/i.test(String(name || ''));
 }
+
+/** UI display names — keep htmlFeature / route ids stable. */
+const FEATURE_DISPLAY_ALIASES = {
+  'Global Intelligence': 'Defence Procurement Intelligence',
+  'Statement & Quote Tracker with Contradiction Detection': 'Public-Figure Media Mention Monitor',
+};
 
 export function isIndustryFeature(name) {
   return /industry updates/i.test(String(name || ''));
@@ -68,7 +74,8 @@ export function isNationalTable(name) {
 export function featureMenuLabel(mod) {
   const raw = String(mod?.workbookFunctions || mod?.htmlFeature || '').trim();
   if (!raw) return '';
-  return raw.replace(/[A-Za-z]+/g, (w) => {
+  const aliased = FEATURE_DISPLAY_ALIASES[raw] || raw;
+  return aliased.replace(/[A-Za-z]+/g, (w) => {
     if (/^(IAS|IPS|AGMUT|MP|MLA|PIB|RBI|SEBI|TRAI|CCI|LS|SIR|CAG|GPDP|MGNREGA|BDO|SDO|SDM|EO)$/i.test(w)) return w.toUpperCase();
     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
   });

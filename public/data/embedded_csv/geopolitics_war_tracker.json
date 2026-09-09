@@ -7,7 +7,11 @@
     "intensity": "Critical",
     "trend": "Escalating",
     "started": "February 2022",
-    "latest_development": "Attritional front largely static; artillery, drones and deep strikes define the fighting; Western aid and mobilisation remain decisive variables."
+    "latest_development": "Attritional front largely static; artillery, drones and deep strikes define the fighting; Western aid and mobilisation remain decisive variables.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Armenia–Azerbaijan (Karabakh aftermath)",
@@ -17,7 +21,11 @@
     "intensity": "Medium",
     "trend": "Easing",
     "started": "2020 (flare 2023)",
-    "latest_development": "Karabakh depopulated after 2023; focus shifted to a border-delimitation and peace-treaty track between Yerevan and Baku."
+    "latest_development": "Karabakh depopulated after 2023; focus shifted to a border-delimitation and peace-treaty track between Yerevan and Baku.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Georgia — Abkhazia / South Ossetia",
@@ -27,7 +35,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2008",
-    "latest_development": "Russian-backed breakaway regions remain outside Tbilisi's control; line of contact quiet but unresolved."
+    "latest_development": "Russian-backed breakaway regions remain outside Tbilisi's control; line of contact quiet but unresolved.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Moldova — Transnistria",
@@ -37,7 +49,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "1992",
-    "latest_development": "Russian troops and a self-declared republic persist on the Dniester; energy leverage is the main pressure lever."
+    "latest_development": "Russian troops and a self-declared republic persist on the Dniester; energy leverage is the main pressure lever.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Israel–Hamas War (Gaza)",
@@ -47,7 +63,11 @@
     "intensity": "Critical",
     "trend": "Stable",
     "started": "October 2023",
-    "latest_development": "Phased ceasefire and hostage-release framework in effect but repeatedly strained; reconstruction and governance of Gaza unresolved."
+    "latest_development": "Phased ceasefire and hostage-release framework in effect but repeatedly strained; reconstruction and governance of Gaza unresolved.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Israel–Hezbollah (Lebanon)",
@@ -57,7 +77,11 @@
     "intensity": "High",
     "trend": "Easing",
     "started": "September 2024",
-    "latest_development": "US/France-brokered ceasefire holding unevenly; disputes over withdrawal lines and Hezbollah disarmament recur."
+    "latest_development": "US/France-brokered ceasefire holding unevenly; disputes over withdrawal lines and Hezbollah disarmament recur.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Syria — Post-Assad Transition",
@@ -67,7 +91,11 @@
     "intensity": "High",
     "trend": "Escalating",
     "started": "December 2024",
-    "latest_development": "Interim authority consolidating after Assad's fall; sectarian violence, Kurdish integration and foreign strikes complicate the transition."
+    "latest_development": "Interim authority consolidating after Assad's fall; sectarian violence, Kurdish integration and foreign strikes complicate the transition.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Yemen — Houthi Conflict / Red Sea",
@@ -77,7 +105,11 @@
     "intensity": "High",
     "trend": "Stable",
     "started": "2015 (escalated 2023)",
-    "latest_development": "Houthi forces conduct periodic Red Sea shipping attacks; internal front lines frozen amid stalled UN-led talks."
+    "latest_development": "Houthi forces conduct periodic Red Sea shipping attacks; internal front lines frozen amid stalled UN-led talks.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Iraq — ISIS remnants",
@@ -87,7 +119,11 @@
     "intensity": "Medium",
     "trend": "Easing",
     "started": "2014",
-    "latest_development": "Residual ISIS cells persist in rural areas; focus turned to militia politics and US-troop drawdown negotiations."
+    "latest_development": "Residual ISIS cells persist in rural areas; focus turned to militia politics and US-troop drawdown negotiations.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Iran–Israel shadow & direct strikes",
@@ -97,7 +133,11 @@
     "intensity": "High",
     "trend": "Escalating",
     "started": "2024",
-    "latest_development": "Escalated from proxy shadow-war to direct exchanges of strikes; nuclear programme and regional deterrence are the flashpoints."
+    "latest_development": "Escalated from proxy shadow-war to direct exchanges of strikes; nuclear programme and regional deterrence are the flashpoints.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Turkey–PKK insurgency",
@@ -107,7 +147,11 @@
     "intensity": "Medium",
     "trend": "Easing",
     "started": "1984",
-    "latest_development": "A 2025 PKK disarmament/dissolution process is underway, potentially ending one of the region's longest insurgencies."
+    "latest_development": "A 2025 PKK disarmament/dissolution process is underway, potentially ending one of the region's longest insurgencies.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Israel — West Bank unrest",
@@ -117,7 +161,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "2023",
-    "latest_development": "Recurrent Israeli raids, settler violence and militant attacks; settlement expansion sharpens tensions."
+    "latest_development": "Recurrent Israeli raids, settler violence and militant attacks; settlement expansion sharpens tensions.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Turkey–Syria (SDF/YPG)",
@@ -127,7 +175,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "2016",
-    "latest_development": "Turkish operations against Kurdish-led SDF continue; post-Assad realignment reopens questions on north-east Syria."
+    "latest_development": "Turkish operations against Kurdish-led SDF continue; post-Assad realignment reopens questions on north-east Syria.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Israel–Syria strikes",
@@ -137,7 +189,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "2024",
-    "latest_development": "Israel struck Syrian military assets during and after the transition, seizing a buffer zone near the Golan."
+    "latest_development": "Israel struck Syrian military assets during and after the transition, seizing a buffer zone near the Golan.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "US–Iran Gulf standoff",
@@ -147,7 +203,11 @@
     "intensity": "Medium",
     "trend": "Stable",
     "started": "2019",
-    "latest_development": "Naval frictions in the Strait of Hormuz persist alongside sanctions pressure and nuclear diplomacy."
+    "latest_development": "Naval frictions in the Strait of Hormuz persist alongside sanctions pressure and nuclear diplomacy.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Iran — Baloch/Kurdish unrest",
@@ -157,7 +217,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2022",
-    "latest_development": "Sporadic clashes with Baloch (Jaish al-Adl) and Kurdish groups continue in the periphery."
+    "latest_development": "Sporadic clashes with Baloch (Jaish al-Adl) and Kurdish groups continue in the periphery.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Libya — Civil conflict",
@@ -167,7 +231,11 @@
     "intensity": "Medium",
     "trend": "Stable",
     "started": "2014",
-    "latest_development": "Rival Tripoli and eastern administrations hold an uneasy truce; militia clashes and stalled elections recur."
+    "latest_development": "Rival Tripoli and eastern administrations hold an uneasy truce; militia clashes and stalled elections recur.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Western Sahara (Morocco–Polisario)",
@@ -177,7 +245,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "1975 (resumed 2020)",
-    "latest_development": "Low-level hostilities resumed after the 2020 ceasefire collapse; a UN-mediated status process remains stalled."
+    "latest_development": "Low-level hostilities resumed after the 2020 ceasefire collapse; a UN-mediated status process remains stalled.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Egypt — Sinai insurgency",
@@ -187,7 +259,11 @@
     "intensity": "Low",
     "trend": "Easing",
     "started": "2011",
-    "latest_development": "Militant activity in northern Sinai has declined substantially after prolonged military operations."
+    "latest_development": "Militant activity in northern Sinai has declined substantially after prolonged military operations.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Tunisia — Political crisis",
@@ -197,7 +273,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2021",
-    "latest_development": "Executive consolidation of power and opposition arrests keep governance contested."
+    "latest_development": "Executive consolidation of power and opposition arrests keep governance contested.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Mali — Jihadist insurgency (JNIM/ISGS)",
@@ -207,7 +287,11 @@
     "intensity": "High",
     "trend": "Escalating",
     "started": "2012",
-    "latest_development": "Al-Qaeda- and IS-affiliated groups expand amid the junta's pivot to Russian security partners and UN mission exit."
+    "latest_development": "Al-Qaeda- and IS-affiliated groups expand amid the junta's pivot to Russian security partners and UN mission exit.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Burkina Faso — Insurgency",
@@ -217,7 +301,11 @@
     "intensity": "High",
     "trend": "Escalating",
     "started": "2015",
-    "latest_development": "One of the world's fastest-growing displacement crises; large territory outside state control."
+    "latest_development": "One of the world's fastest-growing displacement crises; large territory outside state control.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Niger — Insurgency & instability",
@@ -227,7 +315,11 @@
     "intensity": "High",
     "trend": "Escalating",
     "started": "2015",
-    "latest_development": "Post-coup junta realigned away from Western partners as tri-border militant violence persists."
+    "latest_development": "Post-coup junta realigned away from Western partners as tri-border militant violence persists.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Nigeria — Boko Haram / ISWAP",
@@ -237,7 +329,11 @@
     "intensity": "High",
     "trend": "Stable",
     "started": "2009",
-    "latest_development": "Insurgency entrenched around Lake Chad; ISWAP has eclipsed the original Boko Haram faction."
+    "latest_development": "Insurgency entrenched around Lake Chad; ISWAP has eclipsed the original Boko Haram faction.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Nigeria — Banditry & farmer–herder",
@@ -247,7 +343,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "2018",
-    "latest_development": "Armed 'bandit' groups and communal violence drive mass kidnappings across the north-west and Middle Belt."
+    "latest_development": "Armed 'bandit' groups and communal violence drive mass kidnappings across the north-west and Middle Belt.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Cameroon — Anglophone crisis",
@@ -257,7 +357,11 @@
     "intensity": "Medium",
     "trend": "Stable",
     "started": "2017",
-    "latest_development": "Ambazonian separatists and security forces clash in the two Anglophone regions; dialogue stalled."
+    "latest_development": "Ambazonian separatists and security forces clash in the two Anglophone regions; dialogue stalled.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Mali — Azawad / CSP-Tuareg",
@@ -267,7 +371,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "2023",
-    "latest_development": "Northern Tuareg coalition resumed fighting the state after the 2015 Algiers accord collapsed."
+    "latest_development": "Northern Tuareg coalition resumed fighting the state after the 2015 Algiers accord collapsed.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Coastal spillover (Benin/Togo)",
@@ -277,7 +385,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "2021",
-    "latest_development": "Sahelian militancy is pushing south into littoral West African states' northern borderlands."
+    "latest_development": "Sahelian militancy is pushing south into littoral West African states' northern borderlands.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Côte d'Ivoire — Northern spillover",
@@ -287,7 +399,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2020",
-    "latest_development": "Occasional cross-border attacks from the Sahel; reinforced border deployments."
+    "latest_development": "Occasional cross-border attacks from the Sahel; reinforced border deployments.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Senegal — Casamance",
@@ -297,7 +413,11 @@
     "intensity": "Low",
     "trend": "Easing",
     "started": "1982",
-    "latest_development": "Africa's longest low-grade insurgency has wound down through successive peace deals."
+    "latest_development": "Africa's longest low-grade insurgency has wound down through successive peace deals.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Guinea — Political instability",
@@ -307,7 +427,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2021",
-    "latest_development": "Post-coup transition timeline and opposition restrictions keep politics tense."
+    "latest_development": "Post-coup transition timeline and opposition restrictions keep politics tense.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "DRC — M23 / Rwanda",
@@ -317,7 +441,11 @@
     "intensity": "High",
     "trend": "Escalating",
     "started": "2021 (escalated 2024)",
-    "latest_development": "Rwanda-backed M23 seized major eastern cities; a wider regional war risk looms over mineral-rich Kivus."
+    "latest_development": "Rwanda-backed M23 seized major eastern cities; a wider regional war risk looms over mineral-rich Kivus.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "DRC — ADF (eastern)",
@@ -327,7 +455,11 @@
     "intensity": "High",
     "trend": "Escalating",
     "started": "1996",
-    "latest_development": "IS-affiliated ADF conducts massacres in Ituri and North Kivu alongside a Ugandan joint operation."
+    "latest_development": "IS-affiliated ADF conducts massacres in Ituri and North Kivu alongside a Ugandan joint operation.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Central African Republic — Civil war",
@@ -337,7 +469,11 @@
     "intensity": "Medium",
     "trend": "Easing",
     "started": "2012",
-    "latest_development": "Government, Russian partners and rebel coalitions hold a fragile balance; peace process partial."
+    "latest_development": "Government, Russian partners and rebel coalitions hold a fragile balance; peace process partial.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Uganda — ADF/LRA remnants",
@@ -347,7 +483,11 @@
     "intensity": "Low",
     "trend": "Easing",
     "started": "1987",
-    "latest_development": "LRA effectively defeated; residual ADF activity spills from the DRC."
+    "latest_development": "LRA effectively defeated; residual ADF activity spills from the DRC.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Rwanda–Burundi tensions",
@@ -357,7 +497,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2015",
-    "latest_development": "Mutual accusations of backing rebels; periodic border closures amid the DRC crisis."
+    "latest_development": "Mutual accusations of backing rebels; periodic border closures amid the DRC crisis.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Sudan — Civil War (SAF vs RSF)",
@@ -367,7 +511,11 @@
     "intensity": "Critical",
     "trend": "Escalating",
     "started": "April 2023",
-    "latest_development": "SAF–RSF war has triggered the world's largest displacement and hunger crisis; Darfur sees ethnic-targeted violence."
+    "latest_development": "SAF–RSF war has triggered the world's largest displacement and hunger crisis; Darfur sees ethnic-targeted violence.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Ethiopia — Amhara (Fano)",
@@ -377,7 +525,11 @@
     "intensity": "High",
     "trend": "Escalating",
     "started": "2023",
-    "latest_development": "Fano militia insurgency spread across Amhara after the Tigray war; federal offensives ongoing."
+    "latest_development": "Fano militia insurgency spread across Amhara after the Tigray war; federal offensives ongoing.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Ethiopia — Oromia (OLA)",
@@ -387,7 +539,11 @@
     "intensity": "Medium",
     "trend": "Stable",
     "started": "2018",
-    "latest_development": "Oromo Liberation Army insurgency persists amid failed talks."
+    "latest_development": "Oromo Liberation Army insurgency persists amid failed talks.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Somalia — Al-Shabaab",
@@ -397,7 +553,11 @@
     "intensity": "High",
     "trend": "Stable",
     "started": "2006",
-    "latest_development": "Al-Shabaab remains resilient despite government offensives and an AU mission transition."
+    "latest_development": "Al-Shabaab remains resilient despite government offensives and an AU mission transition.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "South Sudan — Instability",
@@ -407,7 +567,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "2013",
-    "latest_development": "2018 peace deal fraying; delayed elections and elite rivalry risk renewed war."
+    "latest_development": "2018 peace deal fraying; delayed elections and elite rivalry risk renewed war.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Ethiopia–Somalia (Somaliland port)",
@@ -417,7 +581,11 @@
     "intensity": "Medium",
     "trend": "Stable",
     "started": "2024",
-    "latest_development": "A Somaliland port-access MoU inflamed Addis Ababa–Mogadishu relations before Turkish-brokered de-escalation."
+    "latest_development": "A Somaliland port-access MoU inflamed Addis Ababa–Mogadishu relations before Turkish-brokered de-escalation.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Eritrea–Ethiopia tensions",
@@ -427,7 +595,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "2023",
-    "latest_development": "Post-Tigray fallout and Red Sea access ambitions raise the risk of renewed interstate conflict."
+    "latest_development": "Post-Tigray fallout and Red Sea access ambitions raise the risk of renewed interstate conflict.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Kenya — Al-Shabaab spillover",
@@ -437,7 +609,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2011",
-    "latest_development": "Cross-border raids continue in the north-east and coast regions."
+    "latest_development": "Cross-border raids continue in the north-east and coast regions.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Somaliland — Sool (SSC-Khaatumo)",
@@ -447,7 +623,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2023",
-    "latest_development": "Clan-based forces wrested Sool region control from Somaliland, seeking federal recognition."
+    "latest_development": "Clan-based forces wrested Sool region control from Somaliland, seeking federal recognition.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Sudan–South Sudan (Abyei)",
@@ -457,7 +637,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2011",
-    "latest_development": "Disputed, oil-adjacent Abyei remains under an expiring UN interim arrangement."
+    "latest_development": "Disputed, oil-adjacent Abyei remains under an expiring UN interim arrangement.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Mozambique — Cabo Delgado (ISIS-M)",
@@ -467,7 +651,11 @@
     "intensity": "Medium",
     "trend": "Stable",
     "started": "2017",
-    "latest_development": "IS-linked insurgency near gas projects; Rwandan and SADC forces contain but have not ended it."
+    "latest_development": "IS-linked insurgency near gas projects; Rwandan and SADC forces contain but have not ended it.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "India–China LAC Standoff (Ladakh)",
@@ -477,7 +665,11 @@
     "intensity": "Medium",
     "trend": "Easing",
     "started": "2020",
-    "latest_development": "Disengagement reached at most friction points; patrolling arrangements restored on parts of the LAC."
+    "latest_development": "Disengagement reached at most friction points; patrolling arrangements restored on parts of the LAC.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "India–Pakistan LoC Tensions",
@@ -487,7 +679,11 @@
     "intensity": "Medium",
     "trend": "Stable",
     "started": "2025",
-    "latest_development": "A ceasefire understanding holds after a 2025 escalation; cross-border militancy remains the core dispute."
+    "latest_development": "A ceasefire understanding holds after a 2025 escalation; cross-border militancy remains the core dispute.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Afghanistan — Taliban vs ISKP",
@@ -497,7 +693,11 @@
     "intensity": "Medium",
     "trend": "Stable",
     "started": "2021",
-    "latest_development": "ISKP mounts periodic mass-casualty attacks against the Taliban government and minorities."
+    "latest_development": "ISKP mounts periodic mass-casualty attacks against the Taliban government and minorities.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Afghanistan–Pakistan (TTP/border)",
@@ -507,7 +707,11 @@
     "intensity": "High",
     "trend": "Escalating",
     "started": "2021",
-    "latest_development": "TTP attacks surged from Afghan soil; Islamabad–Kabul relations deteriorated with cross-border strikes."
+    "latest_development": "TTP attacks surged from Afghan soil; Islamabad–Kabul relations deteriorated with cross-border strikes.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Pakistan — Balochistan insurgency",
@@ -517,7 +721,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "2004",
-    "latest_development": "Baloch separatists escalated attacks on security forces and Chinese/CPEC interests."
+    "latest_development": "Baloch separatists escalated attacks on security forces and Chinese/CPEC interests.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "India — Manipur ethnic conflict",
@@ -527,7 +735,11 @@
     "intensity": "Medium",
     "trend": "Stable",
     "started": "2023",
-    "latest_development": "Meitei–Kuki violence displaced tens of thousands; the state remains effectively partitioned."
+    "latest_development": "Meitei–Kuki violence displaced tens of thousands; the state remains effectively partitioned.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "India — Naxalite (Maoist)",
@@ -537,7 +749,11 @@
     "intensity": "Low",
     "trend": "Easing",
     "started": "1967",
-    "latest_development": "Maoist insurgency is at a historic low, confined to shrinking pockets of central India under a stated 2026 elimination goal."
+    "latest_development": "Maoist insurgency is at a historic low, confined to shrinking pockets of central India under a stated 2026 elimination goal.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "India — J&K militancy",
@@ -547,7 +763,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "1989",
-    "latest_development": "Militancy has ebbed but periodic attacks and infiltration continue post-2019 reorganisation."
+    "latest_development": "Militancy has ebbed but periodic attacks and infiltration continue post-2019 reorganisation.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Pakistan–Iran border strikes",
@@ -557,7 +777,11 @@
     "intensity": "Medium",
     "trend": "Easing",
     "started": "2024",
-    "latest_development": "Tit-for-tat strikes on militant havens in 2024 were quickly de-escalated diplomatically."
+    "latest_development": "Tit-for-tat strikes on militant havens in 2024 were quickly de-escalated diplomatically.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Bangladesh — Political instability",
@@ -567,7 +791,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2024",
-    "latest_development": "An interim government took over after mass protests ousted the prime minister; transition contested."
+    "latest_development": "An interim government took over after mass protests ousted the prime minister; transition contested.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "India–Nepal (Kalapani)",
@@ -577,7 +805,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2020",
-    "latest_development": "Overlapping Himalayan boundary claims remain unresolved but non-violent."
+    "latest_development": "Overlapping Himalayan boundary claims remain unresolved but non-violent.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "China–Bhutan border",
@@ -587,7 +819,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "1984",
-    "latest_development": "Boundary talks continue amid Chinese construction in disputed areas that concern India."
+    "latest_development": "Boundary talks continue amid Chinese construction in disputed areas that concern India.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Myanmar — Civil War",
@@ -597,7 +833,11 @@
     "intensity": "High",
     "trend": "Escalating",
     "started": "February 2021",
-    "latest_development": "Post-coup junta is losing ground to a broad ethnic-resistance and PDF alliance across multiple fronts."
+    "latest_development": "Post-coup junta is losing ground to a broad ethnic-resistance and PDF alliance across multiple fronts.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Philippines — NPA insurgency",
@@ -607,7 +847,11 @@
     "intensity": "Low",
     "trend": "Easing",
     "started": "1969",
-    "latest_development": "The communist NPA is much weakened; localised clashes and peace overtures continue."
+    "latest_development": "The communist NPA is much weakened; localised clashes and peace overtures continue.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Philippines — Mindanao (ASG/BIFF)",
@@ -617,7 +861,11 @@
     "intensity": "Low",
     "trend": "Easing",
     "started": "1969",
-    "latest_development": "BARMM autonomy has reduced violence; splinter militant cells persist."
+    "latest_development": "BARMM autonomy has reduced violence; splinter militant cells persist.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Thailand — South (Patani)",
@@ -627,7 +875,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2004",
-    "latest_development": "A low-grade Malay-Muslim insurgency continues in the deep south amid on-off talks."
+    "latest_development": "A low-grade Malay-Muslim insurgency continues in the deep south amid on-off talks.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Indonesia — Papua",
@@ -637,7 +889,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "1963",
-    "latest_development": "West Papua liberation fighters clash with security forces; access tightly restricted."
+    "latest_development": "West Papua liberation fighters clash with security forces; access tightly restricted.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Taiwan Strait tensions",
@@ -647,7 +903,11 @@
     "intensity": "High",
     "trend": "Escalating",
     "started": "1949 (escalated 2022)",
-    "latest_development": "Record PLA air and naval incursions and drills raise cross-strait invasion and blockade concerns."
+    "latest_development": "Record PLA air and naval incursions and drills raise cross-strait invasion and blockade concerns.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Korean Peninsula (DPRK)",
@@ -657,7 +917,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "1950",
-    "latest_development": "North Korean missile tests, a scrapped inter-Korean posture and DPRK–Russia alignment heighten risk."
+    "latest_development": "North Korean missile tests, a scrapped inter-Korean posture and DPRK–Russia alignment heighten risk.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "South China Sea disputes",
@@ -667,7 +931,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "2012",
-    "latest_development": "China–Philippines standoffs at Second Thomas/Scarborough Shoals recur amid competing claims."
+    "latest_development": "China–Philippines standoffs at Second Thomas/Scarborough Shoals recur amid competing claims.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Senkaku/Diaoyu (China–Japan)",
@@ -677,7 +945,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2012",
-    "latest_development": "Chinese coast-guard patrols near Japan-administered islands sustain a simmering dispute."
+    "latest_development": "Chinese coast-guard patrols near Japan-administered islands sustain a simmering dispute.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Japan–Russia (Kuril Islands)",
@@ -687,7 +959,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "1945",
-    "latest_development": "No WWII peace treaty; the dispute hardened further after 2022."
+    "latest_development": "No WWII peace treaty; the dispute hardened further after 2022.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Mexico — Cartel war",
@@ -697,7 +973,11 @@
     "intensity": "High",
     "trend": "Stable",
     "started": "2006",
-    "latest_development": "Cartel fragmentation drives homicides, disappearances and fentanyl trafficking; a militarised response continues."
+    "latest_development": "Cartel fragmentation drives homicides, disappearances and fentanyl trafficking; a militarised response continues.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Haiti — Gang crisis",
@@ -707,7 +987,11 @@
     "intensity": "Critical",
     "trend": "Escalating",
     "started": "2021",
-    "latest_development": "Armed gangs control most of the capital; a Kenya-led multinational mission struggles to restore order."
+    "latest_development": "Armed gangs control most of the capital; a Kenya-led multinational mission struggles to restore order.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Colombia — ELN / FARC dissidents",
@@ -717,7 +1001,11 @@
     "intensity": "Medium",
     "trend": "Stable",
     "started": "1964",
-    "latest_development": "'Total Peace' talks stall as ELN and FARC-dissident factions fight over coca and mining economies."
+    "latest_development": "'Total Peace' talks stall as ELN and FARC-dissident factions fight over coca and mining economies.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Venezuela–Guyana (Essequibo)",
@@ -727,7 +1015,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "2023",
-    "latest_development": "Caracas revived a claim to two-thirds of Guyana around the oil-rich Essequibo, prompting a regional standoff."
+    "latest_development": "Caracas revived a claim to two-thirds of Guyana around the oil-rich Essequibo, prompting a regional standoff.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Ecuador — Narco violence",
@@ -737,7 +1029,11 @@
     "intensity": "High",
     "trend": "Escalating",
     "started": "2024",
-    "latest_development": "A declared 'internal armed conflict' against gangs after prison takeovers and a TV-station siege."
+    "latest_development": "A declared 'internal armed conflict' against gangs after prison takeovers and a TV-station siege.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Venezuela — Political crisis",
@@ -747,7 +1043,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "2024",
-    "latest_development": "A disputed 2024 election deepened the standoff between Maduro and the opposition amid emigration."
+    "latest_development": "A disputed 2024 election deepened the standoff between Maduro and the opposition amid emigration.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Brazil — Militia & faction violence",
@@ -757,7 +1057,11 @@
     "intensity": "Medium",
     "trend": "Stable",
     "started": "2010",
-    "latest_development": "Rio militias and the PCC/CV drug factions contest territory in major cities."
+    "latest_development": "Rio militias and the PCC/CV drug factions contest territory in major cities.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Central America — El Salvador crackdown",
@@ -767,7 +1071,11 @@
     "intensity": "Medium",
     "trend": "Easing",
     "started": "2022",
-    "latest_development": "A prolonged state of exception slashed gang homicides amid mass-detention rights concerns."
+    "latest_development": "A prolonged state of exception slashed gang homicides amid mass-detention rights concerns.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Honduras — Gang violence",
@@ -777,7 +1085,11 @@
     "intensity": "Medium",
     "trend": "Stable",
     "started": "2010",
-    "latest_development": "MS-13 and Barrio 18 drive violence; a state of exception is in force."
+    "latest_development": "MS-13 and Barrio 18 drive violence; a state of exception is in force.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Nicaragua — Repression",
@@ -787,7 +1099,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2018",
-    "latest_development": "Post-2018 crackdown entrenched authoritarian rule and mass exile of the opposition."
+    "latest_development": "Post-2018 crackdown entrenched authoritarian rule and mass exile of the opposition.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Peru — Political unrest",
@@ -797,7 +1113,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2022",
-    "latest_development": "Recurrent protests and instability since the 2022 presidential crisis, especially in the south."
+    "latest_development": "Recurrent protests and instability since the 2022 presidential crisis, especially in the south.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Chile — Araucanía (Mapuche)",
@@ -807,7 +1127,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2008",
-    "latest_development": "Mapuche land conflict with forestry firms and the state sees periodic arson and clashes."
+    "latest_development": "Mapuche land conflict with forestry firms and the state sees periodic arson and clashes.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Kosovo–Serbia tensions",
@@ -817,7 +1141,11 @@
     "intensity": "Medium",
     "trend": "Escalating",
     "started": "2008 (flare 2023)",
-    "latest_development": "Serb-majority north sees recurrent violence; EU-facilitated normalisation is stalled."
+    "latest_development": "Serb-majority north sees recurrent violence; EU-facilitated normalisation is stalled.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Cyprus — Division",
@@ -827,7 +1155,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "1974",
-    "latest_development": "The island stays split between the Republic and the Turkish-Cypriot north; talks dormant."
+    "latest_development": "The island stays split between the Republic and the Turkish-Cypriot north; talks dormant.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Bosnia — Republika Srpska",
@@ -837,7 +1169,11 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "1995",
-    "latest_development": "Serb-entity secessionist rhetoric and institutional defiance strain the Dayton settlement."
+    "latest_development": "Serb-entity secessionist rhetoric and institutional defiance strain the Dayton settlement.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Greece–Turkey (Aegean/EEZ)",
@@ -847,7 +1183,11 @@
     "intensity": "Medium",
     "trend": "Stable",
     "started": "1996",
-    "latest_development": "Overlapping airspace and maritime-zone claims persist despite a recent diplomatic thaw."
+    "latest_development": "Overlapping airspace and maritime-zone claims persist despite a recent diplomatic thaw.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Spain — Catalonia",
@@ -857,7 +1197,11 @@
     "intensity": "Low",
     "trend": "Easing",
     "started": "2017",
-    "latest_development": "The independence push has cooled into a political/amnesty track after 2017."
+    "latest_development": "The independence push has cooled into a political/amnesty track after 2017.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Tajikistan–Kyrgyzstan border",
@@ -867,7 +1211,11 @@
     "intensity": "Low",
     "trend": "Easing",
     "started": "2021",
-    "latest_development": "Deadly 2021–22 clashes gave way to a delimitation deal reducing tensions."
+    "latest_development": "Deadly 2021–22 clashes gave way to a delimitation deal reducing tensions.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   },
   {
     "conflict_name": "Afghanistan–Iran (water/border)",
@@ -877,6 +1225,10 @@
     "intensity": "Low",
     "trend": "Stable",
     "started": "2023",
-    "latest_development": "Helmand water-rights disputes and border skirmishes recur with the Taliban government."
+    "latest_development": "Helmand water-rights disputes and border skirmishes recur with the Taliban government.",
+    "table_kind": "state",
+    "as_of": "2026-09-07T16:55:06.648Z",
+    "provenance": "unconfirmed",
+    "source_url": ""
   }
 ]

@@ -1,0 +1,158 @@
+/**
+ * Shared readiness model for desk modules.
+ * LIVE | CACHED | ARCHIVED | CURATED | OFFLINE | PLANNED | ERROR
+ */
+
+export const DATA_STATE = {
+  live: { id: 'live', label: 'LIVE', tone: 'ok' },
+  cached: { id: 'cached', label: 'CACHED', tone: 'warn' },
+  archived: { id: 'archived', label: 'ARCHIVED', tone: 'muted' },
+  curated: { id: 'curated', label: 'CURATED', tone: 'muted' },
+  offline: { id: 'offline', label: 'OFFLINE', tone: 'warn' },
+  planned: { id: 'planned', label: 'PLANNED', tone: 'muted' },
+  error: { id: 'error', label: 'ERROR', tone: 'bad' },
+  loading: { id: 'loading', label: 'LOADING', tone: 'muted' },
+};
+
+const PLANNED_RE =
+  /not yet shipped|not scheduled|extraction not scheduled|adapter is not|until feeds? exist|planned|coming soon|no public api|credential or licence|terms review|connector parked/i;
+
+const CURATED_RE = /curated|editorial|reference dataset|managed archive|local pack|dossier pack|html pack/i;
+
+const OFFLINE_RE = /unavailable|unreachable|http\s*502|http\s*503|timed?\s*out|offline|failed/i;
+
+function statusRow(feed) {
+  const row = feed?.rows?.[0];
+  return row?.status === 'source_status' ? row : null;
+}
+
+function noteBlob(feed) {
+  const sr = statusRow(feed);
+  return [
+    feed?.source?.note,
+    feed?.meta?.note,
+    feed?.meta?.status,
+    sr?.title,
+    sr?.detail,
+    sr?.fail_reason,
+    feed?.error,
+  ]
+    .filter(Boolean)
+    .join(' ');
+}
+
+/**
+ * Resolve the single honest data state for a feature-feed envelope.
+ * Never returns LIVE when fallback/archive is showing.
+ */
+export function resolveDataState(feed, { loading = false, error = '' } = {}) {
+  if (loading) return { ...DATA_STATE.loading, detail: 'Fetching…' };
+  if (error && !feed) {
+    return { ...DATA_STATE.error, detail: String(error) };
+  }
+
+  const sr = statusRow(feed);
+  const blob = noteBlob(feed);
+  const kind = String(feed?.source?.kind || '');
+  const adapter = String(feed?.source?.adapter || '');
+  const rows = (feed?.rows || []).filter((r) => r?.status !== 'source_status');
+
+  if (sr || rows.length === 0) {
+    if (PLANNED_RE.test(blob) || /scrape|licensed|credential/i.test(adapter)) {
+      return {
+        ...DATA_STATE.planned,
+        detail: sr?.detail || sr?.title || 'Adapter or dataset is not yet shipped for this module.',
+        host: sr?.host || '',
+        sourceNote: feed?.source?.note || '',
+      };
+    }
+    if (OFFLINE_RE.test(blob) || error) {
+      return {
+        ...DATA_STATE.offline,
+        detail: sr?.detail || sr?.title || String(error) || 'Source is temporarily unavailable.',
+        host: sr?.host || '',
+        sourceNote: feed?.source?.note || '',
+      };
+    }
+    return {
+      ...DATA_STATE.planned,
+      detail: sr?.detail || sr?.title || 'No live rows and no archive on this host.',
+      host: sr?.host || '',
+      sourceNote: feed?.source?.note || '',
+    };
+  }
+
+  if (feed?.meta?.curated || CURATED_RE.test(blob) || /curated/i.test(kind)) {
+    return {
+      ...DATA_STATE.curated,
+      detail: feed?.source?.note || 'Editorial / reference dataset.',
+      coverage: coverageText(feed, rows.length),
+      lastSync: lastSyncText(feed),
+    };
+  }
+
+  if (feed?.fallback) {
+    const ageH = Number(feed?.ageH ?? feed?.meta?.ageH);
+    const recent = Number.isFinite(ageH) && ageH <= 24;
+    const state = recent ? DATA_STATE.cached : DATA_STATE.archived;
+    return {
+      ...state,
+      detail:
+        feed?.source?.note ||
+        (recent
+          ? 'Live source failed. Showing a recent cache.'
+          : 'Dated historical snapshot. Not a live feed.'),
+      coverage: coverageText(feed, rows.length),
+      lastSync: lastSyncText(feed),
+      fallback: true,
+    };
+  }
+
+  if (/geo-pack|law-pack|finance-pack|carbon-pack|dossier/i.test(kind) && !feed?.source?.gdelt) {
+    // Packs are ingested snapshots unless the envelope explicitly says live.
+    if (/live/i.test(blob) && !/archive|fallback/i.test(blob)) {
+      return {
+        ...DATA_STATE.live,
+        detail: feed?.source?.note || 'Live request returned rows.',
+        coverage: coverageText(feed, rows.length),
+        lastSync: lastSyncText(feed),
+      };
+    }
+    return {
+      ...DATA_STATE.archived,
+      detail: feed?.source?.note || 'Ingested pack / archive.',
+      coverage: coverageText(feed, rows.length),
+      lastSync: lastSyncText(feed),
+    };
+  }
+
+  return {
+    ...DATA_STATE.live,
+    detail: feed?.source?.note || 'Live request returned rows.',
+    coverage: coverageText(feed, rows.length),
+    lastSync: lastSyncText(feed),
+  };
+}
+
+function coverageText(feed, n) {
+  if (feed?.coverage?.label) return feed.coverage.label;
+  if (feed?.coverage?.through) return `${n} records · through ${feed.coverage.through}`;
+  if (feed?.coverage?.exhaustive) return `${n} records · exhaustive`;
+  if (n) return `${n} records`;
+  return '';
+}
+
+function lastSyncText(feed) {
+  const raw =
+    feed?.updated ||
+    feed?.meta?.updated ||
+    feed?.meta?.lastSync ||
+    feed?.coverage?.through ||
+    feed?.source?.verifiedAt ||
+    '';
+  return raw ? String(raw) : '';
+}
+
+export function isTerminalState(state) {
+  return state?.id === 'planned' || state?.id === 'offline' || state?.id === 'error';
+}

@@ -4,7 +4,6 @@ import { loadAiModels, resetAiModels, saveAiModels } from '../lib/aiModelsStore.
 export function AiModelsPage() {
   const [roles, setRoles] = useState(() => loadAiModels());
   const [msg, setMsg] = useState('');
-  const [show, setShow] = useState({});
 
   function patch(id, field, value) {
     setRoles((list) =>
@@ -23,7 +22,7 @@ export function AiModelsPage() {
   function onSave(e) {
     e.preventDefault();
     saveAiModels(roles);
-    setMsg('AI models and keys saved in this browser. The research tab picks them up immediately.');
+    setMsg('Model roles saved in this browser. API keys stay on the server environment.');
   }
 
   function onReset() {
@@ -35,9 +34,10 @@ export function AiModelsPage() {
     <>
       <h1 className="adm-h1">AI models</h1>
       <p className="adm-lede">
-        Four research roles. Keys stay in this browser (admin local storage) and are sent only to the same-origin
-        <code> /api/ai/chat </code> proxy. Paste keys here — they are not committed. Desk training prompts live on the
-        <b>AI personas</b> tab.
+        Four research roles (provider + model id). Keys are read only from the host environment
+        (<code>DEEPSEEK_API_KEY</code>, <code>GEMINI_API_KEY</code>, or <code>NIYANTRAN_AI_KEY</code>) inside
+        <code> /api/ai/chat </code> — they are never accepted from the browser. Desk training prompts live on the
+        <b> AI personas</b> tab.
       </p>
       <form onSubmit={onSave}>
         <div className="adm-plans">
@@ -64,24 +64,6 @@ export function AiModelsPage() {
                 <label className="adm-field">
                   <span>Model id</span>
                   <input value={r.model} onChange={(e) => patch(r.id, 'model', e.target.value)} />
-                </label>
-                <label className="adm-field span2">
-                  <span>API key</span>
-                  <span className="adm-inline">
-                    <input
-                      type={show[r.id] ? 'text' : 'password'}
-                      value={r.key}
-                      autoComplete="off"
-                      onChange={(e) => patch(r.id, 'key', e.target.value)}
-                    />
-                    <button
-                      type="button"
-                      className="adm-btn ghost"
-                      onClick={() => setShow((s) => ({ ...s, [r.id]: !s[r.id] }))}
-                    >
-                      {show[r.id] ? 'Hide' : 'Show'}
-                    </button>
-                  </span>
                 </label>
               </div>
             </article>

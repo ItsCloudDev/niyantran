@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import FeedLoader from './FeedLoader.jsx';
 import { feedOverview } from '../lib/analytics.js';
+import { resolveDataState, isTerminalState } from '../lib/dataState.js';
 import { BarList, Heatmap, Sparkline, VizCard } from './AnalyticsViz.jsx';
 import RecordDetail from './RecordDetail.jsx';
 import { openAiResearch } from '../lib/aiDrop.js';
@@ -16,6 +17,7 @@ import { isGlobalResourcesTable } from '../lib/globalResources.js';
 import { isGeonomicsTable } from '../lib/geonomics.js';
 import { isNationalTable } from '../lib/national.js';
 import NationalRecord from '../desks/NationalRecord.jsx';
+import { qualityBannerText } from '../lib/recordChecklist.js';
 
 function recordLabel(row) {
   return String(row?.conflict_name || row?.title || row?.bill_name || row?.name || '').trim();
@@ -25,7 +27,16 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
   const [tab, setTab] = useState('analytics');
   const bodyRef = useRef(null);
   const hi = lang === 'hi';
-  const overview = feedOverview(feed);
+  const dataState = resolveDataState(feed, { loading });
+  const terminal = isTerminalState(dataState) || feed?.rows?.[0]?.status === 'source_status';
+  const overview = (() => {
+    if (terminal) return { title: feed?.feature || 'MODULE', kpis: [], charts: [] };
+    try {
+      return feedOverview(feed);
+    } catch {
+      return { title: feed?.feature || 'MODULE', kpis: [], charts: [], note: 'Overview could not be built for this feed.' };
+    }
+  })();
   const gdelt = Boolean(feed?.source?.gdelt);
   const status = feed?.rows?.[0]?.status === 'source_status';
   const alliances = isAlliancesFeature(feed?.feature);
@@ -42,12 +53,12 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
   const analyticsTitle = dossier ? 'EVENT ANALYTICS' : overview.title;
 
   useEffect(() => {
-    if (selected) setTab('analytics');
+    setTab('analytics');
     if (bodyRef.current) bodyRef.current.scrollTop = 0;
-  }, [selected]);
+  }, [selected, feed?.feature]);
 
   return (
-    <aside className="right-rail">
+    <aside className="right-rail" key={feed?.feature || 'empty'}>
       <div className="rail-tabs" role="tablist">
         <button
           type="button"
@@ -63,25 +74,38 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
           type="button"
           role="tab"
           aria-selected={false}
+          disabled={terminal}
           onClick={() => openAiResearch({ attachFeed: true, row: selected || undefined })}
         >
           {hi ? 'एआई अनुसंधान' : 'AI research'}
         </button>
       </div>
       <div ref={bodyRef} className={`rail-body${loading ? ' is-loading' : ''}${selected ? ' rd-body' : ''}`}>
-          {loading && <FeedLoader label="Updating overview…" />}
-          {gdelt && <p className="banner warn">GDELT reporting search — not an official dataset.</p>}
-          {feed?.fallback && !status && (
-            <p className="banner">Live call did not return rows. Charts below use last-known-good archive.</p>
+          {loading && <FeedLoader label={`Updating ${feed?.feature || 'module'}…`} />}
+          {!feed && !loading && (
+            <p className="banner">Select a module. Overview clears on every route change.</p>
           )}
-          {status && (
+          {gdelt && !terminal && <p className="banner warn">GDELT reporting search — not an official dataset.</p>}
+          {!terminal && qualityBannerText(feed) ? (
+            <p className="banner warn">{qualityBannerText(feed)}</p>
+          ) : null}
+          {feed?.fallback && dataState.id !== 'live' && !status && (
             <p className="banner">
-              Labelled source status only. No records were invented.
-              {feed?.rows?.[0]?.host ? ` Configured host: ${feed.rows[0].host}.` : ''}
+              {dataState.label}: {dataState.detail || 'Charts below use archived or cached rows — not a live feed.'}
+            </p>
+          )}
+          {terminal && (
+            <p className="banner">
+              {dataState.label}. {dataState.detail || 'No records were invented for this module.'}
+              {dataState.host ? ` Configured host: ${dataState.host}.` : ''}
             </p>
           )}
 
-          {selected && isNationalTable(feed?.feature) ? (
+          {terminal && !selected ? (
+            <div className="rail-empty">
+              <p className="muted">Analytics stay empty until live or archive rows exist for this destination.</p>
+            </div>
+          ) : selected && isNationalTable(feed?.feature) ? (
             <NationalRecord
               row={selected}
               feature={feed?.feature}
@@ -127,7 +151,7 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
           {!dossier && !(selected && isNationalTable(feed?.feature)) && (
             <>
               <div className="kpi-grid">
-                {overview.kpis.map((k) => (
+                {overview.kpis.slice(0, 4).map((k) => (
                   <article key={k.label} className={`kpi-card${k.tone === 'ok' ? ' ok' : k.tone === 'warn' ? ' warn' : k.tone === 'bad' ? ' bad' : ''}`}>
                     <h3>{k.label}</h3>
                     <strong>{k.value}</strong>

@@ -1,3 +1,4 @@
+import features from '../data/html-feature-map.json';
 import { TABS, bucketsFor, modulesForTier } from '../desks/catalog.js';
 
 export function firstFeature(tabId) {
@@ -7,15 +8,38 @@ export function firstFeature(tabId) {
   return bucket?.items?.[0]?.htmlFeature || '';
 }
 
+function matchFeatureName(list, want) {
+  if (!want || !list?.length) return null;
+  return (
+    list.find((m) => m.htmlFeature === want) ||
+    list.find((m) => m.htmlFeature.toLowerCase() === want.toLowerCase()) ||
+    null
+  );
+}
+
+/**
+ * Resolve a desk hash to a tab + feature.
+ * Never substitute the first sibling module when the user asked for a specific
+ * name (that was D1: HTML-ONLY State/Local routes rendering Constituency Register).
+ */
 export function resolveDeskRoute(tabId, feature) {
   const tab = TABS.find((t) => t.id === tabId);
   if (!tab || tab.id === 'home') return { tab: 'home', feature: '' };
-  const mods = modulesForTier(tab.tier);
   const want = String(feature || '').trim();
-  const hit =
-    mods.find((m) => m.htmlFeature === want) ||
-    mods.find((m) => m.htmlFeature.toLowerCase() === want.toLowerCase());
-  return { tab: tab.id, feature: hit?.htmlFeature || firstFeature(tab.id) };
+  if (!want) return { tab: tab.id, feature: firstFeature(tab.id) };
+
+  const navMods = modulesForTier(tab.tier);
+  let hit = matchFeatureName(navMods, want);
+  if (!hit) {
+    const tierMods = features.filter((f) => f.htmlTier === tab.tier);
+    hit = matchFeatureName(tierMods, want);
+  }
+  if (!hit) {
+    hit = matchFeatureName(features, want);
+  }
+  // Keep the requested title even when unknown — DeskView shows Planned/empty.
+  // Do not fall through to firstFeature (borrows sibling rows under the wrong name).
+  return { tab: tab.id, feature: hit?.htmlFeature || want };
 }
 
 export function deskHash(tab, feature) {

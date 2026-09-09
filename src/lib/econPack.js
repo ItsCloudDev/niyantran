@@ -58,7 +58,7 @@ export function econNote(slice, extra = '') {
       'World Bank GDP growth, CPI, and employment-to-population. PMI is licensed (S&P Global) and is not in this table.',
     trade: 'Extracted DGFT notifications (India trade policy). OFAC/EU lists and WTO tariff schedules are not in this pack.',
     simulator:
-      'No macro series in this pack to model against. Inputs sit on Country Economies and Key Indicators; this desk is a build task, not a news search.',
+      'World Bank India GDP growth (annual %, NY.GDP.MKTP.KD.ZG). Historical baseline for the desk — not a forecast engine, and no scenario outcomes are invented.',
     sector:
       'World Bank India electricity-access series. Not a ministry gazette. CEA/Grid India/PPAC are not in this pack. The 8-row policy pipeline links to Google News and is not used here.',
     leaders:

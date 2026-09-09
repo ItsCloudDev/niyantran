@@ -73,7 +73,8 @@ function clean(saved) {
       hint: String(extra.hint || base.hint),
       model,
       provider: extra.provider || providerOf(model, base.provider),
-      key: String(extra.key != null ? extra.key : base.key).trim(),
+      // Keys are server-env only (D6). Never persist or ship a browser key.
+      key: '',
     };
   });
 }

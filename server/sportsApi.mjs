@@ -1,6 +1,6 @@
 /**
  * Sports live proxies — TheSportsDB, ESPN ISL, Wikidata.
- * No GDELT.
+ * No GDELT. League/athlete Wikidata URLs normalised to https.
  */
 import {
   ISL_ESPN,

@@ -11,6 +11,7 @@ import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop, { choiceGroup, matchesChoice } from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import { openAiResearch, rowDragProps } from '../lib/aiDrop.js';
+import { downloadJson, withExportProvenance } from '../lib/exportProvenance.js';
 
 export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const theatres = useMemo(() => theatresFromFeed(feed), [feed]);
@@ -54,15 +55,16 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
   }
 
   function exportRegister() {
-    const blob = new Blob(
-      [JSON.stringify({ asOf, derived: stats, conflicts: theatres.map(({ row, ...rest }) => rest) }, null, 2)],
-      { type: 'application/json' },
+    const conflicts = withExportProvenance(
+      theatres.map(({ row, ...rest }) => ({ ...rest, ...(row || {}) })),
+      {
+        feature: feed?.feature || 'Conflicts',
+        filterNote: [region !== 'Global' ? `region=${region}` : '', posture !== 'All' ? `posture=${posture}` : '', query.trim() ? `q=${query.trim()}` : '']
+          .filter(Boolean)
+          .join('; '),
+      },
     );
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'niyantran-conflicts-register.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
+    downloadJson('niyantran-conflicts-register.json', { asOf, derived: stats, conflicts });
   }
 
   if (!theatres.length) {

@@ -119,7 +119,7 @@ export default function AssetRegister({ feed, selected, onSelect, featureName, v
           aria-pressed={liveOpen}
           title={copy.liveTitle}
         >
-          ✓ LIVE FEED
+          ✓ LATEST
         </button>
         <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
         <TableFilterPop

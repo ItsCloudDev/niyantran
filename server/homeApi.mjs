@@ -9,6 +9,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { prepareHomeMarketQuotes } from '../src/lib/homeMarkets.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = path.resolve(__dirname, '..');
@@ -51,11 +52,19 @@ const WIRES = [
 
 const SNAPSHOT_MAX_AGE_H = 24;
 const DEFAULT_HOME_MAX_AGE_H = 6;
+const GDELT_GAP_MS = 5_500;
+const GDELT_CACHE_MS = 10 * 60_000;
+let gdeltNextAt = 0;
+const gdeltCache = new Map();
 
 let ohlcCache = null;
 const homeRefreshInflight = Object.create(null);
 let marketFeedCache = null;
 let warCache = null;
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
 
 function json(res, body, status = 200) {
   res.statusCode = status;
@@ -89,6 +98,17 @@ function loadWar() {
 }
 
 async function fetchText(url, ms = 12000) {
+  if (/^https:\/\/pib\.gov\.in\//i.test(url || '')) {
+    url = url.replace(/^https:\/\/pib\.gov\.in\//i, 'https://www.pib.gov.in/');
+  }
+  const gdelt = /gdeltproject\.org/i.test(url || '');
+  if (gdelt) {
+    const hit = gdeltCache.get(url);
+    if (hit && Date.now() - hit.at < GDELT_CACHE_MS) return hit.value;
+    const wait = gdeltNextAt - Date.now();
+    if (wait > 0) await sleep(wait);
+    gdeltNextAt = Date.now() + GDELT_GAP_MS;
+  }
   const ac = new AbortController();
   const t = setTimeout(() => ac.abort(), ms);
   try {
@@ -97,8 +117,13 @@ async function fetchText(url, ms = 12000) {
       redirect: 'follow',
       headers: { Accept: '*/*', 'User-Agent': UA },
     });
+    const text = await res.text();
+    if (res.status === 429 || /please limit requests|too many requests/i.test(text)) {
+      throw new Error('GDELT rate limited');
+    }
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    return await res.text();
+    if (gdelt) gdeltCache.set(url, { at: Date.now(), value: text });
+    return text;
   } finally {
     clearTimeout(t);
   }
@@ -144,6 +169,7 @@ function quoteFromMarketFeed(name, symbol) {
   const last = Number(String(row.last).replace(/,/g, ''));
   const pct = Number(row.pct_change);
   if (!Number.isFinite(last)) return null;
+  const asOf = row.as_of || row.asOf || '';
   return {
     name,
     symbol,
@@ -152,6 +178,9 @@ function quoteFromMarketFeed(name, symbol) {
     dM: Number.isFinite(pct) ? pct : null,
     spark: [],
     archive: true,
+    asOf,
+    as_of: asOf,
+    source: 'finance_market_feed',
   };
 }
 
@@ -264,18 +293,25 @@ async function liveQuote(name, symbol) {
 }
 
 function snapshotMarketsFromArchive() {
+  // D8: feed last + pct_change are the headline numbers; OHLC is spark-only.
   const rows = TICKERS.map(([name, symbol]) => {
+    const fromFeed = quoteFromMarketFeed(name, symbol);
     const fromOhlc = quoteFromCloses(name, ohlcFromArchive(symbol)?.c, symbol);
-    return fromOhlc || quoteFromMarketFeed(name, symbol) || { name, symbol, last: null, d1: null, dM: null, spark: [], archive: true };
+    if (fromFeed) {
+      return { ...fromFeed, spark: fromOhlc?.spark || [] };
+    }
+    return fromOhlc || { name, symbol, last: null, d1: null, dM: null, spark: [], archive: true };
   }).filter((r) => r.last != null);
+  const feedAsOf = rows.find((r) => r.as_of || r.asOf)?.as_of || rows.find((r) => r.asOf)?.asOf;
   const ts = (ohlcFromArchive('^NSEI')?.t || []).filter(Boolean);
-  const updated = ts.length ? new Date(ts[ts.length - 1] * 1000).toISOString() : new Date().toISOString();
-  return { updated, rows };
+  const updated =
+    feedAsOf || (ts.length ? new Date(ts[ts.length - 1] * 1000).toISOString() : new Date().toISOString());
+  return { updated, rows: prepareHomeMarketQuotes(rows), as_of: updated };
 }
 
 async function fetchLiveMarkets() {
   const rows = await Promise.all(TICKERS.map(([name, symbol]) => liveQuote(name, symbol)));
-  const live = rows.filter(Boolean);
+  const live = prepareHomeMarketQuotes(rows.filter(Boolean));
   if (live.some((r) => r.last != null && !r.archive)) {
     return {
       ok: true,
@@ -294,7 +330,7 @@ async function fetchLiveMarkets() {
   const arch = snapshotMarketsFromArchive();
   return {
     ok: true,
-    rows: arch.rows,
+    rows: prepareHomeMarketQuotes(arch.rows),
     source: 'Original HTML OHLC / NSE market-feed snapshot.',
     archive: true,
   };
@@ -307,15 +343,19 @@ export async function serveHomeMarkets(opts = {}) {
     const snap = readDiskSnapshot('markets');
     if (snap?.rows?.some((r) => r?.last != null)) {
       if (snap.__ageH > maxAgeH) scheduleHomeRefresh('markets', fetchLiveMarkets);
-      return snapshotPayload(snap, { source: snap.source || 'snapshot' });
+      return {
+        ...snapshotPayload(snap, { source: snap.source || 'snapshot' }),
+        rows: prepareHomeMarketQuotes(snap.rows),
+      };
     }
     const arch = snapshotMarketsFromArchive();
     if (arch.rows?.length) {
-      writeDiskSnapshot('markets', { ...arch, archive: true, source: 'Original HTML OHLC / NSE market-feed snapshot.' });
+      const rows = prepareHomeMarketQuotes(arch.rows);
+      writeDiskSnapshot('markets', { ...arch, rows, archive: true, source: 'Original HTML OHLC / NSE market-feed snapshot.' });
       scheduleHomeRefresh('markets', fetchLiveMarkets);
       return {
         ok: true,
-        rows: arch.rows,
+        rows,
         source: 'Original HTML OHLC / NSE market-feed snapshot.',
         archive: true,
         cached: true,
@@ -325,7 +365,7 @@ export async function serveHomeMarkets(opts = {}) {
   }
   const live = await fetchLiveMarkets();
   writeDiskSnapshot('markets', live);
-  return live;
+  return { ...live, rows: prepareHomeMarketQuotes(live.rows || []) };
 }
 
 function decodeXml(s) {

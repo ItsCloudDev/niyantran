@@ -1,3 +1,5 @@
+import { resolveDataState } from './dataState.js';
+
 const HIDDEN = new Set([
   'reporting_search',
   'source_url',
@@ -14,7 +16,7 @@ const HIDDEN = new Set([
 ]);
 
 export function displayColumns(rows) {
-  if (!rows?.length) return ['date', 'title', 'source_url'];
+  if (!rows?.length) return ['date', 'title'];
   const counts = new Map();
   for (const row of rows.slice(0, 40)) {
     for (const [k, v] of Object.entries(row)) {
@@ -27,8 +29,9 @@ export function displayColumns(rows) {
   const rest = [...counts.keys()]
     .filter((k) => !preferred.includes(k))
     .sort((a, b) => (counts.get(b) || 0) - (counts.get(a) || 0));
-  const cols = [...preferred.filter((k) => counts.has(k)), ...rest];
-  return cols.slice(0, 8);
+  const cols = [...preferred.filter((k) => counts.has(k) && k !== 'source_url'), ...rest];
+  // Spec: default 5–7 visible columns.
+  return cols.slice(0, 7);
 }
 
 export function filterRows(rows, q) {
@@ -69,18 +72,14 @@ export function provenanceLabel(feed) {
   return 'LIVE';
 }
 
-/** Badge in front of the desk heading: live table vs archived snapshot. */
+/** Badge in front of the desk heading — uses the shared readiness model. */
 export function feedKindLabel(feed) {
-  const p = provenanceLabel(feed);
-  if (!p) return '';
-  if (p === 'SOURCE STATUS') return 'SOURCE STATUS';
-  if (p === 'LIVE') return 'LIVE FEED';
-  if (p.startsWith('GDELT')) return p;
-  return 'ARCHIVED FEED';
+  if (!feed) return '';
+  return resolveDataState(feed).label;
 }
 
 export function cellText(v) {
-  if (v == null) return '';
+  if (v == null || v === '') return '—';
   const s = String(v);
   return s.length > 220 ? `${s.slice(0, 217)}…` : s;
 }

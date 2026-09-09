@@ -29,6 +29,7 @@ import {
   marketQuoteRows,
   nseLiveRows,
 } from '../src/lib/econPack.js';
+import { serveAir } from './transitApi.mjs';
 import {
   NEWS_FEEDS,
   REGISTRY_FEEDS,
@@ -56,12 +57,14 @@ import {
   rssWireRows as entRssRows,
 } from '../src/lib/entertainmentPack.js';
 import { serveNational } from './nationalFeed.mjs';
+import { loadCentreStateFundFlow, STAT1_URL } from './budgetStat1.mjs';
 import { loadLaunches } from './assetsApi.mjs';
 import { loadConstitutions, loadGrowth, loadTrade } from './resourcesApi.mjs';
 import {
   loadCountryEconomies,
   loadIndiaCeos,
   loadIndiaEnergy,
+  loadIndiaGdpGrowth,
   loadKeyIndicators,
   loadManifoldPolitical,
   loadWorldExchanges,
@@ -92,7 +95,108 @@ const EMBEDDED_DIR = EMBEDDED_DIRS.find((d) => fs.existsSync(d)) || EMBEDDED_DIR
 const FETCH_MS = 12_000;
 const MAX_BYTES = 8 * 1024 * 1024;
 const MAX_ROWS = 500;
+const GDELT_GAP_MS = 5_500;
+const GDELT_CACHE_MS = 10 * 60_000;
+
+/** Real topic query — never search the product name "Geopolitics News Wire". */
+const GEO_NEWS_WIRE_GDELT =
+  'https://api.gdeltproject.org/api/v2/doc/doc?query=' +
+  encodeURIComponent('(geopolitics OR diplomacy OR "foreign policy" OR "United Nations") sourcelang:english') +
+  '&mode=artlist&format=json&sort=datedesc&timespan=3d&maxrecords=40';
+
+/** Indian state legislators via Wikidata (not US House Q13218630). */
+function indiaMlaWikidataUrl() {
+  return (
+    'https://query.wikidata.org/sparql?format=json&query=' +
+    encodeURIComponent(
+      'SELECT DISTINCT ?person ?personLabel ?positionLabel ?stateLabel WHERE { ' +
+        '?person wdt:P39 ?position. ' +
+        '?position wdt:P279* wd:Q4175034. ' +
+        '?position wdt:P1001 ?state. ' +
+        '?state wdt:P17 wd:Q668. ' +
+        'SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } ' +
+        '} LIMIT 500',
+    )
+  );
+}
+
+/** Real MLA/assembly coverage — never search product names like "MLA Report Card…". */
+function mlaCoverageGdeltUrl() {
+  return (
+    'https://api.gdeltproject.org/api/v2/doc/doc?query=' +
+    encodeURIComponent('India (MLA OR "legislative assembly" OR "assembly session") sourcelang:english') +
+    '&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=100'
+  );
+}
+
+function mlaCoverageNewsRssUrl() {
+  return (
+    'https://news.google.com/rss/search?q=' +
+    encodeURIComponent('India (MLA OR "legislative assembly" OR "Vidhan Sabha") when:7d') +
+    '&hl=en-IN&gl=IN&ceid=IN:en'
+  );
+}
+
+/** District media coverage — never search product name "District Media Monitor…". */
+function districtMediaGdeltUrl() {
+  return (
+    'https://api.gdeltproject.org/api/v2/doc/doc?query=' +
+    encodeURIComponent(
+      'India (district OR collectorate OR "district magistrate" OR "zilla parishad") (protest OR land OR water OR road OR school OR hospital OR mining OR power) sourcelang:english',
+    ) +
+    '&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=100'
+  );
+}
+
+function districtMediaNewsRssUrl() {
+  return (
+    'https://news.google.com/rss/search?q=' +
+    encodeURIComponent(
+      'India (district OR collectorate OR "district magistrate" OR "zilla parishad") (protest OR land OR water OR road OR school OR hospital) when:7d',
+    ) +
+    '&hl=en-IN&gl=IN&ceid=IN:en'
+  );
+}
+
+/** State governance coverage — never search product name "State Governance Brief". */
+function stateGovernanceGdeltUrl() {
+  return (
+    'https://api.gdeltproject.org/api/v2/doc/doc?query=' +
+    encodeURIComponent(
+      'India ("state government" OR "chief minister" OR "Vidhan Sabha" OR cabinet OR secretariat) sourcelang:english',
+    ) +
+    '&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=100'
+  );
+}
+
+function stateGovernanceNewsRssUrl() {
+  return (
+    'https://news.google.com/rss/search?q=' +
+    encodeURIComponent(
+      'India ("state government" OR "chief minister" OR "Vidhan Sabha" OR cabinet OR secretariat) when:7d',
+    ) +
+    '&hl=en-IN&gl=IN&ceid=IN:en'
+  );
+}
+
+const PIB_PRESS_RSS = 'https://www.pib.gov.in/RssMain.aspx?ModId=6&Lang=1&Regid=3';
+
+let gdeltNextAt = 0;
+const gdeltCache = new Map();
+
+function sleep(ms) {
+  return new Promise((r) => setTimeout(r, ms));
+}
+
+async function paceGdelt(url) {
+  if (!isGdelt(url)) return;
+  const wait = gdeltNextAt - Date.now();
+  if (wait > 0) await sleep(wait);
+  gdeltNextAt = Date.now() + GDELT_GAP_MS;
+}
 const USER_AGENT =
+  'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
+const USER_AGENT_BOT =
   'Mozilla/5.0 (compatible; NiyantranTerminal/1.0; +https://localhost) AppleWebKit/537.36';
 
 const TIER_ALIAS = {
@@ -124,10 +228,17 @@ const HOME_STOOQ = [
 const NSE_INDICES = 'https://www.nseindia.com/api/allIndices';
 
 let cache = null;
+let cacheMtime = 0;
 const embeddedCache = new Map();
 
 function loadCache() {
-  if (cache) return cache;
+  let mt = 0;
+  try {
+    mt = Math.max(fs.statSync(REGISTRY_PATH).mtimeMs, fs.statSync(FEATURES_PATH).mtimeMs);
+  } catch {
+    mt = Date.now();
+  }
+  if (cache && cacheMtime === mt) return cache;
   const registry = JSON.parse(fs.readFileSync(REGISTRY_PATH, 'utf8'));
   const features = JSON.parse(fs.readFileSync(FEATURES_PATH, 'utf8'));
   const manifest = JSON.parse(fs.readFileSync(MANIFEST_PATH, 'utf8'));
@@ -137,11 +248,13 @@ function loadCache() {
     datasetToFile[row.key.replace(/\.csv$/i, '')] = row.file;
   }
   cache = { registry, features, datasetToFile };
+  cacheMtime = mt;
   return cache;
 }
 
 export function resetFeedCache() {
   cache = null;
+  cacheMtime = 0;
   embeddedCache.clear();
 }
 
@@ -169,6 +282,121 @@ function isHttpsUrl(url) {
 
 function isGdelt(url) {
   return /gdeltproject\.org/i.test(url || '');
+}
+
+/** GDELT URL whose query is a quoted product title — returns empty / rate-limit noise. */
+function isProductNameGdeltUrl(url) {
+  if (!isGdelt(url)) return false;
+  return /[?&]query=%22[^&%]{6,}%22/i.test(url) || /[?&]query="[^"]{6,}"/i.test(url);
+}
+
+const TOPIC_STOP = new Set([
+  'the',
+  'and',
+  'for',
+  'with',
+  'from',
+  'tracker',
+  'monitor',
+  'digest',
+  'database',
+  'index',
+  'simulator',
+  'aggregator',
+  'brief',
+  'wire',
+  'editions',
+  'vernacular',
+  'translated',
+  'structured',
+  'api',
+  'composite',
+  'auto',
+  'personalised',
+  'personalized',
+  'deep',
+  'dive',
+]);
+
+/** Curated topic queries — never the product name in quotes. */
+const FEATURE_TOPIC_Q = {
+  'assembly proceedings digest':
+    'India ("Vidhan Sabha" OR "assembly proceedings" OR "legislative assembly" OR "assembly session")',
+  'governor assent tracker':
+    'India (governor) (assent OR "returned the bill" OR "withheld assent" OR ordinance)',
+  'cabinet decisions':
+    'India (cabinet) (decision OR approves OR approved OR "cabinet meeting")',
+  'bureaucrat transfer & posting tracker':
+    'India (IAS OR IPS OR bureaucrat OR "chief secretary") (transfer OR transferred OR posting OR posted)',
+  'cag audit tracker': 'India (CAG OR "Comptroller and Auditor General") (audit OR report)',
+  'state fiscal deep-dive': 'India ("state budget" OR "fiscal deficit" OR "state finances" OR FRBM)',
+  'centre-state fund flow tracker':
+    'India ("finance commission" OR "centrally sponsored" OR "centre-state" OR "tax devolution")',
+  'state governance brief':
+    'India ("state government" OR "chief minister" OR "Vidhan Sabha" OR cabinet OR secretariat)',
+  'district media monitor':
+    'India (district OR collectorate OR "district magistrate") (protest OR land OR water OR road OR school OR hospital)',
+  'open fronts': 'sourcecountry:IN OR global (war OR conflict OR ceasefire OR frontline)',
+  'nuclear watch': '(nuclear OR IAEA OR enrichment OR "ballistic missile") sourcelang:english',
+  'maritime choke-points':
+    '(Hormuz OR Malacca OR Bab-el-Mandeb OR "South China Sea" OR chokepoint OR "shipping lane")',
+  'critical minerals': '(lithium OR cobalt OR nickel OR "rare earth" OR graphite) (mine OR mining OR supply)',
+  'district court case tracker':
+    'India ("district court" OR "sessions court" OR "judicial magistrate") (order OR judgment OR case)',
+  'up high court (allahabad) order feed':
+    'India ("Allahabad High Court" OR "High Court of Judicature at Allahabad") (order OR judgment OR bench)',
+  'ngt environmental litigation tracker':
+    'India ("National Green Tribunal" OR NGT) (order OR petition OR environment)',
+  'cat & consumer disputes (ncdrc) watch':
+    'India (NCDRC OR "Central Administrative Tribunal" OR "consumer commission") (order OR judgment)',
+  'constitutional bench tracker':
+    'India ("Constitution Bench" OR "constitutional bench") (Supreme Court) (hearing OR judgment)',
+  'hc constitutional & pil tracker':
+    'India ("High Court") (PIL OR "public interest litigation" OR constitutional) (order OR judgment)',
+};
+
+function topicQueryForFeature(featureName) {
+  const n = norm(featureName);
+  for (const [k, q] of Object.entries(FEATURE_TOPIC_Q)) {
+    if (n.includes(k) || k.includes(n)) return q;
+  }
+  const cleaned = String(featureName || '')
+    .replace(/\([^)]*\)/g, ' ')
+    .replace(/[–—&+/|,]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  const words = cleaned
+    .split(' ')
+    .filter((w) => w.length > 2 && !TOPIC_STOP.has(w.toLowerCase()))
+    .slice(0, 6);
+  const phrase = words.slice(0, 4).join(' ') || cleaned.slice(0, 48) || 'India';
+  const orBits = words.length ? words.map((w) => `"${w}"`).join(' OR ') : `"${phrase}"`;
+  return `India (${orBits})`;
+}
+
+function gdeltTopicUrlForFeature(featureName) {
+  let q = topicQueryForFeature(featureName);
+  if (!/sourcelang:/i.test(q)) q += ' sourcelang:english';
+  return (
+    'https://api.gdeltproject.org/api/v2/doc/doc?query=' +
+    encodeURIComponent(q) +
+    '&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=100'
+  );
+}
+
+function newsRssUrlForFeature(featureName) {
+  const q = `${topicQueryForFeature(featureName)} when:7d`;
+  return (
+    'https://news.google.com/rss/search?q=' +
+    encodeURIComponent(q) +
+    '&hl=en-IN&gl=IN&ceid=IN:en'
+  );
+}
+
+function wantsPibWire(featureName) {
+  return /cabinet decisions|state governance brief|policy pipeline|morning brief/i.test(
+    String(featureName || ''),
+  );
 }
 
 function pick(obj, keys) {
@@ -244,7 +472,7 @@ function flattenRow(item, extra = {}) {
       'indicator',
       'country',
     ]) || extra.title || '';
-  const source_url =
+  let source_url =
     pick(src, [
       'source_url',
       'url',
@@ -257,7 +485,12 @@ function flattenRow(item, extra = {}) {
       'detail_url',
       'strVideo',
     ]) || extra.source_url || '';
-  return { ...out, date, title, source_url, ...extra };
+  // Wikidata bindings are http:// by default; upgrade so client citation guard keeps them.
+  if (/^http:\/\/(www\.)?wikidata\.org\//i.test(source_url)) {
+    source_url = source_url.replace(/^http:/i, 'https:');
+  }
+  const { source_url: _drop, title: _t, ...restExtra } = extra || {};
+  return { ...out, date, title, ...restExtra, source_url };
 }
 
 function findArray(json) {
@@ -328,11 +561,27 @@ function worldBankRows(json) {
 function wikidataRows(json) {
   const bindings = json?.results?.bindings || [];
   return bindings.map((b) => {
-    const flat = {};
+    const raw = {};
     for (const [k, cell] of Object.entries(b)) {
-      flat[k.replace(/Label$/, '')] = cell?.value || '';
+      raw[k] = cell?.value || '';
+    }
+    const flat = { ...raw };
+    for (const [k, v] of Object.entries(raw)) {
+      if (!k.endsWith('Label')) continue;
+      const base = k.slice(0, -5);
+      // Prefer human labels over entity URIs for column values.
+      if (!flat[base] || /^https?:\/\/www\.wikidata\.org\//i.test(flat[base]) || /^Q\d+$/i.test(flat[base])) {
+        flat[base] = v;
+      }
     }
     const title =
+      raw.personLabel ||
+      raw.countryLabel ||
+      raw.filmLabel ||
+      raw.serviceLabel ||
+      raw.leagueLabel ||
+      raw.districtLabel ||
+      raw.itemLabel ||
       flat.person ||
       flat.country ||
       flat.film ||
@@ -340,9 +589,13 @@ function wikidataRows(json) {
       flat.league ||
       flat.district ||
       flat.item ||
-      Object.values(flat)[0] ||
+      Object.values(flat).find((v) => v && !/^https?:/i.test(v)) ||
       '';
-    const source_url = Object.values(b).find((c) => /^https?:/.test(c?.value || ''))?.value || '';
+    const source_url = (
+      Object.values(raw).find((v) => /^https?:\/\/www\.wikidata\.org\//i.test(v)) ||
+      Object.values(raw).find((v) => /^https?:/i.test(v)) ||
+      ''
+    ).replace(/^http:\/\//i, 'https://');
     return flattenRow(flat, { title, source_url });
   });
 }
@@ -560,25 +813,64 @@ async function fetchText(url) {
   if (!isHttpsUrl(url)) {
     throw new Error('HTTPS only');
   }
-  const ac = new AbortController();
-  const t = setTimeout(() => ac.abort(), FETCH_MS);
+  // Bare pib.gov.in often ECONNRESET from Node; www host serves the same RSS.
+  if (/^https:\/\/pib\.gov\.in\//i.test(url)) {
+    url = url.replace(/^https:\/\/pib\.gov\.in\//i, 'https://www.pib.gov.in/');
+  }
+  const gdelt = isGdelt(url);
+  if (gdelt) {
+    const hit = gdeltCache.get(url);
+    if (hit && Date.now() - hit.at < GDELT_CACHE_MS) return hit.value;
+  }
+
+  const attempt = async () => {
+    await paceGdelt(url);
+    const ac = new AbortController();
+    const wikidata = /query\.wikidata\.org/i.test(url);
+    const timeoutMs = wikidata ? Math.max(FETCH_MS, 45_000) : FETCH_MS;
+    const t = setTimeout(() => ac.abort(), timeoutMs);
+    const pib = /pib\.gov\.in/i.test(url);
+    try {
+      const res = await fetch(url, {
+        method: 'GET',
+        redirect: 'follow',
+        signal: ac.signal,
+        headers: {
+          Accept: pib
+            ? 'application/rss+xml, application/xml, text/xml, */*'
+            : wikidata
+              ? 'application/sparql-results+json, application/json;q=0.9, */*;q=0.8'
+              : 'application/json, application/xml, application/rss+xml, text/csv, text/plain, */*',
+          'User-Agent': pib ? USER_AGENT : USER_AGENT_BOT,
+          ...(pib ? { 'Accept-Language': 'en-US,en;q=0.9' } : {}),
+        },
+      });
+      const buf = Buffer.from(await res.arrayBuffer());
+      if (buf.length > MAX_BYTES) throw new Error('response too large');
+      const text = buf.toString('utf8');
+      if (res.status === 429 || /please limit requests|too many requests/i.test(text)) {
+        throw new Error('GDELT rate limited (need ≥5s between calls)');
+      }
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const ct = res.headers.get('content-type') || '';
+      return { text, contentType: ct, finalUrl: res.url || url };
+    } finally {
+      clearTimeout(t);
+    }
+  };
+
   try {
-    const res = await fetch(url, {
-      method: 'GET',
-      redirect: 'follow',
-      signal: ac.signal,
-      headers: {
-        Accept: 'application/json, application/xml, application/rss+xml, text/csv, text/plain, */*',
-        'User-Agent': USER_AGENT,
-      },
-    });
-    const buf = Buffer.from(await res.arrayBuffer());
-    if (buf.length > MAX_BYTES) throw new Error('response too large');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const ct = res.headers.get('content-type') || '';
-    return { text: buf.toString('utf8'), contentType: ct, finalUrl: res.url || url };
-  } finally {
-    clearTimeout(t);
+    const got = await attempt();
+    if (gdelt) gdeltCache.set(url, { at: Date.now(), value: got });
+    return got;
+  } catch (err) {
+    if (gdelt && /rate limited/i.test(err.message || '')) {
+      await sleep(GDELT_GAP_MS);
+      const got = await attempt();
+      gdeltCache.set(url, { at: Date.now(), value: got });
+      return got;
+    }
+    throw err;
   }
 }
 
@@ -784,9 +1076,9 @@ function shortFail(error) {
 function statusRow({ adapter, url, reason, featureName }) {
   const scrape = STATUS_ADAPTERS.has(adapter || '');
   const host = scrape ? '' : hostOf(url);
-  const title = scrape ? 'Extraction not scheduled' : 'Live source unavailable';
+  const title = scrape ? 'Module planned' : 'Source offline or empty';
   const detail = scrape
-    ? 'This adapter is listed in the source map, but table extraction is not scheduled. No records were invented to fill this table.'
+    ? 'This adapter is listed in the source map, but table extraction is not scheduled. Intended coverage ships when the family adapter is ready. No records were invented to fill this table.'
     : host
       ? `${host} did not return rows and there is no last-known-good archive for this module. No records were invented.`
       : 'No live rows and no last-known-good archive were available. No records were invented.';
@@ -801,6 +1093,7 @@ function statusRow({ adapter, url, reason, featureName }) {
       host: host || '',
       detail,
       fail_reason: shortFail(reason),
+      readiness: scrape ? 'planned' : 'offline',
     }),
   ];
 }
@@ -1015,6 +1308,68 @@ export async function serveFeatureFeed(searchParams) {
   const primary = entry?.primaryFeedUrl || (isHttpsUrl(feat.source) ? feat.source : '');
   const gdeltFallback = entry?.openLiveFallback || '';
 
+  // Transit: never pull full OpenSky /states/all (often times out). Use bbox air proxy.
+  if (/^transit$/i.test(feat.htmlFeature || '')) {
+    const boxes = [
+      { lamin: 2, lamax: 37, lomin: 55, lomax: 97 }, // India & Arabian Sea
+      { lamin: 35, lamax: 60, lomin: -10, lomax: 30 }, // Europe
+    ];
+    const errors = [];
+    for (const b of boxes) {
+      try {
+        const air = await serveAir(b);
+        const aircraft = air.aircraft || [];
+        if (!aircraft.length) {
+          if (air.error) errors.push(air.error);
+          continue;
+        }
+        const rows = aircraft.slice(0, MAX_ROWS).map((a) =>
+          flattenRow({
+            date: new Date().toISOString(),
+            title: a.flt || a.icao,
+            icao24: a.icao,
+            callsign: a.flt,
+            origin_country: a.country,
+            longitude: a.lon,
+            latitude: a.lat,
+            altitude: a.alt,
+            on_ground: a.cat === 'on ground',
+            velocity: a.vel,
+            heading: a.hdg,
+            category: a.cat,
+          }),
+        );
+        return envelope({
+          tier,
+          feature: feat,
+          rows,
+          adapter: 'api',
+          links: ['https://opensky-network.org/api/states/all', '/api/air'],
+          coverage: { from: '', through: 'present', exhaustive: false },
+          fallback: false,
+          note: `OpenSky live aircraft via /api/air (${air.source || 'opensky'}). Full-world dump is not used.`,
+        });
+      } catch (e) {
+        errors.push(e.message || String(e));
+      }
+    }
+    return envelope({
+      tier,
+      feature: feat,
+      rows: statusRow({
+        adapter: 'api',
+        url: 'https://opensky-network.org/api/states/all',
+        reason: errors.join('; ') || 'OpenSky bbox air feed returned no aircraft',
+        featureName: feat.htmlFeature,
+      }),
+      adapter: 'api',
+      links: ['https://opensky-network.org/api/states/all', '/api/air'],
+      coverage,
+      fallback: false,
+      note: 'Transit air feed failed. No last-known-good archive is shipped for live positions.',
+    });
+  }
+
   // State/Local geography: ingested NIY_GEO pack, not GitHub directory listings or GDELT.
   if (isGeoDesk(feat.htmlFeature, dataset)) {
     const pack = loadJsonPack('niy-geo.json');
@@ -1089,27 +1444,72 @@ export async function serveFeatureFeed(searchParams) {
         }
       }
     }
+
+    // Desks without an extracted docket: Google News RSS coverage first (honest wire, not a
+    // cause-list). Avoids GDELT product-name / ≥5s rate-limit noise on fleet probes.
+    {
+      const newsUrl = /news\.google\.com/i.test(primary || '')
+        ? primary
+        : newsRssUrlForFeature(feat.htmlFeature);
+      const gdeltUrl = gdeltTopicUrlForFeature(feat.htmlFeature);
+      let wire = await tryUrls([newsUrl].filter(Boolean));
+      let wireNote = 'Google News RSS — court / litigation coverage. Not an official docket or cause list.';
+      let wireGdelt = false;
+      if (!wire.rows?.length) {
+        wire = await tryUrls([gdeltUrl]);
+        wireNote =
+          'GDELT DOC 2.0 real-topic reporting search — coverage mentions, not an official docket.';
+        wireGdelt = true;
+      }
+      if (wire.rows?.length) {
+        const rows = wire.rows.slice(0, 100).map((r) => ({
+          ...r,
+          section: wireGdelt ? 'COVERAGE — GDELT 2.0' : 'COVERAGE — GOOGLE NEWS RSS',
+          reporting_search: wireGdelt
+            ? r.reporting_search ||
+              'GDELT DOC 2.0 — news reporting search, not an official court dataset'
+            : 'Google News RSS — coverage mentions, not an official court dataset',
+        }));
+        return envelope({
+          tier,
+          feature: feat,
+          rows,
+          adapter: 'news-search',
+          links: [newsUrl, gdeltUrl].filter(Boolean),
+          coverage: { from: '', through: '7d', exhaustive: false },
+          fallback: false,
+          gdelt: wireGdelt,
+          note: `${rows.length} coverage rows (${wireNote}). Product-name GDELT search is not used.`,
+          meta: {
+            heading: feat.htmlFeature,
+            wire: rows.length,
+            status: wireGdelt ? 'LIVE · GDELT' : 'LIVE · NEWS RSS',
+          },
+        });
+      }
+    }
+
     return envelope({
       tier,
       feature: feat,
       rows: statusRow({
         adapter: adapter || 'unmapped',
         url: primary || links[0] || '',
-        reason: 'no extracted court table for this desk',
+        reason: 'no extracted court table and coverage wire empty',
         featureName: feat.htmlFeature,
       }),
       adapter: adapter || 'unmapped',
       links,
       coverage,
       fallback: false,
-      note: 'No extracted docket for this desk. GDELT news was not used as a stand-in, and no records were invented.',
+      note: 'No extracted docket and coverage wire returned no rows. No records were invented.',
     });
   }
 
   // Economics: extracted tables + free live APIs. Never GDELT as a quote/macro/docket stand-in.
   if (tier === 'finance') {
     const slice = econSlice(feat.htmlFeature);
-    const liveAttempt = ['nse', 'world', 'countries', 'indicators', 'sector', 'leaders', 'ai', 'manifold'].includes(slice);
+    const liveAttempt = ['nse', 'world', 'countries', 'indicators', 'sector', 'leaders', 'ai', 'manifold', 'simulator'].includes(slice);
     const econStatus = (reason) =>
       envelope({
         tier,
@@ -1251,7 +1651,39 @@ export async function serveFeatureFeed(searchParams) {
     }
 
     if (slice === 'simulator') {
-      return econStatus('no macro series in this pack to model against');
+      try {
+        const live = await loadIndiaGdpGrowth();
+        if (live.rows?.length) {
+          return envelope({
+            tier,
+            feature: feat,
+            rows: live.rows,
+            adapter: 'api',
+            links: [
+              'https://api.worldbank.org/v2/country/IND/indicator/NY.GDP.MKTP.KD.ZG?format=json&date=1990:2030&per_page=100',
+              'https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG',
+            ],
+            coverage: {
+              from: live.rows[live.rows.length - 1]?.year || '1990',
+              through: live.rows[0]?.year || '',
+              exhaustive: false,
+            },
+            fallback: false,
+            note: econNote('simulator'),
+            meta: {
+              heading: feat.htmlFeature,
+              section: 'INDIA GDP GROWTH · WORLD BANK',
+              status: 'LIVE · WORLD BANK WDI',
+              indicator: 'NY.GDP.MKTP.KD.ZG',
+              lastupdated: live.lastupdated || '',
+              items: live.rows.length,
+            },
+          });
+        }
+      } catch {
+        /* status */
+      }
+      return econStatus('World Bank India GDP growth series unavailable');
     }
 
     if (slice === 'sector') {
@@ -2091,12 +2523,9 @@ export async function serveFeatureFeed(searchParams) {
     }
   }
 
-  // Global Resources — Geopolitics News Wire: GDELT topic search from the HTML live layer.
+  // Global Resources — Geopolitics News Wire: real GDELT topic search (not the product name).
   if (/^geopolitics news wire$/i.test(feat.htmlFeature || '') || dataset === 'geo_news_wire.csv') {
-    const nws =
-      'https://api.gdeltproject.org/api/v2/doc/doc?query=' +
-      encodeURIComponent('(geopolitics OR "foreign policy" OR diplomacy OR "United Nations")') +
-      '&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=40';
+    const nws = GEO_NEWS_WIRE_GDELT;
     const got = await tryUrls([nws]);
     const labelled = labelledGdelt(got.rows, nws);
     if (labelled.rows.length) {
@@ -2106,16 +2535,41 @@ export async function serveFeatureFeed(searchParams) {
         rows: capRows(labelled.rows, false),
         adapter: 'news-search',
         links: [nws],
-        coverage: { from: '', through: '7d', exhaustive: false },
+        coverage: { from: '', through: '3d', exhaustive: false },
         fallback: false,
         gdelt: true,
-        note: 'GDELT DOC 2.0 reporting search — not an official government dataset.',
+        note: 'GDELT DOC 2.0 reporting search (geopolitics / diplomacy / UN) — not an official government dataset.',
         meta: {
           section: 'TOP WORLD STORIES — GDELT 2.0',
-          status: 'GDELT 2.0 · 7-DAY WINDOW',
+          status: 'GDELT 2.0 · 3-DAY WINDOW',
           note: `${labelled.rows.length} articles · reporting search, not an official feed`,
         },
       });
+    }
+    // GDELT often 429s under sweeps — BBC World RSS is still a live feed (not an archive pack).
+    const bbc = 'https://feeds.bbci.co.uk/news/world/rss.xml';
+    try {
+      const rss = await rssTagged(bbc, { outlet: 'BBC World' });
+      if (rss.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows: capRows(rss, false),
+          adapter: 'news-search',
+          links: [bbc, nws],
+          coverage: { from: '', through: 'present', exhaustive: false },
+          fallback: false,
+          gdelt: false,
+          note: `Live BBC World RSS (GDELT DOC 2.0 unavailable: ${got.error || 'empty/rate-limited'}).`,
+          meta: {
+            section: 'TOP WORLD STORIES — BBC WORLD RSS',
+            status: 'LIVE · BBC WORLD',
+            note: `${rss.length} stories · GDELT paced ≥5s; primary DOC 2.0 search retries on the next refresh`,
+          },
+        });
+      }
+    } catch {
+      /* keep GDELT status below */
     }
     return envelope({
       tier,
@@ -2127,11 +2581,11 @@ export async function serveFeatureFeed(searchParams) {
         featureName: feat.htmlFeature,
       }),
       adapter: 'news-search',
-      links: [nws],
-      coverage: { from: '', through: '7d', exhaustive: false },
+      links: [nws, bbc],
+      coverage: { from: '', through: '3d', exhaustive: false },
       fallback: false,
       gdelt: true,
-      note: 'GDELT DOC 2.0 reporting search did not return rows. No stories were invented.',
+      note: 'GDELT DOC 2.0 reporting search did not return rows (rate limit or empty). No stories were invented.',
     });
   }
 
@@ -2323,6 +2777,329 @@ export async function serveFeatureFeed(searchParams) {
     }
   }
 
+  // District Media Monitor: never search the product name in GDELT. News RSS first (avoids 5s throttle).
+  if (/district media monitor/i.test(feat.htmlFeature || '') || dataset === 'up_district_media.csv') {
+    const newsUrl = districtMediaNewsRssUrl();
+    const gdeltUrl = districtMediaGdeltUrl();
+    const archivePack = loadEmbedded('up_district_media.csv');
+
+    let live = await tryUrls([newsUrl]);
+    let note = 'Live Google News RSS — India district / local-admin coverage themes.';
+    let adapter = 'news-search';
+    let gdelt = false;
+    let linkPrimary = newsUrl;
+
+    if (!live.rows?.length) {
+      live = await tryUrls([gdeltUrl]);
+      note = 'GDELT DOC 2.0 district/local-admin reporting search — not a vernacular edition archive.';
+      gdelt = true;
+      linkPrimary = gdeltUrl;
+    }
+
+    if (live.rows?.length) {
+      const labelled = gdelt ? labelledGdelt(live.rows, gdeltUrl) : { rows: live.rows, gdelt: false };
+      return envelope({
+        tier,
+        feature: feat,
+        rows: capRows(labelled.rows, false),
+        adapter,
+        links: [newsUrl, gdeltUrl],
+        coverage: { from: '', through: '7d', exhaustive: false },
+        fallback: false,
+        gdelt: labelled.gdelt,
+        note,
+        meta: {
+          section: gdelt ? 'DISTRICT MEDIA — GDELT 2.0' : 'DISTRICT MEDIA — GOOGLE NEWS RSS',
+          status: gdelt ? 'LIVE · GDELT' : 'LIVE · NEWS RSS',
+          heading: feat.htmlFeature,
+          items: labelled.rows.length,
+        },
+      });
+    }
+
+    if (archivePack?.length) {
+      return envelope({
+        tier,
+        feature: feat,
+        rows: capRows(archivePack, false),
+        adapter: 'embedded',
+        links: [newsUrl, gdeltUrl],
+        coverage,
+        fallback: true,
+        note: `Live district media wire failed (${live.error || 'empty'}). Showing last-known-good up_district_media pack.`,
+      });
+    }
+
+    return envelope({
+      tier,
+      feature: feat,
+      rows: statusRow({
+        adapter: 'news-search',
+        url: newsUrl,
+        reason: live.error || 'empty district media wire',
+        featureName: feat.htmlFeature,
+      }),
+      adapter: 'news-search',
+      links: [newsUrl, gdeltUrl],
+      coverage: { through: '7d' },
+      fallback: false,
+      note: 'District media wire returned no rows. Product-name GDELT search is not used; no stories were invented.',
+    });
+  }
+
+  // State Governance Brief: never search the product name in GDELT.
+  if (/^state governance brief$/i.test(feat.htmlFeature || '')) {
+    const newsUrl = stateGovernanceNewsRssUrl();
+    const gdeltUrl = stateGovernanceGdeltUrl();
+    const pibUrl = PIB_PRESS_RSS;
+
+    const pib = await tryUrls([pibUrl]);
+    let wire = await tryUrls([newsUrl]);
+    let wireNote = 'Google News RSS — state government / CM / Vidhan Sabha coverage';
+    let wireGdelt = false;
+    if (!wire.rows?.length) {
+      wire = await tryUrls([gdeltUrl]);
+      wireNote = 'GDELT DOC 2.0 state-governance reporting search';
+      wireGdelt = true;
+    }
+
+    const pibRows = (pib.rows || []).slice(0, 40).map((r) => ({
+      ...r,
+      section: 'Government wire (PIB)',
+      source: r.source || 'PIB',
+    }));
+    const wireRows = (wire.rows || []).slice(0, 100).map((r) => ({
+      ...r,
+      section: 'State coverage',
+      reporting_search: wireGdelt
+        ? r.reporting_search || 'GDELT DOC 2.0 — news reporting search, not an official briefing'
+        : 'Google News RSS — coverage mentions, not an official briefing',
+    }));
+    const rows = [...pibRows, ...wireRows];
+    if (rows.length) {
+      return envelope({
+        tier,
+        feature: feat,
+        rows,
+        adapter: 'news-search',
+        links: [pibUrl, newsUrl, gdeltUrl],
+        coverage: { from: '', through: '7d', exhaustive: false },
+        fallback: false,
+        gdelt: wireGdelt && !pibRows.length,
+        note: `${pibRows.length} PIB · ${wireRows.length} state coverage (${wireNote}). Not a personalised governance digest.`,
+        meta: {
+          heading: 'State Governance Brief',
+          pib: pibRows.length,
+          wire: wireRows.length,
+          status: pibRows.length || !wireGdelt ? 'LIVE · PIB / NEWS RSS' : 'LIVE · GDELT',
+        },
+      });
+    }
+    return envelope({
+      tier,
+      feature: feat,
+      rows: statusRow({
+        adapter: 'news-search',
+        url: newsUrl,
+        reason: pib.error || wire.error || 'empty state governance wire',
+        featureName: feat.htmlFeature,
+      }),
+      adapter: 'news-search',
+      links: [pibUrl, newsUrl, gdeltUrl],
+      coverage: { through: '7d' },
+      fallback: false,
+      note: 'State Governance Brief wires returned no rows. Product-name GDELT search is not used.',
+    });
+  }
+
+  // Centre–State Fund Flow: live Union Budget Statement 1 XLSX (not GDELT / news).
+  if (/centre[-–]?state fund flow/i.test(feat.htmlFeature || '')) {
+    try {
+      const pack = await loadCentreStateFundFlow();
+      if (pack.rows?.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows: pack.rows,
+          adapter: 'api',
+          links: [STAT1_URL, 'https://www.indiabudget.gov.in/'],
+          coverage: {
+            from: '2024-25',
+            through: '2026-27',
+            exhaustive: false,
+          },
+          fallback: Boolean(pack.stale),
+          kind: 'budget-xlsx',
+          note: pack.stale
+            ? `Cached Statement 1 (live download failed: ${pack.error}). ₹ crore as published.`
+            : 'Live Union Budget Statement 1 (stat1.xlsx) — Expenditure Profile summary. ₹ crore. Transfer lines 5–8 are the centre→state block.',
+          meta: {
+            heading: 'Centre-State Fund Flow Tracker',
+            section: 'STATEMENT 1 · SUMMARY OF EXPENDITURE',
+            status: pack.stale ? 'CACHED · BUDGET XLSX' : 'LIVE · BUDGET XLSX',
+            profile: pack.profile,
+            unit: pack.unit,
+            sheet: pack.sheet,
+            fetched_at: pack.fetched_at,
+          },
+        });
+      }
+    } catch (err) {
+      return envelope({
+        tier,
+        feature: feat,
+        rows: statusRow({
+          adapter: 'api',
+          url: STAT1_URL,
+          reason: err.message || String(err),
+          featureName: feat.htmlFeature,
+        }),
+        adapter: 'api',
+        links: [STAT1_URL],
+        coverage,
+        fallback: false,
+        note: 'Union Budget stat1.xlsx could not be downloaded or parsed. No figures were invented.',
+      });
+    }
+  }
+
+  // State MLA Directory: Wikidata Indian legislators (never US House Q13218630).
+  if (/^mla directory$/i.test(feat.htmlFeature || '')) {
+    const MLA_WD = indiaMlaWikidataUrl();
+    const live = await tryUrls([MLA_WD, primary].filter(Boolean));
+    if (live.rows.length) {
+      return envelope({
+        tier,
+        feature: feat,
+        rows: capRows(live.rows, false),
+        adapter: 'api',
+        links: [MLA_WD, 'https://query.wikidata.org/'],
+        coverage: { from: '', through: 'present', exhaustive: false },
+        fallback: false,
+        note:
+          'Wikidata live directory of people holding Indian state legislative positions (jurisdiction in India). Not a complete electoral roll.',
+        meta: { heading: 'MLA Directory', items: live.rows.length, source: 'wikidata' },
+      });
+    }
+    const mlaNews = mlaCoverageGdeltUrl();
+    const fb = await tryUrls([mlaNews]);
+    if (fb.rows.length) {
+      const labelled = labelledGdelt(fb.rows, mlaNews);
+      return envelope({
+        tier,
+        feature: feat,
+        rows: capRows(labelled.rows, false),
+        adapter: 'news-search',
+        links: [MLA_WD, mlaNews],
+        coverage,
+        fallback: true,
+        gdelt: true,
+        note: 'Wikidata SPARQL unreachable. Showing GDELT MLA/assembly reporting search — not an official directory.',
+      });
+    }
+    return envelope({
+      tier,
+      feature: feat,
+      rows: statusRow({
+        adapter: 'api',
+        url: MLA_WD,
+        reason: live.error || 'Wikidata SPARQL returned no Indian legislators',
+        featureName: feat.htmlFeature,
+      }),
+      adapter: 'api',
+      links: [MLA_WD],
+      coverage,
+      fallback: false,
+      note: 'MLA Directory uses Wikidata SPARQL (Indian jurisdictions). No rows were invented.',
+    });
+  }
+
+  // MLA Report Card + Statement Tracker: never search the product name in GDELT.
+  // Profiles from Wikidata; coverage wire prefers Google News RSS (avoids GDELT 5s throttle).
+  if (/mla report card/i.test(feat.htmlFeature || '')) {
+    const MLA_WD = indiaMlaWikidataUrl();
+    const newsUrl = mlaCoverageNewsRssUrl();
+    const gdeltUrl = mlaCoverageGdeltUrl();
+    const pack = loadEmbedded('up_mla_report_card.csv');
+    const profiles = pack?.length
+      ? {
+          rows: pack.map((r) =>
+            flattenRow(r, {
+              title: r.mla_name || r.name || r.title || '',
+              section: 'MLA profiles',
+            }),
+          ),
+          source: 'embedded',
+        }
+      : await tryUrls([MLA_WD]).then((got) => ({
+          rows: (got.rows || []).map((r) => ({
+            ...r,
+            mla_name: r.title || r.person || '',
+            section: 'MLA profiles',
+          })),
+          source: got.rows?.length ? 'wikidata' : '',
+          error: got.error,
+        }));
+
+    let wire = await tryUrls([newsUrl]);
+    let wireNote = 'Google News RSS MLA/assembly coverage';
+    let wireGdelt = false;
+    let wireLink = newsUrl;
+    if (!wire.rows?.length) {
+      wire = await tryUrls([gdeltUrl]);
+      wireNote = 'GDELT DOC 2.0 MLA/assembly reporting search';
+      wireGdelt = true;
+      wireLink = gdeltUrl;
+    }
+    const wireRows = (wire.rows || []).map((r) => ({
+      ...r,
+      section: 'Statement / coverage wire',
+      reporting_search: wireGdelt
+        ? r.reporting_search || 'GDELT DOC 2.0 — news reporting search, not an official scorecard'
+        : 'Google News RSS — coverage mentions, not an official scorecard',
+    }));
+
+    const profileRows = (profiles.rows || []).slice(0, 400);
+    const wireLimited = wireRows.slice(0, 100);
+    const rows = [...profileRows, ...wireLimited];
+    if (rows.length) {
+      return envelope({
+        tier,
+        feature: feat,
+        rows,
+        adapter: profiles.source === 'embedded' ? 'embedded' : 'api',
+        links: [MLA_WD, newsUrl, gdeltUrl].filter(Boolean),
+        coverage: { from: '', through: 'present', exhaustive: false },
+        fallback: false,
+        gdelt: wireGdelt && !profileRows.length,
+        note:
+          `${profileRows.length} MLA profiles (${profiles.source || 'none'}) · ${wireLimited.length} coverage rows (${wireNote}). ` +
+          'Not a complete attendance/questions meter — UP pack is empty on disk; Wikidata supplies identities.',
+        meta: {
+          heading: 'MLA Report Card + Statement Tracker',
+          profiles: profileRows.length,
+          wire: wireLimited.length,
+          profileSource: profiles.source || '',
+        },
+      });
+    }
+    return envelope({
+      tier,
+      feature: feat,
+      rows: statusRow({
+        adapter: 'api',
+        url: MLA_WD,
+        reason: profiles.error || wire.error || 'no MLA profiles or coverage rows',
+        featureName: feat.htmlFeature,
+      }),
+      adapter: 'api',
+      links: [MLA_WD, newsUrl, gdeltUrl],
+      coverage,
+      fallback: false,
+      note: 'MLA Report Card uses Wikidata profiles + News RSS/GDELT coverage. Product-name GDELT search is not used.',
+    });
+  }
+
   const archive = loadEmbedded(dataset);
 
   if (tier === 'national') {
@@ -2342,6 +3119,103 @@ export async function serveFeatureFeed(searchParams) {
       labelledGdelt,
     });
     if (nat) return nat;
+  }
+
+  // Product-name GDELT (or blocked adapter with only GDELT) → News RSS first, then paced real-topic GDELT.
+  // Covers Assembly Proceedings, Governor Assent, Cabinet, Cadre transfers, and the rest of the inactive queue.
+  {
+    const skipGeoDataset = dataset && /^geo_/i.test(dataset);
+    const hasRealPrimary = primary && !isGdelt(primary) && isHttpsUrl(primary);
+    const productPrimary = isProductNameGdeltUrl(primary);
+    const productFallback = isProductNameGdeltUrl(gdeltFallback);
+    const blocked = STATUS_ADAPTERS.has(adapter) || !LIVE_ADAPTERS.has(adapter);
+    const gdeltOnly =
+      primary &&
+      isGdelt(primary) &&
+      (!gdeltFallback || isGdelt(gdeltFallback)) &&
+      (!links.length || links.every((u) => isGdelt(u) || !u));
+    // Never replace a real primary (XLSX, RSS, Wikidata, …) with a news wire.
+    const rewrite =
+      !skipGeoDataset &&
+      !hasRealPrimary &&
+      (productPrimary ||
+        (blocked && (productPrimary || productFallback || (gdeltOnly && isGdelt(primary)))));
+
+    if (rewrite) {
+      const newsUrl = newsRssUrlForFeature(feat.htmlFeature);
+      const gdeltUrl = gdeltTopicUrlForFeature(feat.htmlFeature);
+      const pibUrl = wantsPibWire(feat.htmlFeature) ? PIB_PRESS_RSS : '';
+
+      const pib = pibUrl ? await tryUrls([pibUrl]) : { rows: [] };
+      let wire = await tryUrls([newsUrl]);
+      let wireNote = 'Google News RSS topic search';
+      let wireGdelt = false;
+      if (!wire.rows?.length) {
+        wire = await tryUrls([gdeltUrl]);
+        wireNote = 'GDELT DOC 2.0 real-topic reporting search (not the product name)';
+        wireGdelt = true;
+      }
+
+      const pibRows = (pib.rows || []).slice(0, 30).map((r) => ({
+        ...r,
+        section: 'Government wire (PIB)',
+        source: r.source || 'PIB',
+      }));
+      const wireRows = (wire.rows || []).slice(0, 100).map((r) => ({
+        ...r,
+        section: 'Coverage wire',
+        reporting_search: wireGdelt
+          ? r.reporting_search || 'GDELT DOC 2.0 — news reporting search, not an official dataset'
+          : 'Google News RSS — coverage mentions, not an official dataset',
+      }));
+      const rows = [...pibRows, ...wireRows];
+      if (rows.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows,
+          adapter: 'news-search',
+          links: [pibUrl, newsUrl, gdeltUrl].filter(Boolean),
+          coverage: { from: '', through: '7d', exhaustive: false },
+          fallback: false,
+          gdelt: wireGdelt && !pibRows.length,
+          note: `${pibRows.length ? `${pibRows.length} PIB · ` : ''}${wireRows.length} coverage rows (${wireNote}). Product-name GDELT search is not used.`,
+          meta: {
+            heading: feat.htmlFeature,
+            pib: pibRows.length,
+            wire: wireRows.length,
+            status: pibRows.length || !wireGdelt ? 'LIVE · NEWS RSS' : 'LIVE · GDELT',
+          },
+        });
+      }
+      if (archive && archive.length) {
+        return envelope({
+          tier,
+          feature: feat,
+          rows: capRows(archive, isBills),
+          adapter: 'embedded',
+          links: [newsUrl, gdeltUrl],
+          coverage,
+          fallback: true,
+          note: `Live topic wire failed (${wire.error || pib.error || 'empty'}). Showing last-known-good archive.`,
+        });
+      }
+      return envelope({
+        tier,
+        feature: feat,
+        rows: statusRow({
+          adapter: 'news-search',
+          url: newsUrl,
+          reason: wire.error || pib.error || 'empty topic wire',
+          featureName: feat.htmlFeature,
+        }),
+        adapter: 'news-search',
+        links: [newsUrl, gdeltUrl],
+        coverage: { through: '7d' },
+        fallback: false,
+        note: 'Topic news wire returned no rows. Product-name GDELT search is not used; no records were invented.',
+      });
+    }
   }
 
   // Wave C: scrape / licensed / download-or-html / internal / unmapped — no live table.
@@ -2470,7 +3344,27 @@ export async function serveFeatureFeed(searchParams) {
   }
 
   if (allowGdelt && (gdeltFallback || isGdelt(primary))) {
-    const gdeltUrl = isGdelt(primary) ? primary : gdeltFallback;
+    // Prefer Google News RSS before any GDELT call — fleet probes otherwise trip the ≥5s rate limit.
+    const newsUrl = newsRssUrlForFeature(feat.htmlFeature);
+    const news = await tryUrls([newsUrl]);
+    if (news.rows.length) {
+      return envelope({
+        tier,
+        feature: feat,
+        rows: capRows(news.rows, false),
+        adapter: 'news-search',
+        links: [newsUrl, isGdelt(primary) ? primary : gdeltFallback].filter(Boolean),
+        coverage: { from: '', through: '7d', exhaustive: false },
+        fallback: false,
+        gdelt: false,
+        note: 'Google News RSS topic search. GDELT DOC 2.0 is the paced fallback — not an official dataset.',
+        meta: { heading: feat.htmlFeature, status: 'LIVE · NEWS RSS' },
+      });
+    }
+    const rawGdelt = isGdelt(primary) ? primary : gdeltFallback;
+    const gdeltUrl = isProductNameGdeltUrl(rawGdelt)
+      ? gdeltTopicUrlForFeature(feat.htmlFeature)
+      : rawGdelt;
     const fb = await tryUrls([gdeltUrl]);
     if (fb.rows.length) {
       const labelled = labelledGdelt(fb.rows, gdeltUrl);
@@ -2479,11 +3373,11 @@ export async function serveFeatureFeed(searchParams) {
         feature: feat,
         rows: capRows(labelled.rows, false),
         adapter: 'news-search',
-        links,
+        links: [newsUrl, gdeltUrl].filter(Boolean),
         coverage,
         fallback: true,
         gdelt: true,
-        note: 'No HTML dataset for this module. GDELT DOC 2.0 reporting search — not an official dataset.',
+        note: 'Google News RSS empty. GDELT DOC 2.0 real-topic reporting search — not an official dataset.',
       });
     }
   }

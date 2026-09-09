@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { tableFilterGroups } from '../lib/analytics.js';
 import { vizFilterList, vizFilterOn } from '../lib/nationalKpi.js';
 import { Icon } from './Icons.jsx';
@@ -50,12 +50,20 @@ export default function TableFilterPop({
 }) {
   const [open, setOpen] = useState(false);
   const wrapRef = useRef(null);
+  const popRef = useRef(null);
   const feedGroups = useMemo(() => {
     if (groupsProp) return groupsProp;
     if (!feed) return [];
-    return tableFilterGroups(feed);
+    try {
+      return tableFilterGroups(feed);
+    } catch {
+      return [];
+    }
   }, [feed, groupsProp]);
   const groups = useMemo(() => [...feedGroups, ...(extraGroups || [])], [feedGroups, extraGroups]);
+  const extraOn = (extraGroups || []).some((g) => g.options?.some((o, i) => i > 0 && o.on));
+  const list = vizFilterList(vizFilter);
+  const active = Boolean(q?.trim() || list.length || extraOn);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -73,9 +81,50 @@ export default function TableFilterPop({
     };
   }, [open]);
 
-  const extraOn = (extraGroups || []).some((g) => g.options?.some((o, i) => i > 0 && o.on));
-  const list = vizFilterList(vizFilter);
-  const active = Boolean(q?.trim() || list.length || extraOn);
+  useLayoutEffect(() => {
+    if (!open) return undefined;
+    const wrap = wrapRef.current;
+    const pop = popRef.current;
+    if (!wrap || !pop) return undefined;
+
+    function place() {
+      const btn = wrap.getBoundingClientRect();
+      const pad = 8;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+      const width = Math.min(340, vw * 0.86, vw - pad * 2);
+      pop.style.width = `${width}px`;
+      pop.style.maxHeight = `${Math.min(520, vh * 0.7, vh - pad * 2)}px`;
+
+      const spaceRight = vw - btn.left - pad;
+      const spaceLeft = btn.right - pad;
+      if (spaceRight >= width || spaceRight >= spaceLeft) {
+        pop.style.left = '0';
+        pop.style.right = 'auto';
+        const overflow = btn.left + width + pad - vw;
+        if (overflow > 0) pop.style.left = `${-overflow}px`;
+      } else {
+        pop.style.right = '0';
+        pop.style.left = 'auto';
+        const overflow = pad - (btn.right - width);
+        if (overflow > 0) pop.style.right = `${-overflow}px`;
+      }
+
+      const below = btn.bottom + 6;
+      const need = Math.min(pop.scrollHeight || 280, parseFloat(pop.style.maxHeight) || 280);
+      if (below + need > vh - pad && btn.top > need + pad) {
+        pop.style.top = 'auto';
+        pop.style.bottom = 'calc(100% + 6px)';
+      } else {
+        pop.style.top = 'calc(100% + 6px)';
+        pop.style.bottom = 'auto';
+      }
+    }
+
+    place();
+    window.addEventListener('resize', place);
+    return () => window.removeEventListener('resize', place);
+  }, [open, groups.length, q, active]);
 
   function pick(opt) {
     if (typeof opt.onPick === 'function') {
@@ -107,7 +156,7 @@ export default function TableFilterPop({
         {active ? <i className="tbl-filter-dot" /> : null}
       </button>
       {open ? (
-        <div className="tbl-filter-pop" role="dialog" aria-label="Table filters">
+        <div ref={popRef} className="tbl-filter-pop" role="dialog" aria-label="Table filters">
           {onQ ? (
             <label className="tbl-filter-search">
               <Icon name="search" size={14} />

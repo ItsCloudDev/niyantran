@@ -4,22 +4,86 @@ import { Sparkline, VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
 import { rowDragProps } from '../lib/aiDrop.js';
+import { dedupeNewsRows } from '../lib/newsDedup.js';
+import { applyRecordChecklistToFeed } from '../lib/recordChecklist.js';
+import { liveApiEnabled } from '../lib/apiMode.js';
+
+const GDELT_GAP_MS = 5500;
 
 function gdeltDoc(q) {
-  return `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(`"${q}" sourcecountry:IN`)}&mode=artlist&format=json&sort=datedesc&timespan=7d&maxrecords=40`;
+  return `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(`"${q}" sourcecountry:IN`)}&mode=artlist&format=json&sort=datedesc&timespan=3d&maxrecords=40`;
 }
 function gdeltVol(q) {
   return `https://api.gdeltproject.org/api/v2/doc/doc?query=${encodeURIComponent(`"${q}" sourcecountry:IN`)}&mode=TimelineVol&format=json&timespan=7d`;
 }
+function newsRss(q) {
+  return `https://news.google.com/rss/search?q=${encodeURIComponent(`"${q}" India`)}&hl=en-IN&gl=IN&ceid=IN:en`;
+}
 
-async function proxyJson(url, signal) {
+function sleep(ms, signal) {
+  return new Promise((resolve, reject) => {
+    if (signal?.aborted) {
+      reject(new DOMException('Aborted', 'AbortError'));
+      return;
+    }
+    const t = setTimeout(resolve, ms);
+    signal?.addEventListener(
+      'abort',
+      () => {
+        clearTimeout(t);
+        reject(new DOMException('Aborted', 'AbortError'));
+      },
+      { once: true },
+    );
+  });
+}
+
+async function proxyText(url, signal) {
+  if (!liveApiEnabled()) throw new Error('unreachable');
   const res = await fetch(`/api/rss?url=${encodeURIComponent(url)}`, { signal });
   const text = await res.text();
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  if (/please limit requests|too many requests/i.test(text)) throw new Error('GDELT rate limited');
+  return text;
+}
+
+async function proxyJson(url, signal) {
+  const text = await proxyText(url, signal);
   try {
     return JSON.parse(text);
   } catch {
-    throw new Error('unreachable');
+    throw new Error('not json');
   }
+}
+
+function parseRssItems(xml) {
+  const items = [];
+  const re = /<item\b[^>]*>([\s\S]*?)<\/item>/gi;
+  let m;
+  while ((m = re.exec(xml))) {
+    const block = m[1];
+    const tag = (name) => {
+      const r = new RegExp(`<${name}[^>]*>(?:<!\\[CDATA\\[([\\s\\S]*?)\\]\\]>|([\\s\\S]*?))<\\/${name}>`, 'i');
+      const hit = r.exec(block);
+      return hit ? (hit[1] || hit[2] || '').trim() : '';
+    };
+    const href =
+      /<link>([^<]+)<\/link>/i.exec(block)?.[1]?.trim() ||
+      /href="([^"]+)"/i.exec(block)?.[1] ||
+      '';
+    const title = tag('title');
+    if (title) {
+      items.push({
+        title,
+        date: tag('pubDate') || tag('updated') || '',
+        source_url: href,
+        source: 'Google News',
+        reporting_search: 'Google News RSS — media mentions, not an official statement archive',
+      });
+    }
+    if (items.length >= 40) break;
+  }
+  return items;
 }
 
 export default function StatementsDesk({ onSelect, onFeed, vizFilter, onClearViz }) {
@@ -40,74 +104,90 @@ export default function StatementsDesk({ onSelect, onFeed, vizFilter, onClearViz
     const ac = new AbortController();
     setLoading(true);
     setErr('');
-    Promise.all([
-      proxyJson(gdeltDoc(person), ac.signal),
-      proxyJson(gdeltVol(person), ac.signal).catch(() => null),
-    ])
-      .then(([doc, timeline]) => {
-        if (ac.signal.aborted) return;
+    setVol(null);
+
+    (async () => {
+      let mapped = [];
+      let series = null;
+      let note = 'Coverage volume, not statements. No contradiction verdict.';
+      let adapter = 'news-search';
+
+      try {
+        // One GDELT call at a time — DOC then TimelineVol after ≥5.5s (GDELT rate limit).
+        const doc = await proxyJson(gdeltDoc(person), ac.signal);
         const arts = doc?.articles || doc?.article || [];
-        const mapped = (Array.isArray(arts) ? arts : []).map((a) => ({
-          title: a.title || a.seendate,
-          date: a.seendate || a.date,
-          source_url: a.url,
-          source: a.domain || a.sourceCountry,
-          reporting_search: 'GDELT DOC 2.0 — news reporting search, not an official dataset',
-        }));
-        setRows(mapped);
-        const series = (((timeline && timeline.timeline && timeline.timeline[0] && timeline.timeline[0].data) || [])).map((p) => {
-          const d = String(p.date || '');
-          return { year: d.length >= 8 ? `${d.slice(4, 6)}/${d.slice(6, 8)}` : d, n: +p.value || 0 };
-        });
-        setVol(series.length ? series : null);
-        onFeed?.({
+        mapped = dedupeNewsRows(
+          (Array.isArray(arts) ? arts : []).map((a) => ({
+            title: a.title || a.seendate,
+            date: a.seendate || a.date,
+            source_url: a.url,
+            source: a.domain || a.sourceCountry,
+            reporting_search: 'GDELT DOC 2.0 — news reporting search, not an official dataset',
+          })),
+        );
+        note = `Live GDELT DOC 2.0 media mentions for "${person}". Coverage volume, not statements. No contradiction verdict.`;
+        try {
+          await sleep(GDELT_GAP_MS, ac.signal);
+          const timeline = await proxyJson(gdeltVol(person), ac.signal);
+          series = (((timeline && timeline.timeline && timeline.timeline[0] && timeline.timeline[0].data) || [])).map((p) => {
+            const d = String(p.date || '');
+            return { year: d.length >= 8 ? `${d.slice(4, 6)}/${d.slice(6, 8)}` : d, n: +p.value || 0 };
+          });
+          if (!series.length) series = null;
+        } catch (e) {
+          if (e?.name === 'AbortError') throw e;
+          /* volume chart is optional */
+        }
+      } catch (e) {
+        if (e?.name === 'AbortError') return;
+        try {
+          const xml = await proxyText(newsRss(person), ac.signal);
+          mapped = dedupeNewsRows(parseRssItems(xml));
+          note = `Live Google News RSS for "${person}" (GDELT unavailable). Coverage mentions only — no contradiction verdict.`;
+          adapter = 'news-search';
+        } catch (e2) {
+          if (e2?.name === 'AbortError') return;
+          mapped = [];
+          note = 'GDELT wire unreachable from this network — it will retry automatically.';
+          setErr(note);
+        }
+      }
+
+      if (ac.signal.aborted) return;
+      setRows(mapped);
+      setVol(series);
+      onFeed?.(
+        applyRecordChecklistToFeed({
           ok: true,
           tier: 'national',
           feature: 'Statement & Quote Tracker with Contradiction Detection',
           rows: mapped,
-          source: { adapter: 'news-search', gdelt: true, note: 'Coverage volume, not statements. No contradiction verdict.' },
-          coverage: { from: '', through: '7d', exhaustive: false },
-          fallback: true,
+          source: { adapter, gdelt: /GDELT/i.test(note), note },
+          coverage: { from: '', through: '3d', exhaustive: false },
+          fallback: false,
           meta: {
-            heading: 'STATEMENTS & CONTRADICTIONS',
-            section: 'STATEMENT COVERAGE — GDELT 2.0',
-            status: mapped.length ? 'GDELT 2.0 · 7-DAY WINDOW' : 'OFFLINE',
-            volume: series,
+            heading: 'PUBLIC-FIGURE MEDIA MENTION MONITOR',
+            section: 'MEDIA MENTIONS — GDELT 2.0',
+            status: mapped.length ? (series ? 'GDELT 2.0 · LIVE' : 'LIVE · MENTIONS') : 'OFFLINE',
+            volume: series || [],
             person,
           },
-        });
-      })
-      .catch(() => {
-        if (ac.signal.aborted) return;
-        setRows([]);
-        setVol(null);
-        const fail = 'GDELT wire unreachable from this network — it will retry automatically.';
-        setErr(fail);
-        onFeed?.({
-          ok: true,
-          tier: 'national',
-          feature: 'Statement & Quote Tracker with Contradiction Detection',
-          rows: [],
-          source: { adapter: 'news-search', gdelt: true, note: fail },
-          coverage: { through: '7d' },
-          fallback: true,
-          meta: { heading: 'STATEMENTS & CONTRADICTIONS', volume: [], person },
-        });
-      })
-      .finally(() => {
-        if (!ac.signal.aborted) setLoading(false);
-      });
+        }),
+      );
+      setLoading(false);
+    })();
+
     return () => ac.abort();
   }, [person, onFeed]);
 
   return (
     <div className="nat-panel">
       <div className="feed-head">
-        <h1>STATEMENTS & CONTRADICTIONS</h1>
-        <span className={`live-feed${rows.length ? ' on' : ''}`}>{loading ? 'LOADING' : rows.length ? 'GDELT 2.0' : 'OFFLINE'}</span>
+        <h1>PUBLIC-FIGURE MEDIA MENTION MONITOR</h1>
+        <span className={`live-feed${rows.length ? ' on' : ''}`}>{loading ? 'LOADING' : rows.length ? 'LIVE' : 'OFFLINE'}</span>
         <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
         <TableFilterPop
-          feed={{ feature: 'Statement & Contradiction Tracker', rows }}
+          feed={{ feature: 'Statement & Quote Tracker with Contradiction Detection', rows }}
           q={q}
           onQ={setQ}
           searchPlaceholder="Search headlines"
@@ -116,9 +196,8 @@ export default function StatementsDesk({ onSelect, onFeed, vizFilter, onClearViz
         />
       </div>
       <p className="desk-note">
-        This is coverage volume, not statements. The desk measures how much a named person is written about. It does not hold their
-        statements and cannot compare positions. No TRUE/FALSE/MISLEADING badge. {STATEMENT_LEADERS.length} personas tracked — count only,
-        no portraits.
+        Media mention volume for named public figures — not a statement archive and not a contradiction detector. No TRUE / FALSE /
+        MISLEADING badges. {STATEMENT_LEADERS.length} personas tracked.
       </p>
       <div className="nls-chips">
         {STATEMENT_LEADERS.map((name, idx) => (
@@ -148,22 +227,30 @@ export default function StatementsDesk({ onSelect, onFeed, vizFilter, onClearViz
         <table className="feed-table">
           <thead>
             <tr>
+              <th>Person</th>
               <th>Headline</th>
-              <th>Seen</th>
+              <th>Outlet</th>
+              <th>Topic</th>
+              <th>Published</th>
             </tr>
           </thead>
           <tbody>
             {loading && !rows.length ? (
               <tr>
-                <td colSpan={2}>loading…</td>
+                <td colSpan={5}>loading…</td>
               </tr>
             ) : shown.length === 0 ? (
               <tr>
-                <td colSpan={2}>No coverage rows in this window.</td>
+                <td colSpan={5}>No coverage rows in this window.</td>
               </tr>
             ) : (
               shown.map((r, n) => (
-                <tr key={r.source_url || n} onClick={() => onSelect?.(r)} {...rowDragProps(r, { title: r.title, feature: 'Statements' })}>
+                <tr
+                  key={r.source_url || n}
+                  onClick={() => onSelect?.({ ...r, person, topic: '—' })}
+                  {...rowDragProps(r, { title: r.title, feature: 'Statement & Quote Tracker with Contradiction Detection' })}
+                >
+                  <td>{person}</td>
                   <td>
                     {r.source_url ? (
                       <a href={r.source_url} target="_blank" rel="noreferrer" onClick={(e) => e.stopPropagation()}>
@@ -173,7 +260,9 @@ export default function StatementsDesk({ onSelect, onFeed, vizFilter, onClearViz
                       r.title
                     )}
                   </td>
-                  <td>{r.date}</td>
+                  <td>{r.source || '—'}</td>
+                  <td>—</td>
+                  <td>{r.date || '—'}</td>
                 </tr>
               ))
             )}

@@ -5,6 +5,8 @@ import { applyVizFilter } from '../lib/nationalKpi.js';
 import TableFilterPop from '../shell/TableFilterPop.jsx';
 import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import { aiDragProps } from '../lib/aiDrop.js';
+import { downloadJson, withExportProvenance } from '../lib/exportProvenance.js';
+import { liveApiEnabled } from '../lib/apiMode.js';
 
 const AI_SUMMARY =
   'Bab-el-Mandeb and Hormuz are the acute risks: Houthi strikes have already rerouted Suez traffic around the Cape (+10-14 days), and any Hormuz disruption removes ~1/5 of world oil with no bypass. Panama’s constraint is climate, not conflict.';
@@ -52,6 +54,10 @@ export default function ChokepointsDesk({ feed, selected, onSelect, onAsk, vizFi
 
   useEffect(() => {
     if (!liveOpen) return undefined;
+    if (!liveApiEnabled()) {
+      setLiveErr('Live PortWatch API is not deployed on this host.');
+      return undefined;
+    }
     const ac = new AbortController();
     setLiveErr('');
     fetch('/api/portwatch', { signal: ac.signal })
@@ -69,14 +75,14 @@ export default function ChokepointsDesk({ feed, selected, onSelect, onAsk, vizFi
   }, [liveOpen]);
 
   function exportJson() {
-    const blob = new Blob([JSON.stringify({ asOf, stats, points: list.map((p) => p.row) }, null, 2)], {
-      type: 'application/json',
+    downloadJson('niyantran-chokepoints.json', {
+      asOf,
+      stats,
+      points: withExportProvenance(
+        list.map((p) => p.row),
+        { feature: feed?.feature || 'Maritime Choke-Points' },
+      ),
     });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'niyantran-chokepoints.json';
-    a.click();
-    URL.revokeObjectURL(a.href);
   }
 
   if (!allList.length) return <div className="alw-empty-page">Chokepoint register is unavailable.</div>;
@@ -91,7 +97,7 @@ export default function ChokepointsDesk({ feed, selected, onSelect, onAsk, vizFi
           AS OF {String(asOf).toUpperCase()} · {list.length} TRACKED
         </span>
         <button type="button" className="geo-btn live" onClick={() => setLiveOpen((v) => !v)}>
-          LIVE FEED ↗
+          LATEST ↗
         </button>
         <span className="geo-actions">
           <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />

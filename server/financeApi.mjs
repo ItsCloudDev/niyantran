@@ -176,6 +176,41 @@ export async function loadIndiaEnergy() {
   return energyCache;
 }
 
+let indiaGdpCache = null;
+let indiaGdpAt = 0;
+
+/** India annual GDP growth (NY.GDP.MKTP.KD.ZG) — baseline series for Economic Simulator. */
+export async function loadIndiaGdpGrowth() {
+  if (indiaGdpCache && Date.now() - indiaGdpAt < TTL) return indiaGdpCache;
+  const url =
+    'https://api.worldbank.org/v2/country/IND/indicator/NY.GDP.MKTP.KD.ZG?format=json&date=1990:2030&per_page=100';
+  const j = await getJson(url);
+  const list = Array.isArray(j?.[1]) ? j[1] : [];
+  const rows = list
+    .filter((r) => r && r.value != null && r.date)
+    .map((r) => {
+      const growth = Number(r.value);
+      return {
+        title: `India GDP growth ${r.date}`,
+        country: 'India',
+        iso3: r.countryiso3code || 'IND',
+        year: String(r.date),
+        date: String(r.date),
+        indicator: r.indicator?.value || 'GDP growth (annual %)',
+        indicator_id: r.indicator?.id || 'NY.GDP.MKTP.KD.ZG',
+        value: Number.isFinite(growth) ? Math.round(growth * 100) / 100 : null,
+        gdp_growth_pct: Number.isFinite(growth) ? Math.round(growth * 100) / 100 : null,
+        unit: 'annual %',
+        source_url: 'https://data.worldbank.org/indicator/NY.GDP.MKTP.KD.ZG',
+        lastupdated: Array.isArray(j?.[0]) ? j[0]?.lastupdated : j?.[0]?.lastupdated || '',
+      };
+    })
+    .sort((a, b) => String(b.year).localeCompare(String(a.year)));
+  indiaGdpCache = { ok: true, source: 'world-bank', rows, lastupdated: rows[0]?.lastupdated || '' };
+  indiaGdpAt = Date.now();
+  return indiaGdpCache;
+}
+
 function yahooChartUrl(symbol) {
   return `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=5d`;
 }

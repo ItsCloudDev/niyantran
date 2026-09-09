@@ -1,3 +1,5 @@
+import { prepareHomeMarketQuotes } from './homeMarkets.js';
+
 const TICKERS = [
   ['NIFTY 50', '^NSEI'],
   ['SENSEX', '^BSESN'],
@@ -40,24 +42,46 @@ export async function homeMarketsFromStatic(signal) {
     getStaticJson('/data/ohlc.json', signal),
     getStaticJson('/data/embedded_csv/finance_market_feed.json', signal),
   ]);
+  const feedRows = Array.isArray(feed) ? feed : [];
+  const feedAsOf = feedRows.find((r) => r.as_of || r.asOf)?.as_of || feedRows.find((r) => r.as_of || r.asOf)?.asOf || '';
+
   const rows = TICKERS.map(([name, symbol]) => {
     const pack = ohlc?.[symbol];
     const fromOhlc = quoteFromCloses(name, pack?.c || pack?.close, symbol);
-    if (fromOhlc) return fromOhlc;
-    const row = Array.isArray(feed)
-      ? feed.find((r) => String(r.name || '').toUpperCase() === name.toUpperCase())
-      : null;
-    if (!row || row.last == null) return null;
-    const last = Number(String(row.last).replace(/,/g, ''));
-    const pct = Number(row.pct_change);
-    if (!Number.isFinite(last)) return null;
-    return { name, symbol, last, d1: Number.isFinite(pct) ? pct : null, dM: Number.isFinite(pct) ? pct : null, spark: [], archive: true };
+    const feedRow = feedRows.find((r) => String(r.name || '').toUpperCase() === name.toUpperCase());
+    const lastFeed = feedRow?.last != null ? Number(String(feedRow.last).replace(/,/g, '')) : null;
+    const pctFeed = feedRow?.pct_change != null ? Number(feedRow.pct_change) : null;
+    const asOf = feedRow?.as_of || feedRow?.asOf || feedAsOf || '';
+
+    // D8: one source of truth for last + % — prefer the stamped market feed when present.
+    // OHLC supplies the spark only so strip and MARKETS never diverge.
+    if (Number.isFinite(lastFeed)) {
+      return {
+        name,
+        symbol,
+        last: lastFeed,
+        d1: Number.isFinite(pctFeed) ? pctFeed : fromOhlc?.d1 ?? null,
+        dM: Number.isFinite(pctFeed) ? pctFeed : fromOhlc?.dM ?? null,
+        spark: fromOhlc?.spark || [],
+        archive: true,
+        asOf: asOf || fromOhlc?.asOf || '',
+        as_of: asOf || fromOhlc?.asOf || '',
+        source: 'finance_market_feed',
+      };
+    }
+    if (fromOhlc) {
+      return { ...fromOhlc, asOf: asOf || fromOhlc.asOf || '', as_of: asOf || fromOhlc.asOf || '' };
+    }
+    return null;
   }).filter(Boolean);
+
   return {
     ok: true,
-    rows,
-    source: 'Original HTML OHLC / NSE market-feed snapshot.',
+    rows: prepareHomeMarketQuotes(rows),
+    source: 'NSE market-feed snapshot (OHLC spark).',
     archive: true,
+    as_of: feedAsOf || rows[0]?.asOf || '',
+    updated: feedAsOf || rows[0]?.asOf || '',
   };
 }
 

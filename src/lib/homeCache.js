@@ -1,4 +1,5 @@
 import { loadRefreshCfg } from './refreshStore.js';
+import { liveApiEnabled } from './apiMode.js';
 
 const KEY = 'niyantranHomeDesk';
 
@@ -57,6 +58,7 @@ export function saveHomeCache({ markets, latest, pulse }) {
 export function kickHomeRefreshIfDue() {
   const cfg = loadRefreshCfg();
   if (!cfg.auto) return Promise.resolve(null);
+  if (!liveApiEnabled()) return Promise.resolve(null);
   const hours = cfg.intervalHours;
   const cache = read();
   if (!homeCacheHasRows(cache)) return Promise.resolve(null);
