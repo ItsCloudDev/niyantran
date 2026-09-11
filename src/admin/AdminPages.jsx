@@ -377,7 +377,7 @@ export function UsersPage({ users, onChange }) {
     }
     e.target.reset();
     setErr('');
-    setMsg(`Issued ${res.user.email}`);
+    setMsg(`Issued — sign in with User ID “${res.user.email}”`);
     onChange();
   }
 
@@ -396,8 +396,16 @@ export function UsersPage({ users, onChange }) {
             <input name="name" required />
           </label>
           <label className="adm-field">
-            <span>User ID / email</span>
-            <input name="email" type="email" required />
+            <span>User ID</span>
+            <input
+              name="email"
+              type="text"
+              required
+              minLength={2}
+              autoComplete="off"
+              spellCheck="false"
+              placeholder="e.g. student1 or student@niyantran"
+            />
           </label>
           <label className="adm-field">
             <span>Password</span>

@@ -32,3 +32,9 @@ dist-ssr
 tmp/
 .tmp-of-debug/
 
+# Secrets — never commit
+.env
+.env.local
+.env.*.local
+
+

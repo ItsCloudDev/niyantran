@@ -34,9 +34,9 @@ export function AiModelsPage() {
     <>
       <h1 className="adm-h1">AI models</h1>
       <p className="adm-lede">
-        Four research roles (provider + model id). Keys are read only from the host environment
-        (<code>DEEPSEEK_API_KEY</code>, <code>GEMINI_API_KEY</code>, or <code>NIYANTRAN_AI_KEY</code>) inside
-        <code> /api/ai/chat </code> — they are never accepted from the browser. Desk training prompts live on the
+        Four research roles (all route through Gemini while other providers are parked). Keys are read only from
+        the host environment (<code>GEMINI_API_KEY</code>, optional <code>DEEPSEEK_API_KEY</code>) inside
+        <code> /api/ai/chat </code> — never from the browser. Desk training prompts live on the
         <b> AI personas</b> tab.
       </p>
       <form onSubmit={onSave}>

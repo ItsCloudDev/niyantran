@@ -4,7 +4,7 @@ import { ApisPage, OverviewPage, PricingAdminPage, UsersPage } from './AdminPage
 import { AiModelsPage } from './AiModelsPage.jsx';
 import { AiPersonasPage } from './AiPersonasPage.jsx';
 import { PrivacyAdminPage, SiteSettingsPage, TermsAdminPage } from './AdminSitePages.jsx';
-import { loadUsers } from '../lib/userStore.js';
+import { hydrateUsersFromServer, loadUsers } from '../lib/userStore.js';
 import { isDue, loadRefreshCfg, refreshProgress } from '../lib/refreshStore.js';
 import { sweepApis } from '../lib/refreshFeeds.js';
 import './admin.css';
@@ -45,6 +45,16 @@ export default function AdminApp() {
       document.documentElement.classList.remove('adm-doc');
       document.body.classList.remove('adm-doc');
       window.removeEventListener('hashchange', onHash);
+    };
+  }, []);
+
+  useEffect(() => {
+    let alive = true;
+    hydrateUsersFromServer().then((list) => {
+      if (alive) setUsers(list);
+    });
+    return () => {
+      alive = false;
     };
   }, []);
 
