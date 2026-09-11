@@ -70,6 +70,7 @@ import {
   loadWorldExchanges,
 } from './financeApi.mjs';
 import { loadAthletes, loadIsl, loadSportsLeagues, loadWorldFixtures } from './sportsApi.mjs';
+import { loadBackupForFeature } from './backupFeed.mjs';
 import {
   loadBoxOffice,
   loadCelebrities,
@@ -3431,6 +3432,54 @@ async function serveCsvTable(searchParams) {
   };
 }
 
+function bodyHasRealRows(body) {
+  const rows = body?.rows || [];
+  if (!rows.length) return false;
+  return rows[0]?.status !== 'source_status';
+}
+
+/** Last resort: exhaustive backup/{DESK} XLSX when live + archive are empty. */
+function applyBackupFallback(body, searchParams) {
+  if (bodyHasRealRows(body)) return body;
+  const featureName =
+    (typeof body?.feature === 'string' && body.feature) ||
+    searchParams.get('feature') ||
+    '';
+  const tier = body?.tier || searchParams.get('tier') || '';
+  if (!featureName) return body;
+  let pack;
+  try {
+    pack = loadBackupForFeature(featureName, tier, { cap: MAX_ROWS });
+  } catch (err) {
+    return {
+      ...body,
+      source: {
+        ...(body?.source || {}),
+        note:
+          (body?.source?.note ? `${body.source.note} · ` : '') +
+          `Backup pack failed to load (${err.message || err}).`,
+      },
+    };
+  }
+  if (!pack?.rows?.length) return body;
+  return envelope({
+    tier,
+    feature: featureName,
+    rows: pack.rows,
+    adapter: 'embedded',
+    links: (pack.meta?.files || []).map((f) => `/backup/${String(tier || 'desk')}/${f}`),
+    coverage: {
+      from: '',
+      through: 'backup',
+      exhaustive: true,
+    },
+    fallback: true,
+    kind: 'backup-pack',
+    note: pack.note,
+    meta: pack.meta,
+  });
+}
+
 export async function handleFeatureFeedRequest(req, res, next) {
   const host = req.headers.host || 'localhost';
   const url = new URL(req.url, `http://${host}`);
@@ -3467,7 +3516,8 @@ export async function handleFeatureFeedRequest(req, res, next) {
     return;
   }
   try {
-    const body = await serveFeatureFeed(url.searchParams);
+    const raw = await serveFeatureFeed(url.searchParams);
+    const body = applyBackupFallback(raw, url.searchParams);
     const json = JSON.stringify(body);
     res.statusCode = 200;
     res.setHeader('Content-Type', 'application/json; charset=utf-8');

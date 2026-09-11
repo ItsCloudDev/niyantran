@@ -1,0 +1,69 @@
+{
+  "desk": "CARBON",
+  "local_excluded": true,
+  "generated_at": "2026-09-10T11:06:54.163Z",
+  "functions": 4,
+  "files": 4,
+  "records": 12042,
+  "parts": [
+    {
+      "function_id": "F55",
+      "function": "Carbon Border (CBAM) Watch",
+      "part": "FULL",
+      "file": "F55_Carbon_Border_CBAM_Watch.xlsx",
+      "records": 7,
+      "columns": 28,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "climate_cbam_watch.json"
+      ]
+    },
+    {
+      "function_id": "F56",
+      "function": "Global Carbon Pricing Tracker",
+      "part": "FULL",
+      "file": "F56_Global_Carbon_Pricing_Tracker.xlsx",
+      "records": 346,
+      "columns": 39,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "climate_carbon_pricing.json",
+        "climate_price_series.json",
+        "climate_ets_timeline.json"
+      ]
+    },
+    {
+      "function_id": "F57",
+      "function": "India CCTS & Green Credits",
+      "part": "FULL",
+      "file": "F57_India_CCTS_Green_Credits.xlsx",
+      "records": 6,
+      "columns": 27,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "climate_india_ccts.json"
+      ]
+    },
+    {
+      "function_id": "F58",
+      "function": "Carbon Registry Wire",
+      "part": "FULL",
+      "file": "F58_Carbon_Registry_Wire.xlsx",
+      "records": 11683,
+      "columns": 12,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete latest multi-registry project snapshot (11659 projects; 544458 source rows)",
+      "source_files": [
+        "carbonplan_offsets_projects_full.json",
+        "climate_registry_wire.json"
+      ]
+    }
+  ]
+}

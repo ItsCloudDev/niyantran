@@ -1,0 +1,96 @@
+{
+  "desk": "ECONOMICS",
+  "local_excluded": true,
+  "generated_at": "2026-09-10T11:06:32.799Z",
+  "functions": 6,
+  "files": 6,
+  "records": 117179,
+  "parts": [
+    {
+      "function_id": "F49",
+      "function": "NSE/BSE Market Feed",
+      "part": "FULL",
+      "file": "F49_NSE_BSE_Market_Feed.xlsx",
+      "records": 10096,
+      "columns": 12,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete daily observations for selected terminal index universe over trailing five years",
+      "source_files": [
+        "india_indices_5y.json",
+        "finance_market_feed.json"
+      ]
+    },
+    {
+      "function_id": "F50",
+      "function": "Live Global Stock Exchanges",
+      "part": "FULL",
+      "file": "F50_Live_Global_Stock_Exchanges.xlsx",
+      "records": 18799,
+      "columns": 12,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete daily observations for selected terminal index universe over trailing five years",
+      "source_files": [
+        "global_indices_5y.json"
+      ]
+    },
+    {
+      "function_id": "F51",
+      "function": "All Countries Key Financial Indicators (GDP, CPI, PMI, Emp-to-Pop)",
+      "part": "FULL",
+      "file": "F51_All_Countries_Key_Financial_Indicators_GDP_CPI_PMI_Emp_to_Pop.xlsx",
+      "records": 87450,
+      "columns": 12,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete World Bank series 1960–2026 across all economies",
+      "source_files": [
+        "world_bank_indicators_full.json"
+      ]
+    },
+    {
+      "function_id": "F52",
+      "function": "Sector Policy — Power/Energy/Green/Critical Minerals",
+      "part": "FULL",
+      "file": "F52_Sector_Policy_Power_Energy_Green_Critical_Minerals.xlsx",
+      "records": 267,
+      "columns": 33,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "climate_news.json",
+        "national_dgft_notifications.json"
+      ]
+    },
+    {
+      "function_id": "F53",
+      "function": "AI & the Tech Industry",
+      "part": "FULL",
+      "file": "F53_AI_the_Tech_Industry.xlsx",
+      "records": 67,
+      "columns": 29,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "news_ai_tech_14d.json"
+      ]
+    },
+    {
+      "function_id": "F54",
+      "function": "Prediction Market",
+      "part": "FULL",
+      "file": "F54_Prediction_Market.xlsx",
+      "records": 500,
+      "columns": 31,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "finance_manifold_markets.json"
+      ]
+    }
+  ]
+}

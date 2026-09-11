@@ -1,0 +1,80 @@
+{
+  "desk": "ENTERTAINMENT",
+  "local_excluded": true,
+  "generated_at": "2026-09-10T11:09:48.052Z",
+  "functions": 5,
+  "files": 5,
+  "records": 13290,
+  "parts": [
+    {
+      "function_id": "F65",
+      "function": "TV & Streaming Tonight",
+      "part": "FULL",
+      "file": "F65_TV_Streaming_Tonight.xlsx",
+      "records": 6495,
+      "columns": 34,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete TVmaze published future episode schedule snapshot",
+      "source_files": [
+        "tvmaze_full_schedule.json"
+      ]
+    },
+    {
+      "function_id": "F66",
+      "function": "Box Office Tracker",
+      "part": "FULL",
+      "file": "F66_Box_Office_Tracker.xlsx",
+      "records": 100,
+      "columns": 29,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "news_box_office_14d.json"
+      ]
+    },
+    {
+      "function_id": "F67",
+      "function": "India Music Charts",
+      "part": "FULL",
+      "file": "F67_India_Music_Charts.xlsx",
+      "records": 100,
+      "columns": 42,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "apple_music_india.json"
+      ]
+    },
+    {
+      "function_id": "F68",
+      "function": "Global Music Charts",
+      "part": "FULL",
+      "file": "F68_Global_Music_Charts.xlsx",
+      "records": 100,
+      "columns": 42,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "apple_music_global.json"
+      ]
+    },
+    {
+      "function_id": "F69",
+      "function": "OTT & Studio Intelligence",
+      "part": "FULL",
+      "file": "F69_OTT_Studio_Intelligence.xlsx",
+      "records": 6495,
+      "columns": 34,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete TVmaze published future episode schedule snapshot",
+      "source_files": [
+        "tvmaze_full_schedule.json"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,181 @@
+{
+  "desk": "NATIONAL",
+  "local_excluded": true,
+  "generated_at": "2026-09-10T11:25:01.740Z",
+  "functions": 12,
+  "files": 12,
+  "records": 21323,
+  "parts": [
+    {
+      "function_id": "F17",
+      "function": "Bill Passage Probability Index",
+      "part": "FULL",
+      "file": "F17_Bill_Passage_Probability_Index.xlsx",
+      "records": 9819,
+      "columns": 33,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "national_bill_tracker.json"
+      ]
+    },
+    {
+      "function_id": "F18",
+      "function": "Policy Intelligence Graph",
+      "part": "FULL",
+      "file": "F18_Policy_Intelligence_Graph.xlsx",
+      "records": 665,
+      "columns": 32,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "national_bill_tracker.json derived graph"
+      ]
+    },
+    {
+      "function_id": "F19",
+      "function": "Parliamentary Question Database",
+      "part": "FULL",
+      "file": "F19_Parliamentary_Question_Database.xlsx",
+      "records": 8000,
+      "columns": 32,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "national_question_database.json"
+      ]
+    },
+    {
+      "function_id": "F20",
+      "function": "Regulatory Body Watch (RBI/SEBI/TRAI/CCI)",
+      "part": "FULL",
+      "file": "F20_Regulatory_Body_Watch_RBI_SEBI_TRAI_CCI.xlsx",
+      "records": 151,
+      "columns": 32,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "national_regulatory_watch.json",
+        "national_sebi_orders.json"
+      ]
+    },
+    {
+      "function_id": "F21",
+      "function": "Candidate Affidavit Database",
+      "part": "FULL",
+      "file": "F21_Candidate_Affidavit_Database.xlsx",
+      "records": 483,
+      "columns": 38,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "national_candidate_affidavit.json"
+      ]
+    },
+    {
+      "function_id": "F22",
+      "function": "MP Profiles & Performance (MPLAD, attendance, debates)",
+      "part": "FULL",
+      "file": "F22_MP_Profiles_Performance_MPLAD_attendance_debates.xlsx",
+      "records": 782,
+      "columns": 31,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "national_mp_report_card.json"
+      ]
+    },
+    {
+      "function_id": "F23",
+      "function": "Central Tender Aggregator + Constituency Filter",
+      "part": "FULL",
+      "file": "F23_Central_Tender_Aggregator_Constituency_Filter.xlsx",
+      "records": 10,
+      "columns": 27,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "national_tender_aggregator.json"
+      ]
+    },
+    {
+      "function_id": "F24",
+      "function": "Bureaucratic Transfers — AGMUT Cadre",
+      "part": "FULL",
+      "file": "F24_Bureaucratic_Transfers_AGMUT_Cadre.xlsx",
+      "records": 29,
+      "columns": 31,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "national_agmut_transfers.json"
+      ]
+    },
+    {
+      "function_id": "F25",
+      "function": "Cabinet Decisions",
+      "part": "FULL",
+      "file": "F25_Cabinet_Decisions.xlsx",
+      "records": 158,
+      "columns": 37,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "pib_cabinet_decisions_full.json"
+      ]
+    },
+    {
+      "function_id": "F26",
+      "function": "Centre-sanctioned Projects & Completion Rate",
+      "part": "FULL",
+      "file": "F26_Centre_sanctioned_Projects_Completion_Rate.xlsx",
+      "records": 889,
+      "columns": 44,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete World Bank India project registry snapshot",
+      "source_files": [
+        "world_bank_india_projects_full.json",
+        "news_centre_projects_14d.json"
+      ]
+    },
+    {
+      "function_id": "F27",
+      "function": "Budget Utilisation & Schemes",
+      "part": "FULL",
+      "file": "F27_Budget_Utilisation_Schemes.xlsx",
+      "records": 100,
+      "columns": 29,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "news_budget_schemes_14d.json"
+      ]
+    },
+    {
+      "function_id": "F28",
+      "function": "Industry Updates (Ministry Data)",
+      "part": "FULL",
+      "file": "F28_Industry_Updates_Ministry_Data.xlsx",
+      "records": 237,
+      "columns": 34,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "national_dgft_notifications.json",
+        "national_policy_pipeline.json"
+      ]
+    }
+  ]
+}
