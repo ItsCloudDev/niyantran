@@ -12,15 +12,16 @@ import {
   setChatRole,
   subscribeAiChats,
 } from '../lib/aiChatStore.js';
-import { loadAiModels, pickAiRole, shortModelLabel, subscribeAiModels } from '../lib/aiModelsStore.js';
+import { pickAiRole, AI_PROVIDERS, activeAiProvider, shortModelLabel } from '../lib/aiModelsStore.js';
 import { sessionUser } from '../lib/userStore.js';
 import { filesFromDrop, materializeAiDrop, openAiResearch, readAiDrag } from '../lib/aiDrop.js';
+import { AiBrandIcon } from './AiBrandIcon.jsx';
 import AiMarkdown from './AiMarkdown.jsx';
 
 export default function AiPanel({ feed, selected, tab, featureName, lang, seed, onSeedConsumed, compact }) {
   const hi = lang === 'hi';
   const [state, setState] = useState(() => ensureAiChat());
-  const [roles, setRoles] = useState(() => loadAiModels());
+  const [providerId, setProviderId] = useState(() => activeAiProvider().id);
   const [draft, setDraft] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState('');
@@ -34,7 +35,10 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
   );
 
   useEffect(() => subscribeAiChats(setState), []);
-  useEffect(() => subscribeAiModels(setRoles), []);
+  useEffect(() => {
+    const live = activeAiProvider().id;
+    if (!AI_PROVIDERS.find((p) => p.id === providerId)?.enabled) setProviderId(live);
+  }, [providerId]);
 
   useEffect(() => {
     if (scroller.current) scroller.current.scrollTop = scroller.current.scrollHeight;
@@ -77,17 +81,6 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
     openAiResearch();
   }
 
-  async function attachCurrent() {
-    const st = ensureAiChat();
-    if (selected) {
-      await attachDrop({ kind: 'row', row: selected, feature: featureName, tab, title: selected.conflict_name || selected.title || selected.name });
-      return;
-    }
-    if (feed?.feature) {
-      await attachDrop({ kind: 'feed', feature: feed.feature, tab });
-    }
-  }
-
   async function onDrop(e) {
     e.preventDefault();
     setDragOver(false);
@@ -125,16 +118,18 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
         role: m.role,
         content: m.content,
       }));
+      const picked = AI_PROVIDERS.find((p) => p.id === providerId && p.enabled) || activeAiProvider();
       const out = await sendAiChat({
         roleId: current?.roleId || 'AUTO',
         messages: history.filter((m) => m.role === 'user' || m.role === 'assistant'),
         attachments,
         userType: sessionUser()?.type,
+        model: picked.model,
       });
       appendAiMessage(id, {
         role: 'assistant',
         content: out.text,
-        model: out.model,
+        model: shortModelLabel({ model: out.model, provider: out.provider }) || 'Gemini - Lite',
         provider: out.provider,
         roleUsed: out.role?.id,
       });
@@ -186,19 +181,9 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
       </div>
 
       <div className="ai-main">
-        <header className="ai-bar">
-          <button type="button" className="ai-attach-now" onClick={attachCurrent}>
-            {hi ? 'यह पंक्ति जोड़ें' : 'Attach selected row'}
-          </button>
-        </header>
-
-        <div ref={scroller} className="ai-history">
-          <div className="ai-msg ai-msg-sys">
-            {hi
-              ? 'तालिका की पंक्ति यहाँ खींचें। PDF/CSV जुड़ने पर मॉडल उन्हें पढ़ेगा।'
-              : 'Drag a row from the table — Russia–Ukraine War, a bill, a scheme. Linked PDFs, CSVs and sources are opened with your question.'}
-          </div>
-          {(chat?.attachments || []).length > 0 && (
+        <header className="ai-bar ai-attached-mod">
+          <p className="ai-attached-label">{hi ? 'संलग्न मॉड्यूल' : 'Attached Module'}</p>
+          {(chat?.attachments || []).length > 0 ? (
             <div className="ai-pins">
               {chat.attachments.map((a) => (
                 <span key={a.id} className="ai-pin" title={a.feature || a.kind}>
@@ -211,16 +196,28 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
                 </span>
               ))}
             </div>
+          ) : (
+            <p className="ai-attached-empty muted">
+              {hi ? 'तालिका से कोई पंक्ति खींचकर जोड़ें' : 'Drop a table row here to attach'}
+            </p>
           )}
+        </header>
+
+        <div ref={scroller} className="ai-history">
+          <div className="ai-msg ai-msg-sys">
+            {hi
+              ? 'तालिका की पंक्ति यहाँ खींचें। PDF/CSV जुड़ने पर मॉडल उन्हें पढ़ेगा।'
+              : 'Drag a row from the table — Russia–Ukraine War, a bill, a scheme. Linked PDFs, CSVs and sources are opened with your question.'}
+          </div>
           {(chat?.messages || []).filter((m) => m.role !== 'system').map((m) => (
             <div key={m.id} className={`ai-msg ai-msg-${m.role}${m.error ? ' err' : ''}`}>
-              <span>{m.role === 'user' ? (hi ? 'आप' : 'You') : m.model || 'Niyantran'}</span>
+              <span>{m.role === 'user' ? (hi ? 'आप' : 'You') : m.model || 'Gemini'}</span>
               {m.role === 'assistant' && !m.error ? <AiMarkdown text={m.content} /> : m.content}
             </div>
           ))}
           {busy && (
             <div className="ai-msg ai-msg-assistant">
-              <span>Niyantran</span>
+              <span>Gemini</span>
               {hi ? 'पढ़ रहा है…' : 'Reading attached sources…'}
             </div>
           )}
@@ -257,22 +254,34 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
               placeholder={hi ? 'इस संदर्भ के बारे में पूछें…' : 'Ask across the attached desks and files…'}
             />
             <div className="ai-compose-row">
-              <select
-                className="ai-model"
-                aria-label={hi ? 'मॉडल' : 'Model'}
-                title={`${resolved.label} · ${resolved.model}`}
-                value={chat?.roleId || 'AUTO'}
-                onChange={(e) => chat && setChatRole(chat.id, e.target.value)}
-              >
-                <option value="AUTO" title={`${resolved.label} · ${resolved.model}`}>
-                  auto [{resolved.provider || 'model'}]
-                </option>
-                {roles.map((r) => (
-                  <option key={r.id} value={r.id} title={`${r.label} · ${r.model}`}>
-                    {shortModelLabel(r)}
-                  </option>
-                ))}
-              </select>
+              <div className="ai-providers" role="group" aria-label={hi ? 'मॉडल' : 'Model'}>
+                {AI_PROVIDERS.map((p) => {
+                  const on = p.enabled && p.id === providerId;
+                  return (
+                    <button
+                      key={p.id}
+                      type="button"
+                      className={`ai-provider${on ? ' on' : ''}${p.enabled ? '' : ' locked'}`}
+                      disabled={!p.enabled || busy}
+                      title={p.enabled ? `${p.label} · ${p.model}` : `${p.label} — ${p.hint}`}
+                      aria-pressed={on}
+                      onClick={() => {
+                        if (!p.enabled) return;
+                        setProviderId(p.id);
+                        if (chat) {
+                          setChatRole(
+                            chat.id,
+                            p.id === 'gemini-flash' ? 'EXPERT_ESCALATION' : 'DEFAULT_ANALYST',
+                          );
+                        }
+                      }}
+                    >
+                      <AiBrandIcon id={p.provider} size={13} />
+                      <span>{p.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
               <button className="ai-send" type="submit" disabled={busy || !draft.trim()}>
                 {hi ? 'भेजें' : 'Send'}
               </button>

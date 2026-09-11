@@ -270,86 +270,85 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
 
       <div className="nh-grid">
         <div className="nh-main">
-          <div className="nh-main-top">
-            {featured && (
-              <article className="nh-hero">
-                <div className="nh-hero-copy">
-                  <div className="nh-kicker">
-                    <span className="nh-tag inv">{featured.type || 'Briefing'}</span>
-                    {featured.interactive && <span className="nh-sim">INTERACTIVE</span>}
-                  </div>
-                  <h2>{featured.title}</h2>
-                  <p>{featured.dek}</p>
-                  <div className="nh-story-meta">
-                    <span>{featured.source || 'Niyantran'}</span>
-                    {featured.published ? <span>· {featured.published}</span> : null}
-                  </div>
-                  <button type="button" className="nh-cta">
-                    Read + explore the data
-                  </button>
-                </div>
-                {featured.thumb && <img className="nh-hero-img" alt="" src={featured.thumb} />}
-              </article>
-            )}
-            <div className="nh-side-stack">
-              {ads.length > 0 && (
-                <div className="nh-ads" aria-label="Sponsored">
-                  <span className="ad-tag">SPONSORED</span>
-                  {ads.map((a, i) => (
-                    <a
-                      key={a.name}
-                      className={`ad-slide${i === ad ? ' on' : ''}`}
-                      href={a.url}
-                      target="_blank"
-                      rel="noopener noreferrer sponsored"
-                      aria-label={a.name}
-                    >
-                      <img alt={a.name} src={a.img} />
-                    </a>
-                  ))}
-                  <div className="ad-dots">
-                    {ads.map((a, i) => (
-                      <i key={a.name} className={i === ad ? 'on' : ''} onClick={() => setAd(i)} />
-                    ))}
-                  </div>
-                </div>
-              )}
-              <section className="nh-box">
-                <div className="bh">MY WATCHLIST</div>
-                <ul className="nh-watchlist">
-                  {[
-                    { tab: 'global', feature: 'Open Fronts', label: 'Open Fronts' },
-                    { tab: 'national', feature: 'Bill Passage Probability Index', label: 'Bill Passage' },
-                    { tab: 'economics', feature: 'NSE/BSE Delayed Market Feed', label: 'Markets' },
-                  ].map((w) => (
-                    <li key={w.feature}>
-                      <button type="button" onClick={() => onOpen({ tab: w.tab, feature: w.feature })}>
-                        {w.label}
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-              <section className="nh-box">
-                <div className="bh">FEED HEALTH</div>
-                <div className="nh-health">
-                  <div>
-                    <span>Markets</span>
-                    <b>{meta.markets?.ageH != null ? `${Number(meta.markets.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
-                  </div>
-                  <div>
-                    <span>Latest wire</span>
-                    <b>{meta.latest?.ageH != null ? `${Number(meta.latest.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
-                  </div>
-                  <div>
-                    <span>Conflict pulse</span>
-                    <b>{meta.pulse?.ageH != null ? `${Number(meta.pulse.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
-                  </div>
-                </div>
-              </section>
+          {ads.length > 0 && (
+            <div className="nh-ads" aria-label="Sponsored">
+              <span className="ad-tag">SPONSORED</span>
+              {ads.map((a, i) => (
+                <a
+                  key={a.name}
+                  className={`ad-slide${i === ad ? ' on' : ''}`}
+                  href={a.url}
+                  target="_blank"
+                  rel="noopener noreferrer sponsored"
+                  aria-label={a.name}
+                >
+                  <img alt={a.name} src={a.img} />
+                </a>
+              ))}
+              <div className="ad-dots">
+                {ads.map((a, i) => (
+                  <i key={a.name} className={i === ad ? 'on' : ''} onClick={() => setAd(i)} />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
+          {featured && (
+            <article className="nh-hero">
+              <div className="nh-hero-copy">
+                <div className="nh-kicker">
+                  <span className="nh-tag inv">{featured.type || 'Briefing'}</span>
+                  {featured.interactive && <span className="nh-sim">INTERACTIVE</span>}
+                </div>
+                <h2>{featured.title}</h2>
+                <p>{featured.dek}</p>
+                <div className="nh-story-meta">
+                  <span>{featured.source || 'Niyantran'}</span>
+                  {featured.published ? <span>· {featured.published}</span> : null}
+                </div>
+                <button type="button" className="nh-cta">
+                  Read + explore the data
+                </button>
+              </div>
+              {featured.thumb && <img className="nh-hero-img" alt="" src={featured.thumb} />}
+            </article>
+          )}
         </div>
+
+        <aside className="nh-mid">
+          <section className="nh-box">
+            <div className="bh">MY WATCHLIST</div>
+            <ul className="nh-watchlist">
+              {[
+                { tab: 'global', feature: 'Open Fronts', label: 'Open Fronts' },
+                { tab: 'national', feature: 'Bill Passage Probability Index', label: 'Bill Passage' },
+                { tab: 'economics', feature: 'NSE/BSE Delayed Market Feed', label: 'Markets' },
+              ].map((w) => (
+                <li key={w.feature}>
+                  <button type="button" onClick={() => onOpen({ tab: w.tab, feature: w.feature })}>
+                    {w.label}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </section>
+          <section className="nh-box">
+            <div className="bh">FEED HEALTH</div>
+            <div className="nh-health">
+              <div>
+                <span>Markets</span>
+                <b>{meta.markets?.ageH != null ? `${Number(meta.markets.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
+              </div>
+              <div>
+                <span>Latest wire</span>
+                <b>{meta.latest?.ageH != null ? `${Number(meta.latest.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
+              </div>
+              <div>
+                <span>Conflict pulse</span>
+                <b>{meta.pulse?.ageH != null ? `${Number(meta.pulse.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
+              </div>
+            </div>
+          </section>
+        </aside>
 
         <aside className="nh-rail">
           <section className="nh-box">

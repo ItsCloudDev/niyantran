@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import {
   authenticateUser,
+  hydrateUsersFromServer,
   setSessionUser,
-  updateUser,
-  USER_TYPES,
   userTypeOf,
 } from '../lib/userStore.js';
 
@@ -111,9 +110,12 @@ function Field({ mouse }) {
 export default function LoginPage({ onSuccess }) {
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
-  const [userType, setUserType] = useState('analyst');
   const mouse = useRef({ x: 0.72, y: 0.42 });
   const root = useRef(null);
+
+  useEffect(() => {
+    hydrateUsersFromServer().catch(() => {});
+  }, []);
 
   function onMove(e) {
     const el = root.current;
@@ -128,17 +130,21 @@ export default function LoginPage({ onSuccess }) {
     el.style.setProperty('--py', `${((y - 0.5) * 18).toFixed(2)}px`);
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const fd = new FormData(e.target);
     const user = String(fd.get('user') || '').trim();
     const pass = String(fd.get('pass') || '');
     setPending(true);
     setError('');
+    try {
+      await hydrateUsersFromServer();
+    } catch {
+      /* local-only */
+    }
     const res = authenticateUser(user, pass);
     if (res.ok) {
-      const type = userTypeOf(userType).id;
-      updateUser(res.user.id, { type });
+      const type = userTypeOf(res.user.type).id;
       setSessionUser({ ...res.user, type });
       sessionStorage.setItem('niyantranLand', userTypeOf(type).startTab);
       onSuccess();
@@ -185,25 +191,6 @@ export default function LoginPage({ onSuccess }) {
         <h1>TERMINAL</h1>
         <div className="tag">DESK ACCESS</div>
         <form onSubmit={handleSubmit} autoComplete="off">
-          <div className="mkt-field">
-            <span>I am a</span>
-            <div className="mkt-types" role="radiogroup" aria-label="User type">
-              {USER_TYPES.map((t) => (
-                <button
-                  key={t.id}
-                  type="button"
-                  role="radio"
-                  aria-checked={userType === t.id}
-                  className={userType === t.id ? 'on' : ''}
-                  title={t.hint}
-                  onClick={() => setUserType(t.id)}
-                >
-                  {t.short}
-                </button>
-              ))}
-            </div>
-            <em className="mkt-type-hint">{userTypeOf(userType).label}</em>
-          </div>
           <label className="mkt-field">
             <span>User ID</span>
             <input name="user" type="text" autoComplete="username" spellCheck="false" required autoFocus />
@@ -220,7 +207,7 @@ export default function LoginPage({ onSuccess }) {
           </div>
         </form>
         <div className="mkt-login-hint">
-          Students, journalists, lawyers, policy desks, and analysts. Sign in with an issued ID.
+          Demo: analyst@niyantran or student@niyantran · password 12345678#
         </div>
       </main>
     </div>

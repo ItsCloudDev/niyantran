@@ -1,11 +1,17 @@
 /**
  * Same-origin AI proxy.
  *   POST /api/ai/chat   { roleId, model, provider, messages, files }
+ *   POST /api/ai/desk-brief  { feature, tier, row, hash, force }  — organise one selected entry
+ *   GET  /api/ai/desk-brief?feature=&tier=&hash=  cached entry brief only
  *   GET  /api/ai/fetch?url=  text or base64 for pdf/image (CORS bypass)
  *
  * Keys come from server env (DEEPSEEK_API_KEY / GEMINI_API_KEY / NIYANTRAN_AI_KEY).
  * Request-body `key` is ignored — never accept client-supplied credentials (D6).
  */
+import { loadEnv } from './loadEnv.mjs';
+import { entryFingerprint, getCachedDeskBrief, runDeskBrief } from './deskBrief.mjs';
+
+loadEnv();
 const UA = 'Mozilla/5.0 (compatible; NiyantranTerminal/1.0; AI-research)';
 const FETCH_MS = 25_000;
 const CHAT_MS = 90_000;
@@ -13,15 +19,19 @@ const MAX_TEXT = 180_000;
 const MAX_BIN = 8 * 1024 * 1024;
 
 const SYSTEM = `You are the Niyantran Terminal research assistant.
-You analyse government, policy, legislative, economic and geopolitical records the analyst attaches.
-Rules:
+You help the analyst understand the substance of attached desk rows, PDFs, and CSVs.
+
+How to answer:
+- Explain the data itself in clear prose (countries, figures, dates, status, what changed).
+- Example: if Germany trade is attached, talk about merchandise exports, trade-to-GDP, year, and what that means — not about JSON fields or APIs.
+- Use bold short labels where helpful (e.g. **Exports:** … · **Trade-to-GDP:** …).
+- Do NOT paste raw JSON, field dumps, adapter names, API endpoints, or "packet / terminal context" meta into the reply.
+- Do NOT lead with source URLs. Name the organisation in words (e.g. World Bank, WTO) when useful; give a URL only if the user asks for sources.
+- Never invent figures. If a field is missing, say so in one short line.
 - Never give buy, sell, hold, accumulate, or avoid advice. Never give price targets or predicted moves.
 - Do not use the word "correlation". Prefer connections, linkages, pathways, what this touches.
-- Evidence first: quote or cite attached rows, URLs, PDFs or CSVs before interpretation.
-- If a source is missing, say so. Do not invent records, figures, or citations.
-- Confidence as labelled bands (strong / moderate / weak / speculative), not a bare decimal as the headline.
-- Market cap is price-derived — do not use it as an input to materiality. Revenue/size bands only if present in the attachment.
-- You may summarise, compare, extract, and flag what the documents actually say.`;
+- Confidence only as labelled bands (strong / moderate / weak / speculative) when you state uncertainty.
+- Market cap is price-derived — do not use it as materiality.`;
 
 const MAX_PERSONA = 200_000;
 
@@ -169,9 +179,12 @@ function geminiParts(messages, binaries) {
 
 async function geminiChat({ model, key, messages, binaries, system }) {
   const tried = [model];
-  if (model === 'gemini-3.5-flash-lite') tried.push('gemini-3.1-flash-lite', 'gemini-flash-lite-latest', 'gemini-2.5-flash-lite', 'gemini-3.6-flash');
-  if (model === 'gemini-3.7-flash') tried.push('gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash');
-  if (model === 'gemini-3.6-flash') tried.push('gemini-3.5-flash', 'gemini-flash-latest', 'gemini-2.5-flash');
+  if (model === 'gemini-3.5-flash-lite') tried.push('gemini-3.1-flash-lite', 'gemini-flash-lite-latest', 'gemini-3.5-flash', 'gemini-2.0-flash');
+  if (model === 'gemini-3.7-flash') tried.push('gemini-3.6-flash', 'gemini-3.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash');
+  if (model === 'gemini-3.6-flash') tried.push('gemini-3.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash');
+  if (model === 'gemini-2.5-flash' || model === 'gemini-2.5-flash-lite') {
+    tried.push('gemini-3.5-flash-lite', 'gemini-3.5-flash', 'gemini-flash-latest', 'gemini-2.0-flash');
+  }
   let last = '';
   for (const m of [...new Set(tried)]) {
     const ac = new AbortController();
@@ -255,7 +268,13 @@ export async function runAiChat(payload = {}) {
   ];
   if (ctx) {
     const lastUser = messages.filter((m) => m.role === 'user').pop();
-    if (lastUser) lastUser.content = `${lastUser.content}\n\n---\nAttached terminal context:\n${ctx}`;
+    if (lastUser) {
+      lastUser.content = `${lastUser.content}
+
+---
+Attached terminal data (INTERNAL — extract facts and figures for the user; NEVER paste this block, raw JSON, field names, or API URLs into your reply):
+${ctx}`;
+    }
   }
   const out =
     provider === 'gemini'
@@ -275,6 +294,7 @@ export async function runAiChat(payload = {}) {
 }
 
 export async function handleAiApi(req, res, next) {
+  loadEnv();
   const host = req.headers.host || 'localhost';
   const url = new URL(req.url, `http://${host}`);
   if (!url.pathname.startsWith('/api/ai')) {
@@ -290,6 +310,58 @@ export async function handleAiApi(req, res, next) {
     } catch (err) {
       const msg = err.message || String(err);
       return json(res, { ok: false, error: msg }, /required/i.test(msg) ? 400 : 502);
+    }
+  }
+
+  if (url.pathname === '/api/ai/desk-brief') {
+    if (req.method === 'GET') {
+      const feature = url.searchParams.get('feature') || '';
+      const tier = url.searchParams.get('tier') || '';
+      const hash = url.searchParams.get('hash') || '';
+      const hit = getCachedDeskBrief(feature, tier, hash);
+      if (!hit) return json(res, { ok: false, cached: false, error: 'No cached brief for this fingerprint.' }, 404);
+      return json(res, { ok: true, ...hit });
+    }
+    if (req.method !== 'POST') return json(res, { ok: false, error: 'POST or GET only' }, 405);
+
+    let body = '';
+    req.on('data', (c) => {
+      body += c;
+      if (body.length > 6 * 1024 * 1024) req.destroy();
+    });
+    await new Promise((resolve, reject) => {
+      req.on('end', resolve);
+      req.on('error', reject);
+    });
+    let payload = {};
+    try {
+      payload = JSON.parse(body || '{}');
+    } catch {
+      return json(res, { ok: false, error: 'Invalid JSON' }, 400);
+    }
+    try {
+      const row =
+        payload.row && typeof payload.row === 'object'
+          ? payload.row
+          : Array.isArray(payload.rows)
+            ? payload.rows[0]
+            : null;
+      const feature = String(payload.feature || '').trim();
+      const tier = String(payload.tier || '').trim();
+      if (!row) return json(res, { ok: false, error: 'Select a row to organise' }, 400);
+      const hash = String(payload.hash || entryFingerprint(row, feature, tier));
+      const out = await runDeskBrief({
+        feature,
+        tier,
+        row,
+        hash,
+        force: Boolean(payload.force),
+        sourceNote: payload.sourceNote || '',
+      });
+      return json(res, { ok: true, ...out });
+    } catch (err) {
+      const msg = err.message || String(err);
+      return json(res, { ok: false, error: msg }, /missing|required|Select a row|No rows/i.test(msg) ? 400 : 502);
     }
   }
 

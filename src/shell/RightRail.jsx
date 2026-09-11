@@ -4,6 +4,7 @@ import { feedOverview } from '../lib/analytics.js';
 import { resolveDataState, isTerminalState } from '../lib/dataState.js';
 import { BarList, Heatmap, Sparkline, VizCard } from './AnalyticsViz.jsx';
 import RecordDetail from './RecordDetail.jsx';
+import DeskIntel from './DeskIntel.jsx';
 import { openAiResearch } from '../lib/aiDrop.js';
 import AlliancesAnalytics from '../desks/AlliancesAnalytics.jsx';
 import SanctionsAnalytics from '../desks/SanctionsAnalytics.jsx';
@@ -100,6 +101,8 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
               {dataState.host ? ` Configured host: ${dataState.host}.` : ''}
             </p>
           )}
+
+          {!terminal ? <DeskIntel feed={feed} selected={selected} loading={loading} /> : null}
 
           {terminal && !selected ? (
             <div className="rail-empty">

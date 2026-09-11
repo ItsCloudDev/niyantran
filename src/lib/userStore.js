@@ -17,6 +17,17 @@ export const SEED_USER = {
   createdAt: '2026-01-15T00:00:00.000Z',
 };
 
+export const SEED_STUDENT = {
+  id: 'seed-student',
+  name: 'Student Desk',
+  email: 'student@niyantran',
+  password: '12345678#',
+  plan: 'pro',
+  type: 'student',
+  active: true,
+  createdAt: '2026-01-15T00:00:00.000Z',
+};
+
 function readRaw() {
   try {
     const raw = localStorage.getItem(KEY);
@@ -34,20 +45,106 @@ function normalize(user) {
   if (!user || typeof user !== 'object') return null;
   return {
     ...user,
+    email: String(user.email || '')
+      .trim()
+      .toLowerCase(),
     type: userTypeOf(user.type).id,
+    active: user.active !== false,
   };
+}
+
+function withSeeds(list) {
+  let out = Array.isArray(list) ? list.map(normalize).filter(Boolean) : [];
+  if (!out.some((u) => u.email === SEED_USER.email)) out = [SEED_USER, ...out];
+  if (!out.some((u) => u.email === SEED_STUDENT.email)) out = [...out, SEED_STUDENT];
+  return out.map(normalize).filter(Boolean);
+}
+
+function mergeByEmail(a, b) {
+  const map = new Map();
+  for (const u of [...(a || []), ...(b || [])]) {
+    const n = normalize(u);
+    if (!n?.email) continue;
+    const prev = map.get(n.email);
+    if (!prev) {
+      map.set(n.email, n);
+      continue;
+    }
+    const newer = String(n.createdAt || '') >= String(prev.createdAt || '') ? n : prev;
+    map.set(n.email, { ...prev, ...newer, email: n.email });
+  }
+  // Demo seats always keep known passwords so a stale localStorage can't lock you out.
+  const seeds = [SEED_USER, SEED_STUDENT];
+  for (const s of seeds) {
+    const cur = map.get(s.email);
+    if (!cur) {
+      map.set(s.email, normalize(s));
+      continue;
+    }
+    map.set(s.email, {
+      ...cur,
+      id: s.id,
+      email: s.email,
+      password: s.password,
+      type: cur.type || s.type,
+      active: cur.active !== false,
+    });
+  }
+  return withSeeds([...map.values()]);
 }
 
 export function loadUsers() {
   const saved = readRaw();
-  let list = saved && saved.length ? saved : [SEED_USER];
-  if (!list.some((u) => u.email === SEED_USER.email)) list = [SEED_USER, ...list];
-  return list.map(normalize).filter(Boolean);
+  const list = withSeeds(saved && saved.length ? saved : [SEED_USER, SEED_STUDENT]);
+  // Keep demo passwords stable even if localStorage was polluted.
+  return list.map((u) => {
+    if (u.email === SEED_USER.email) return { ...u, password: SEED_USER.password, id: SEED_USER.id };
+    if (u.email === SEED_STUDENT.email) return { ...u, password: SEED_STUDENT.password, id: SEED_STUDENT.id };
+    return u;
+  });
+}
+
+async function pushUsersToServer(users) {
+  try {
+    await fetch('/api/users', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ users }),
+    });
+  } catch {
+    /* offline / no plugin */
+  }
+}
+
+/** Pull server seats into localStorage (fixes localhost vs 127.0.0.1 split). */
+export async function hydrateUsersFromServer() {
+  const local = loadUsers();
+  try {
+    const res = await fetch('/api/users');
+    if (!res.ok) return local;
+    const body = await res.json().catch(() => ({}));
+    const remote = Array.isArray(body?.users) ? body.users : [];
+    if (!remote.length) {
+      await pushUsersToServer(local);
+      return local;
+    }
+    const merged = mergeByEmail(remote, local);
+    localStorage.setItem(KEY, JSON.stringify(merged));
+    window.dispatchEvent(new Event(EVENT));
+    // Persist union so the other origin sees issued seats too
+    await pushUsersToServer(merged);
+    return merged;
+  } catch {
+    return local;
+  }
 }
 
 export function saveUsers(users) {
-  localStorage.setItem(KEY, JSON.stringify(users.map(normalize).filter(Boolean)));
+  const list = withSeeds(users.map(normalize).filter(Boolean));
+  localStorage.setItem(KEY, JSON.stringify(list));
   window.dispatchEvent(new Event(EVENT));
+  pushUsersToServer(list);
+  return list;
 }
 
 export function subscribeUsers(fn) {
@@ -70,20 +167,43 @@ export function toPublicUser(user, typeOverride) {
   };
 }
 
-export function authenticateUser(email, password) {
-  const needle = String(email || '').trim().toLowerCase();
+export function authenticateUser(loginId, password) {
+  const needle = String(loginId || '').trim().toLowerCase();
   const pass = String(password || '');
-  const hit = loadUsers().find((u) => String(u.email).toLowerCase() === needle);
-  if (!hit) return { ok: false, reason: 'Unknown user ID.' };
+  if (!needle) return { ok: false, reason: 'Unknown user ID.' };
+
+  const users = loadUsers();
+  const byEmail = users.filter((u) => String(u.email || '').toLowerCase() === needle);
+  const byId = users.filter((u) => String(u.id || '').toLowerCase() === needle);
+  const byLocal = users.filter((u) => {
+    const em = String(u.email || '').toLowerCase();
+    const at = em.indexOf('@');
+    return at > 0 && em.slice(0, at) === needle;
+  });
+  const byName = users.filter((u) => String(u.name || '').trim().toLowerCase() === needle);
+
+  let hit = byEmail[0] || byId[0] || (byLocal.length === 1 ? byLocal[0] : null);
+  if (!hit && byName.length === 1) hit = byName[0];
+
+  if (!hit) {
+    return {
+      ok: false,
+      reason: 'Unknown user ID. Open Admin → Users and use that exact User ID, or try student@niyantran / 12345678#',
+    };
+  }
   if (!hit.active) return { ok: false, reason: 'This account is suspended.' };
-  if (hit.password !== pass) return { ok: false, reason: 'Invalid user ID or password.' };
+  if (String(hit.password) !== pass) return { ok: false, reason: 'Invalid user ID or password.' };
   return { ok: true, user: hit };
 }
 
 export function createUser({ name, email, password, plan, type }) {
   const users = loadUsers();
-  const cleanEmail = String(email || '').trim().toLowerCase();
-  if (!cleanEmail || !password) return { ok: false, reason: 'Email and password are required.' };
+  const cleanEmail = String(email || '')
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '');
+  if (!cleanEmail || !password) return { ok: false, reason: 'User ID and password are required.' };
+  if (cleanEmail.length < 2) return { ok: false, reason: 'User ID is too short.' };
   if (users.some((u) => String(u.email).toLowerCase() === cleanEmail)) {
     return { ok: false, reason: 'That user ID already exists.' };
   }
@@ -112,7 +232,9 @@ export function updateUser(id, patch) {
 }
 
 export function removeUser(id) {
-  if (id === SEED_USER.id) return { ok: false, reason: 'The seed analyst cannot be removed.' };
+  if (id === SEED_USER.id || id === SEED_STUDENT.id) {
+    return { ok: false, reason: 'Seed accounts cannot be removed.' };
+  }
   saveUsers(loadUsers().filter((u) => u.id !== id));
   return { ok: true };
 }
