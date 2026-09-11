@@ -1,0 +1,601 @@
+{
+  "desk": "LAW",
+  "local_excluded": true,
+  "generated_at": "2026-09-10T11:04:06.220Z",
+  "functions": 12,
+  "files": 42,
+  "records": 707897,
+  "parts": [
+    {
+      "function_id": "F37",
+      "function": "Supreme Court Order & Judgment Feed",
+      "part": "FULL",
+      "file": "F37_Supreme_Court_Order_Judgment_Feed.xlsx",
+      "records": 43547,
+      "columns": 12,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "supreme_court_judgments_full.json"
+      ]
+    },
+    {
+      "function_id": "F38",
+      "function": "Order Archive by Topic (Cross-Court)",
+      "part": "FULL",
+      "file": "F38_Order_Archive_by_Topic_Cross_Court.xlsx",
+      "records": 1080,
+      "columns": 28,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete cross-court month/court index over the canonical Supreme Court 1950–2026 and High Court 2026 tabs",
+      "source_files": [
+        "Supreme Court full history + High Courts 2026 canonical views"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "Allahabad High Court P01",
+      "file": "F39_High_Court_Case_Tracker__Allahabad_High_Court_P01.xlsx",
+      "records": 8531,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "Bombay High Court P01",
+      "file": "F39_High_Court_Case_Tracker__Bombay_High_Court_P01.xlsx",
+      "records": 22864,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "Calcutta High Court P01",
+      "file": "F39_High_Court_Case_Tracker__Calcutta_High_Court_P01.xlsx",
+      "records": 44172,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "Gauhati High Court P01",
+      "file": "F39_High_Court_Case_Tracker__Gauhati_High_Court_P01.xlsx",
+      "records": 17480,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court  for State of Telangana P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_for_State_of_Telangana_P01.xlsx",
+      "records": 11597,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Andhra Pradesh P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Andhra_Pradesh_P01.xlsx",
+      "records": 28486,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court Of Chhattisgarh P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_Of_Chhattisgarh_P01.xlsx",
+      "records": 36707,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Delhi P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Delhi_P01.xlsx",
+      "records": 33150,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Gujarat P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Gujarat_P01.xlsx",
+      "records": 6698,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Himachal Pradesh P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Himachal_Pradesh_P01.xlsx",
+      "records": 26643,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Jammu and Kashmir P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Jammu_and_Kashmir_P01.xlsx",
+      "records": 6497,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Jammu and Kashmir and Ladakh P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Jammu_and_Kashmir_and_Ladakh_P01.xlsx",
+      "records": 852,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Jharkhand P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Jharkhand_P01.xlsx",
+      "records": 25190,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Karnataka P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Karnataka_P01.xlsx",
+      "records": 50000,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Karnataka P02",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Karnataka_P02.xlsx",
+      "records": 499,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Kerala P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Kerala_P01.xlsx",
+      "records": 83,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Madhya Pradesh P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Madhya_Pradesh_P01.xlsx",
+      "records": 110,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Manipur P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Manipur_P01.xlsx",
+      "records": 1504,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Meghalaya P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Meghalaya_P01.xlsx",
+      "records": 1199,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Punjab and Haryana P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Punjab_and_Haryana_P01.xlsx",
+      "records": 50000,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Punjab and Haryana P02",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Punjab_and_Haryana_P02.xlsx",
+      "records": 35308,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court Of Rajasthan P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_Of_Rajasthan_P01.xlsx",
+      "records": 21833,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Sikkim P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Sikkim_P01.xlsx",
+      "records": 97,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Tripura P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Tripura_P01.xlsx",
+      "records": 931,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "High Court of Uttarakhand P01",
+      "file": "F39_High_Court_Case_Tracker__High_Court_of_Uttarakhand_P01.xlsx",
+      "records": 10494,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "Madras High Court P01",
+      "file": "F39_High_Court_Case_Tracker__Madras_High_Court_P01.xlsx",
+      "records": 50000,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "Madras High Court P02",
+      "file": "F39_High_Court_Case_Tracker__Madras_High_Court_P02.xlsx",
+      "records": 50000,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "Madras High Court P03",
+      "file": "F39_High_Court_Case_Tracker__Madras_High_Court_P03.xlsx",
+      "records": 13368,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "Orissa High Court P01",
+      "file": "F39_High_Court_Case_Tracker__Orissa_High_Court_P01.xlsx",
+      "records": 46931,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "Patna High Court P01",
+      "file": "F39_High_Court_Case_Tracker__Patna_High_Court_P01.xlsx",
+      "records": 50000,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F39",
+      "function": "High Court Case Tracker",
+      "part": "Patna High Court P02",
+      "file": "F39_High_Court_Case_Tracker__Patna_High_Court_P02.xlsx",
+      "records": 10043,
+      "columns": 7,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "high_court_judgments_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F40",
+      "function": "District Court Case Tracker",
+      "part": "FULL",
+      "file": "F40_District_Court_Case_Tracker.xlsx",
+      "records": 63,
+      "columns": 29,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "news_district_court_14d.json"
+      ]
+    },
+    {
+      "function_id": "F41",
+      "function": "NGT Environmental Litigation Tracker",
+      "part": "FULL",
+      "file": "F41_NGT_Environmental_Litigation_Tracker.xlsx",
+      "records": 52,
+      "columns": 29,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "news_ngt_14d.json"
+      ]
+    },
+    {
+      "function_id": "F42",
+      "function": "CAT & Consumer Disputes (NCDRC) Watch",
+      "part": "FULL",
+      "file": "F42_CAT_Consumer_Disputes_NCDRC_Watch.xlsx",
+      "records": 35,
+      "columns": 29,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "news_cat_ncdrc_14d.json"
+      ]
+    },
+    {
+      "function_id": "F43",
+      "function": "Judge Profiles & Bench Analytics",
+      "part": "FULL",
+      "file": "F43_Judge_Profiles_Bench_Analytics.xlsx",
+      "records": 500,
+      "columns": 33,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "wikidata_indian_judges.json"
+      ]
+    },
+    {
+      "function_id": "F44",
+      "function": "ICC Proceedings",
+      "part": "FULL",
+      "file": "F44_ICC_Proceedings.xlsx",
+      "records": 53,
+      "columns": 29,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "news_icc_14d.json"
+      ]
+    },
+    {
+      "function_id": "F45",
+      "function": "ICJ Proceedings",
+      "part": "FULL",
+      "file": "F45_ICJ_Proceedings.xlsx",
+      "records": 192,
+      "columns": 32,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete ICJ General List on official all-cases page",
+      "source_files": [
+        "icj_cases_full.json",
+        "news_icj_14d.json"
+      ]
+    },
+    {
+      "function_id": "F46",
+      "function": "WTO Dispute Settlement",
+      "part": "FULL",
+      "file": "F46_WTO_Dispute_Settlement.xlsx",
+      "records": 644,
+      "columns": 33,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete WTO DS1–DS641 official case-page audit",
+      "source_files": [
+        "wto_disputes_full.json",
+        "news_wto_14d.json"
+      ]
+    },
+    {
+      "function_id": "F47",
+      "function": "NCLT / NCLAT (Insolvency)",
+      "part": "FULL",
+      "file": "F47_NCLT_NCLAT_Insolvency.xlsx",
+      "records": 434,
+      "columns": 34,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "judiciary_nclt_orders.json",
+        "national_ibbi_announcements.json"
+      ]
+    },
+    {
+      "function_id": "F48",
+      "function": "Sector Tribunals (ITAT / TDSAT / SAT / DRT)",
+      "part": "FULL",
+      "file": "F48_Sector_Tribunals_ITAT_TDSAT_SAT_DRT.xlsx",
+      "records": 30,
+      "columns": 28,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "national_sebi_orders.json"
+      ]
+    }
+  ]
+}

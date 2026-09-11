@@ -1,0 +1,125 @@
+{
+  "desk": "STATE",
+  "local_excluded": true,
+  "generated_at": "2026-09-10T10:50:02.884Z",
+  "functions": 8,
+  "files": 8,
+  "records": 41359,
+  "parts": [
+    {
+      "function_id": "F29",
+      "function": "Constituency Register",
+      "part": "FULL",
+      "file": "F29_Constituency_Register.xlsx",
+      "records": 14123,
+      "columns": 12,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete repository coverage of Indian assembly constituency results since 2009",
+      "source_files": [
+        "assembly_constituency_results_since_2009_full.json"
+      ]
+    },
+    {
+      "function_id": "F30",
+      "function": "MLA Directory",
+      "part": "FULL",
+      "file": "F30_MLA_Directory.xlsx",
+      "records": 4104,
+      "columns": 44,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "open_india_mlas.json"
+      ]
+    },
+    {
+      "function_id": "F31",
+      "function": "MLA Report Card + Statement Tracker",
+      "part": "FULL",
+      "file": "F31_MLA_Report_Card_Statement_Tracker.xlsx",
+      "records": 4104,
+      "columns": 44,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "open_india_mlas.json"
+      ]
+    },
+    {
+      "function_id": "F32",
+      "function": "Roll Demography",
+      "part": "FULL",
+      "file": "F32_Roll_Demography.xlsx",
+      "records": 14163,
+      "columns": 12,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete repository coverage of Indian assembly constituency results since 2009",
+      "source_files": [
+        "assembly_constituency_results_since_2009_full.json",
+        "seven state constituency datasets"
+      ]
+    },
+    {
+      "function_id": "F33",
+      "function": "Community Bloc Matrix",
+      "part": "FULL",
+      "file": "F33_Community_Bloc_Matrix.xlsx",
+      "records": 4144,
+      "columns": 44,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "open_india_mlas.json",
+        "seven state constituency datasets"
+      ]
+    },
+    {
+      "function_id": "F34",
+      "function": "Cabinet Decisions",
+      "part": "FULL",
+      "file": "F34_Cabinet_Decisions.xlsx",
+      "records": 661,
+      "columns": 40,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "open_state_ministers.json",
+        "news_state_cabinet_14d.json"
+      ]
+    },
+    {
+      "function_id": "F35",
+      "function": "Bureaucrat Transfer & Posting Tracker (State Cadre)",
+      "part": "FULL",
+      "file": "F35_Bureaucrat_Transfer_Posting_Tracker_State_Cadre.xlsx",
+      "records": 35,
+      "columns": 29,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "news_state_transfers_14d.json"
+      ]
+    },
+    {
+      "function_id": "F36",
+      "function": "State Tender Aggregator (State e-Procurement)",
+      "part": "FULL",
+      "file": "F36_State_Tender_Aggregator_State_e_Procurement.xlsx",
+      "records": 25,
+      "columns": 29,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "news_state_tenders_14d.json"
+      ]
+    }
+  ]
+}

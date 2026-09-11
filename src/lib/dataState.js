@@ -94,21 +94,24 @@ export function resolveDataState(feed, { loading = false, error = '' } = {}) {
   if (feed?.fallback) {
     const ageH = Number(feed?.ageH ?? feed?.meta?.ageH);
     const recent = Number.isFinite(ageH) && ageH <= 24;
-    const state = recent ? DATA_STATE.cached : DATA_STATE.archived;
+    const isBackup = /backup-pack/i.test(kind) || /exhaustive shipped backup/i.test(blob);
+    const state = isBackup ? DATA_STATE.archived : recent ? DATA_STATE.cached : DATA_STATE.archived;
     return {
       ...state,
       detail:
         feed?.source?.note ||
-        (recent
-          ? 'Live source failed. Showing a recent cache.'
-          : 'Dated historical snapshot. Not a live feed.'),
+        (isBackup
+          ? 'Exhaustive shipped backup. Live and archive returned no rows.'
+          : recent
+            ? 'Live source failed. Showing a recent cache.'
+            : 'Dated historical snapshot. Not a live feed.'),
       coverage: coverageText(feed, rows.length),
       lastSync: lastSyncText(feed),
       fallback: true,
     };
   }
 
-  if (/geo-pack|law-pack|finance-pack|carbon-pack|dossier/i.test(kind) && !feed?.source?.gdelt) {
+  if (/geo-pack|law-pack|finance-pack|carbon-pack|backup-pack|dossier/i.test(kind) && !feed?.source?.gdelt) {
     // Packs are ingested snapshots unless the envelope explicitly says live.
     if (/live/i.test(blob) && !/archive|fallback/i.test(blob)) {
       return {

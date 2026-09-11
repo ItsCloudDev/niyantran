@@ -22,7 +22,7 @@ function outcome(body, row) {
   const note = String(body?.source?.note || body?.error || '');
   // Live alternate sources (e.g. BBC RSS when GDELT is paced) are still Live, not Archive.
   const liveAlt =
-    /Live BBC|BBC World RSS|via \/api\/air|OpenSky live|Google News RSS|LIVE · NEWS RSS|LIVE · PIB|Product-name GDELT search is not used|Wikidata live|LIVE · BUDGET XLSX|Statement 1|Wikidata chief-executive|BUSINESS LEADERS|LIVE · WORLD BANK|India GDP growth|Indian Sports Wire|hockey, badminton|Wikidata Indian leagues|leagues and owners|coverage rows|court \/ litigation coverage|reporting search|last-known-good|Shipped pack/i.test(
+    /Live BBC|BBC World RSS|via \/api\/air|OpenSky live|Google News RSS|LIVE · NEWS RSS|LIVE · PIB|Product-name GDELT search is not used|Wikidata live|LIVE · BUDGET XLSX|Statement 1|Wikidata chief-executive|BUSINESS LEADERS|LIVE · WORLD BANK|India GDP growth|Indian Sports Wire|hockey, badminton|Wikidata Indian leagues|leagues and owners|coverage rows|court \/ litigation coverage|reporting search|last-known-good|Shipped pack|Exhaustive shipped backup/i.test(
       note,
     );
   // Static Vercel has no /api/feature-feed. Loading the shipped pack is not a live failure.

@@ -1,0 +1,94 @@
+{
+  "desk": "SPORTS",
+  "local_excluded": true,
+  "generated_at": "2026-09-10T11:08:26.497Z",
+  "functions": 6,
+  "files": 6,
+  "records": 12998,
+  "parts": [
+    {
+      "function_id": "F59",
+      "function": "Cricket Wire",
+      "part": "FULL",
+      "file": "F59_Cricket_Wire.xlsx",
+      "records": 74,
+      "columns": 44,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete IPL 2026 ESPN scoreboard",
+      "source_files": [
+        "espn_cricket_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F60",
+      "function": "Football Wire",
+      "part": "FULL",
+      "file": "F60_Football_Wire.xlsx",
+      "records": 3826,
+      "columns": 44,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete 2025 ESPN scoreboard for eng.1",
+      "source_files": [
+        "espn_football_2025_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F61",
+      "function": "ISL Tracker",
+      "part": "FULL",
+      "file": "F61_ISL_Tracker.xlsx",
+      "records": 325,
+      "columns": 44,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete 2024 Indian Super League ESPN scoreboard",
+      "source_files": [
+        "espn_isl_2024_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F62",
+      "function": "Indian Sports Wire",
+      "part": "FULL",
+      "file": "F62_Indian_Sports_Wire.xlsx",
+      "records": 71,
+      "columns": 29,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "news_india_sports_14d.json"
+      ]
+    },
+    {
+      "function_id": "F63",
+      "function": "Sports Governance & Policy",
+      "part": "FULL",
+      "file": "F63_Sports_Governance_Policy.xlsx",
+      "records": 34,
+      "columns": 29,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "news_sports_governance_14d.json"
+      ]
+    },
+    {
+      "function_id": "F64",
+      "function": "Athlete Index",
+      "part": "FULL",
+      "file": "F64_Athlete_Index.xlsx",
+      "records": 8668,
+      "columns": 35,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete Wikidata query result for Indian athletes (10,000-row safety ceiling)",
+      "source_files": [
+        "wikidata_indian_athletes_full.json"
+      ]
+    }
+  ]
+}

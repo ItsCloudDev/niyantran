@@ -1,0 +1,236 @@
+{
+  "desk": "GLOBAL",
+  "local_excluded": true,
+  "generated_at": "2026-09-10T10:45:20.657Z",
+  "functions": 16,
+  "files": 16,
+  "records": 119264,
+  "parts": [
+    {
+      "function_id": "F01",
+      "function": "Open Fronts",
+      "part": "FULL",
+      "file": "F01_Open_Fronts.xlsx",
+      "records": 88,
+      "columns": 33,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "geopolitics_war_tracker.json"
+      ]
+    },
+    {
+      "function_id": "F02",
+      "function": "Global Intelligence",
+      "part": "FULL",
+      "file": "F02_Global_Intelligence.xlsx",
+      "records": 10,
+      "columns": 28,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "geopolitics_defense_procurement.json"
+      ]
+    },
+    {
+      "function_id": "F03",
+      "function": "Alliances",
+      "part": "FULL",
+      "file": "F03_Alliances.xlsx",
+      "records": 236,
+      "columns": 43,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "wikidata_military_alliances.json",
+        "news_alliances_14d.json"
+      ]
+    },
+    {
+      "function_id": "F04",
+      "function": "Sanctions",
+      "part": "FULL",
+      "file": "F04_Sanctions.xlsx",
+      "records": 19369,
+      "columns": 12,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete current OFAC SDN CSV",
+      "source_files": [
+        "ofac_sdn_full.json"
+      ]
+    },
+    {
+      "function_id": "F05",
+      "function": "Global Aid",
+      "part": "FULL",
+      "file": "F05_Global_Aid.xlsx",
+      "records": 20165,
+      "columns": 12,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete FTS 2026 flow snapshot (20165 flows)",
+      "source_files": [
+        "ocha_fts_flows_2026_full.json"
+      ]
+    },
+    {
+      "function_id": "F06",
+      "function": "Infra",
+      "part": "FULL",
+      "file": "F06_Infra.xlsx",
+      "records": 22729,
+      "columns": 12,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete World Bank project registry snapshot (22729 projects)",
+      "source_files": [
+        "world_bank_projects_full.json"
+      ]
+    },
+    {
+      "function_id": "F07",
+      "function": "Nuclear Watch",
+      "part": "FULL",
+      "file": "F07_Nuclear_Watch.xlsx",
+      "records": 494,
+      "columns": 44,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "wikidata_nuclear_power_plants.json",
+        "news_nuclear_14d.json"
+      ]
+    },
+    {
+      "function_id": "F08",
+      "function": "Satellite Infrastructure",
+      "part": "FULL",
+      "file": "F08_Satellite_Infrastructure.xlsx",
+      "records": 16506,
+      "columns": 12,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "celestrak_active.json"
+      ]
+    },
+    {
+      "function_id": "F09",
+      "function": "Maritime Choke-Points",
+      "part": "FULL",
+      "file": "F09_Maritime_Choke_Points.xlsx",
+      "records": 18,
+      "columns": 38,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "geo_chokepoints.json"
+      ]
+    },
+    {
+      "function_id": "F10",
+      "function": "World Constitutions",
+      "part": "FULL",
+      "file": "F10_World_Constitutions.xlsx",
+      "records": 4341,
+      "columns": 44,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "constitute_metadata.json"
+      ]
+    },
+    {
+      "function_id": "F11",
+      "function": "Growth Indicators",
+      "part": "FULL",
+      "file": "F11_Growth_Indicators.xlsx",
+      "records": 17490,
+      "columns": 12,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete World Bank series 1960–2026 across all economies",
+      "source_files": [
+        "world_bank_indicators_full.json"
+      ]
+    },
+    {
+      "function_id": "F12",
+      "function": "Geopolitics News Wire",
+      "part": "FULL",
+      "file": "F12_Geopolitics_News_Wire.xlsx",
+      "records": 38,
+      "columns": 29,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "news_geopolitics_14d.json"
+      ]
+    },
+    {
+      "function_id": "F13",
+      "function": "Heads of State",
+      "part": "FULL",
+      "file": "F13_Heads_of_State.xlsx",
+      "records": 252,
+      "columns": 30,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete returned current head-of-state statements for sovereign-state universe",
+      "source_files": [
+        "wikidata_heads_of_state_deduped.json"
+      ]
+    },
+    {
+      "function_id": "F14",
+      "function": "Global Commodities",
+      "part": "FULL",
+      "file": "F14_Global_Commodities.xlsx",
+      "records": 24,
+      "columns": 28,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "geo_commodities.json"
+      ]
+    },
+    {
+      "function_id": "F15",
+      "function": "Global Trade",
+      "part": "FULL",
+      "file": "F15_Global_Trade.xlsx",
+      "records": 17490,
+      "columns": 12,
+      "charts": 3,
+      "formula_errors": "NONE",
+      "coverage_scope": "Complete World Bank series 1960–2026 across all economies",
+      "source_files": [
+        "world_bank_indicators_full.json"
+      ]
+    },
+    {
+      "function_id": "F16",
+      "function": "Energy",
+      "part": "FULL",
+      "file": "F16_Energy.xlsx",
+      "records": 14,
+      "columns": 36,
+      "charts": 2,
+      "formula_errors": "NONE",
+      "coverage_scope": "Published source scope loaded",
+      "source_files": [
+        "geo_energy.json"
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 /**
- * D14 — Central Tender board: only show tenders whose deadline is still open.
- * An all-expired board is worse than empty.
+ * D14 — Central / state tender boards: hide notices whose deadline has passed.
+ * Rows without a deadline (news wires, exhaustive backup packs) stay visible —
+ * missing deadline is not the same as expired.
  */
 function parseDeadline(raw) {
   const s = String(raw || '').replace(/-/g, ' ');
@@ -10,12 +11,17 @@ function parseDeadline(raw) {
 
 export function isOpenTender(row, now = Date.now()) {
   const d = parseDeadline(row?.deadline);
-  return Boolean(d && d.getTime() > now);
+  if (!d) return true; // no deadline → keep (backup / coverage rows)
+  return d.getTime() > now;
 }
 
 export function applyOpenTenderFilterToFeed(feed) {
   const feature = String(feed?.feature || '');
   if (!/central tender|tender aggregator/i.test(feature)) return feed;
+  // Exhaustive backup is the last-resort pack — do not empty the board.
+  if (feed?.source?.kind === 'backup-pack' || feed?.meta?.backup || feed?.meta?.exhaustive) {
+    return feed;
+  }
   const rows = Array.isArray(feed?.rows) ? feed.rows : [];
   if (!rows.length) return feed;
   const open = rows.filter((r) => isOpenTender(r));
