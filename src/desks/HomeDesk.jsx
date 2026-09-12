@@ -312,43 +312,43 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
               {featured.thumb && <img className="nh-hero-img" alt="" src={featured.thumb} />}
             </article>
           )}
-        </div>
 
-        <aside className="nh-mid">
-          <section className="nh-box">
-            <div className="bh">MY WATCHLIST</div>
-            <ul className="nh-watchlist">
-              {[
-                { tab: 'global', feature: 'Open Fronts', label: 'Open Fronts' },
-                { tab: 'national', feature: 'Bill Passage Probability Index', label: 'Bill Passage' },
-                { tab: 'economics', feature: 'NSE/BSE Delayed Market Feed', label: 'Markets' },
-              ].map((w) => (
-                <li key={w.feature}>
-                  <button type="button" onClick={() => onOpen({ tab: w.tab, feature: w.feature })}>
-                    {w.label}
-                  </button>
-                </li>
-              ))}
-            </ul>
-          </section>
-          <section className="nh-box">
-            <div className="bh">FEED HEALTH</div>
-            <div className="nh-health">
-              <div>
-                <span>Markets</span>
-                <b>{meta.markets?.ageH != null ? `${Number(meta.markets.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
+          <div className="nh-tools">
+            <section className="nh-box">
+              <div className="bh">MY WATCHLIST</div>
+              <ul className="nh-watchlist">
+                {[
+                  { tab: 'global', feature: 'Open Fronts', label: 'Open Fronts' },
+                  { tab: 'national', feature: 'Bill Passage Probability Index', label: 'Bill Passage' },
+                  { tab: 'economics', feature: 'NSE/BSE Delayed Market Feed', label: 'Markets' },
+                ].map((w) => (
+                  <li key={w.feature}>
+                    <button type="button" onClick={() => onOpen({ tab: w.tab, feature: w.feature })}>
+                      {w.label}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+            <section className="nh-box">
+              <div className="bh">FEED HEALTH</div>
+              <div className="nh-health">
+                <div>
+                  <span>Markets</span>
+                  <b>{meta.markets?.ageH != null ? `${Number(meta.markets.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
+                </div>
+                <div>
+                  <span>Latest wire</span>
+                  <b>{meta.latest?.ageH != null ? `${Number(meta.latest.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
+                </div>
+                <div>
+                  <span>Conflict pulse</span>
+                  <b>{meta.pulse?.ageH != null ? `${Number(meta.pulse.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
+                </div>
               </div>
-              <div>
-                <span>Latest wire</span>
-                <b>{meta.latest?.ageH != null ? `${Number(meta.latest.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
-              </div>
-              <div>
-                <span>Conflict pulse</span>
-                <b>{meta.pulse?.ageH != null ? `${Number(meta.pulse.ageH).toFixed(1)}h` : loading ? '…' : '—'}</b>
-              </div>
-            </div>
-          </section>
-        </aside>
+            </section>
+          </div>
+        </div>
 
         <aside className="nh-rail">
           <section className="nh-box">
@@ -398,14 +398,15 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
               {!loading && !latestShown.length && <li className="muted">Wire quiet. Headlines arrive from RSS when the proxy can reach the publishers.</li>}
               {latestShown.map((r, i) => (
                 <li key={`${r.link}-${i}`} {...aiDragProps({ kind: 'row', title: r.title, row: { title: r.title, source_url: r.link, src: r.src } })}>
-                  <span className="nh-story-kicker">{r.src || 'Wire'}{r.ago ? ` · ${r.ago}` : ''}{r.related_count > 0 ? ` · +${r.related_count} related` : ''}</span>
-                  <div>
-                    <a href={r.link} target="_blank" rel="noreferrer">
-                      {r.title}
-                    </a>
-                    {r.dek ? <span className="nh-story-dek">{r.dek}</span> : null}
-                    <span className="s">{r.src}{r.ago ? ` · ${r.ago}` : ''}</span>
-                  </div>
+                  <a href={r.link} target="_blank" rel="noreferrer">
+                    {r.title}
+                  </a>
+                  {r.dek ? <span className="nh-story-dek">{r.dek}</span> : null}
+                  <span className="s">
+                    {r.src || 'Wire'}
+                    {r.ago ? ` · ${r.ago}` : ''}
+                    {r.related_count > 0 ? ` · +${r.related_count} related` : ''}
+                  </span>
                 </li>
               ))}
             </ul>
