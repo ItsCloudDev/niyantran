@@ -9,7 +9,9 @@ import { fileURLToPath } from 'url';
 import { loadEnv } from './loadEnv.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const CACHE_DIR = path.join(__dirname, '..', 'tmp', 'desk-briefs');
+const CACHE_DIR = process.env.VERCEL
+  ? path.join('/tmp', 'desk-briefs')
+  : path.join(__dirname, '..', 'tmp', 'desk-briefs');
 const CACHE_VER = 'v6-entry';
 const MODEL =
   process.env.GEMINI_DESK_MODEL ||
@@ -34,7 +36,11 @@ Hard rules:
 - Return ONLY valid JSON matching the schema. No markdown fences.`;
 
 function ensureCacheDir() {
-  fs.mkdirSync(CACHE_DIR, { recursive: true });
+  try {
+    fs.mkdirSync(CACHE_DIR, { recursive: true });
+  } catch {
+    /* Vercel /tmp or read-only — skip disk cache */
+  }
 }
 
 export function feedFingerprint(rows, feature, tier) {
@@ -85,8 +91,12 @@ function readCache(file) {
 }
 
 function writeCache(file, payload) {
-  ensureCacheDir();
-  fs.writeFileSync(file, JSON.stringify(payload), 'utf8');
+  try {
+    ensureCacheDir();
+    fs.writeFileSync(file, JSON.stringify(payload), 'utf8');
+  } catch {
+    /* ephemeral hosts may not persist — brief still returns */
+  }
 }
 
 function cell(v) {

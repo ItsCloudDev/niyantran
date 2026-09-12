@@ -4,7 +4,8 @@
   "outputDirectory": "dist",
   "functions": {
     "api/ai/chat.js": { "maxDuration": 60 },
-    "api/ai/fetch.js": { "maxDuration": 30 }
+    "api/ai/fetch.js": { "maxDuration": 30 },
+    "api/ai/desk-brief.js": { "maxDuration": 60 }
   },
   "rewrites": [
     { "source": "/((?!api/|data/|legacy/|assets/|home/|conflicts/|favicon).*)", "destination": "/index.html" }
