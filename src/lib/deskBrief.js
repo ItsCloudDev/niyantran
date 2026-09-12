@@ -138,6 +138,11 @@ export async function ensureDeskBrief({ feature, tier, row, sourceNote, force = 
   });
   const body = await res.json().catch(() => ({}));
   if (!res.ok || !body?.ok) {
+    if (res.status === 404) {
+      throw new Error(
+        'Desk brief API is not deployed on this host. After a Vercel rebuild, set GEMINI_API_KEY in the project environment.',
+      );
+    }
     throw new Error(body?.error || `desk-brief HTTP ${res.status}`);
   }
   writeLocalBrief(feature, hash, body);
