@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { catalogModules, TABS } from '../desks/catalog.js';
+import { bucketsFor, catalogModules, modulesForTier, TABS } from '../desks/catalog.js';
 import HomeDesk from '../desks/HomeDesk.jsx';
 import DeskView from '../desks/DeskView.jsx';
+import DeskGuide from '../desks/DeskGuide.jsx';
 import DeskNav from './DeskNav.jsx';
 import RightRail from './RightRail.jsx';
 import { Icon } from './Icons.jsx';
@@ -12,7 +13,7 @@ import { isGeoResourceDossier } from '../lib/globalResources.js';
 import { isEnergyFeature } from '../lib/geonomics.js';
 import { isNationalFullscreen, isImpactRecordFeature } from '../lib/national.js';
 import { isGithubCsvRow } from '../lib/githubCsv.js';
-import { firstFeature, parseDeskHash, resolveDeskRoute, writeDeskHash } from '../lib/deskRoute.js';
+import { parseDeskHash, resolveDeskRoute, writeDeskHash } from '../lib/deskRoute.js';
 import { kickHomeRefreshIfDue } from '../lib/homeCache.js';
 import { canOpenDesk, clearSessionUser, sessionUser, tabsForType, userTypeOf } from '../lib/userStore.js';
 import AiDock from '../ai/AiDock.jsx';
@@ -41,6 +42,11 @@ export default function TerminalShell({ onLogout }) {
   const onSelect = useCallback((row) => setSelected(row), []);
   const onLoading = useCallback((v) => setLoading(Boolean(v)), []);
   const onClearViz = useCallback(() => setVizFilter(null), []);
+  const guideMode = tab !== 'home' && !String(featureName || '').trim();
+  const deskBuckets = useMemo(
+    () => (tab === 'home' ? [] : bucketsFor(modulesForTier(active.tier), active.tier)),
+    [tab, active.tier],
+  );
 
   useEffect(() => {
     function onViz(e) {
@@ -93,10 +99,10 @@ export default function TerminalShell({ onLogout }) {
     const emptyHash = !hash || hash === '#' || hash === '#/';
     let r = parseDeskHash();
     if (land && canOpenDesk(typeId, land) && emptyHash) {
-      r = resolveDeskRoute(land, land === 'home' ? '' : firstFeature(land));
+      r = resolveDeskRoute(land, '');
     } else if (!canOpenDesk(typeId, r.tab)) {
       const fallback = userTypeOf(typeId).startTab || 'home';
-      r = resolveDeskRoute(fallback, fallback === 'home' ? '' : firstFeature(fallback));
+      r = resolveDeskRoute(fallback, '');
     }
     setTab(r.tab);
     setFeatureName(r.feature);
@@ -109,7 +115,7 @@ export default function TerminalShell({ onLogout }) {
       let r = parseDeskHash();
       if (!canOpenDesk(typeId, r.tab)) {
         const fallback = userTypeOf(typeId).startTab || 'home';
-        r = resolveDeskRoute(fallback, fallback === 'home' ? '' : firstFeature(fallback));
+        r = resolveDeskRoute(fallback, '');
         writeDeskHash(r.tab, r.feature, { replace: true });
       }
       setTab(r.tab);
@@ -141,7 +147,7 @@ export default function TerminalShell({ onLogout }) {
 
   function onDesk(id) {
     if (!canOpenDesk(typeId, id)) return;
-    const r = resolveDeskRoute(id, id === 'home' ? '' : firstFeature(id));
+    const r = resolveDeskRoute(id, '');
     setTab(r.tab);
     setFeatureName(r.feature);
     setSelected(null);
@@ -177,6 +183,7 @@ export default function TerminalShell({ onLogout }) {
   const showRail =
     !aiOpen &&
     tab !== 'home' &&
+    !guideMode &&
     !isConflictsFeature(featureName) &&
     !isChokepointsFeature(featureName) &&
     !isEnergyFeature(featureName) &&
@@ -262,10 +269,17 @@ export default function TerminalShell({ onLogout }) {
         </div>
       </header>
       <DeskNav tab={tab} featureName={featureName} lang={lang} onDesk={onDesk} onFeature={onFeature} tabs={deskTabs} />
-      <div className={`workspace${tab === 'home' ? ' home' : ''}${isConflictsFeature(featureName) ? ' conflicts-holistic' : ''}${isChokepointsFeature(featureName) || isEnergyFeature(featureName) || isNationalFullscreen(featureName) ? ' choke-holistic' : ''}${isGeoResourceDossier(featureName) ? ' geo-holistic' : ''}${isTransitFeature(featureName) ? ' transit-map' : ''}${isNationalFullscreen(featureName) ? ' pig-holistic' : ''}${billRecordOpen ? ' bill-record' : ''}${aiOpen ? ' ai-open' : ''}`}>
+      <div className={`workspace${tab === 'home' ? ' home' : ''}${guideMode ? ' desk-guide-mode' : ''}${isConflictsFeature(featureName) ? ' conflicts-holistic' : ''}${isChokepointsFeature(featureName) || isEnergyFeature(featureName) || isNationalFullscreen(featureName) ? ' choke-holistic' : ''}${isGeoResourceDossier(featureName) ? ' geo-holistic' : ''}${isTransitFeature(featureName) ? ' transit-map' : ''}${isNationalFullscreen(featureName) ? ' pig-holistic' : ''}${billRecordOpen ? ' bill-record' : ''}${aiOpen ? ' ai-open' : ''}`}>
         <main className="main-col">
           {tab === 'home' ? (
             <HomeDesk onOpen={onOpen} onFeed={onFeed} onSelect={onSelect} onLoading={onLoading} reload={reload} />
+          ) : guideMode ? (
+            <DeskGuide
+              tab={tab}
+              label={hi ? active.labelHi : active.label}
+              buckets={deskBuckets}
+              onFeature={onFeature}
+            />
           ) : (
             <DeskView
               key={`${active.tier}:${featureName}`}

@@ -5,7 +5,7 @@
  *   GET  /api/ai/desk-brief?feature=&tier=&hash=  cached entry brief only
  *   GET  /api/ai/fetch?url=  text or base64 for pdf/image (CORS bypass)
  *
- * Keys come from server env (DEEPSEEK_API_KEY / GEMINI_API_KEY / NIYANTRAN_AI_KEY).
+ * Keys come from server env (DEEPSEEK_API_KEY / GEMINI_API_KEY / OPENROUTER_API_KEY / NIYANTRAN_AI_KEY).
  * Request-body `key` is ignored — never accept client-supplied credentials (D6).
  */
 import { loadEnv } from './loadEnv.mjs';
@@ -215,6 +215,49 @@ async function geminiChat({ model, key, messages, binaries, system }) {
   throw new Error(last || 'Gemini request failed');
 }
 
+async function openrouterChat({ model, key, messages }) {
+  const tried = [model, 'openai/gpt-6-astra', '~openai/gpt-astra-latest'].filter(Boolean);
+  let last = '';
+  for (const m of [...new Set(tried)]) {
+    const ac = new AbortController();
+    const t = setTimeout(() => ac.abort(), CHAT_MS);
+    try {
+      const r = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+        method: 'POST',
+        signal: ac.signal,
+        headers: {
+          Authorization: `Bearer ${key}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': 'https://niyantran.local',
+          'X-Title': 'Niyantran Terminal',
+        },
+        body: JSON.stringify({
+          model: m,
+          temperature: 0.2,
+          messages,
+        }),
+      });
+      const body = await r.json().catch(() => ({}));
+      if (!r.ok) {
+        last = body?.error?.message || body?.error || `OpenRouter HTTP ${r.status}`;
+        if (typeof last !== 'string') last = JSON.stringify(last);
+        continue;
+      }
+      const text = body?.choices?.[0]?.message?.content || '';
+      if (!String(text).trim()) {
+        last = 'Empty OpenRouter response';
+        continue;
+      }
+      return { text, model: body?.model || m, provider: 'openrouter' };
+    } catch (err) {
+      last = err.message || String(err);
+    } finally {
+      clearTimeout(t);
+    }
+  }
+  throw new Error(last || 'OpenRouter request failed');
+}
+
 export async function runAiFetch(target) {
   if (!/^https?:\/\//i.test(target)) throw new Error('HTTPS url required');
   const file = await loadFile({ url: target });
@@ -231,16 +274,30 @@ export async function runAiFetch(target) {
 }
 
 export async function runAiChat(payload = {}) {
+  loadEnv();
   const model = String(payload.model || '').trim();
-  const provider = String(payload.provider || (model.includes('gemini') ? 'gemini' : 'deepseek')).toLowerCase();
+  let provider = String(
+    payload.provider ||
+      (model.includes('gemini')
+        ? 'gemini'
+        : /astra|openai\/|gpt-6|openrouter/i.test(model)
+          ? 'openrouter'
+          : 'deepseek'),
+  ).toLowerCase();
+  if (provider === 'openai' || provider === 'gpt') provider = 'openrouter';
+
   // D6: never trust a key from the browser. Server env only.
   const key =
     provider === 'gemini'
       ? String(process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || process.env.NIYANTRAN_AI_KEY || '').trim()
-      : String(process.env.DEEPSEEK_API_KEY || process.env.NIYANTRAN_AI_KEY || '').trim();
+      : provider === 'openrouter'
+        ? String(process.env.OPENROUTER_API_KEY || process.env.NIYANTRAN_AI_KEY || '').trim()
+        : String(process.env.DEEPSEEK_API_KEY || process.env.NIYANTRAN_AI_KEY || '').trim();
   if (!key) {
     throw new Error(
-      'API key missing on the server. Set DEEPSEEK_API_KEY or GEMINI_API_KEY (or NIYANTRAN_AI_KEY) in the host environment.',
+      provider === 'openrouter'
+        ? 'OPENROUTER_API_KEY missing on the server. Add it to niyantran-react/.env (never in the browser).'
+        : 'API key missing on the server. Set GEMINI_API_KEY, OPENROUTER_API_KEY, or DEEPSEEK_API_KEY in the host environment.',
     );
   }
   if (!model) throw new Error('Model missing.');
@@ -279,7 +336,9 @@ ${ctx}`;
   const out =
     provider === 'gemini'
       ? await geminiChat({ model, key, messages, binaries, system })
-      : await deepseekChat({ model, key, messages });
+      : provider === 'openrouter'
+        ? await openrouterChat({ model, key, messages })
+        : await deepseekChat({ model, key, messages });
   if (!out.text.trim()) throw new Error('Empty model response');
   return {
     ...out,

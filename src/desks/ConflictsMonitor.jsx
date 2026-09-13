@@ -13,6 +13,19 @@ import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import { openAiResearch, rowDragProps } from '../lib/aiDrop.js';
 import { downloadJson, withExportProvenance } from '../lib/exportProvenance.js';
 
+function theatrePrompt(c, angle = 0) {
+  const actors = (c.actors || []).slice(0, 4).join(', ') || 'the named actors';
+  const posture = statusOf(c.status).label.toLowerCase();
+  const prompts = [
+    `Build a dated briefing for ${c.name}. Separate verified developments from actor claims, explain the current ${posture} posture, and cite the attached sources for each key point.`,
+    `Map the actors and interests in ${c.name}, including ${actors}. Identify what changed most recently, what remains disputed, and which source would best resolve each gap.`,
+    `Compare the latest ${c.name} development with the earlier record in this dossier. Highlight escalation or de-escalation indicators without predicting an outcome.`,
+    `Prepare a source-critical note on ${c.name} in ${regionGroup(c.region)}. Reconcile conflicting figures, preserve each source's date and scope, and list the questions the dossier cannot answer.`,
+  ];
+  const seed = String(c.id || c.name).split('').reduce((n, ch) => n + ch.charCodeAt(0), 0);
+  return prompts[(seed + angle) % prompts.length];
+}
+
 export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, onClearViz }) {
   const theatres = useMemo(() => theatresFromFeed(feed), [feed]);
   const [region, setRegion] = useState('Global');
@@ -122,6 +135,11 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
         </div>
       </header>
 
+      <div className="c2-guide" role="note">
+        <strong>On this map</strong>
+        <span>Click a theatre marker to open its sourced dossier. Intensity and posture colours match the legend.</span>
+      </div>
+
       <section className="c2-main">
         <div className="c2-map">
           <div className="c2-map-title">Global theatre map</div>
@@ -218,7 +236,10 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
                       {s.label} ↗
                     </a>
                   ))}
-                  <button type="button" disabled title="AI route not configured">
+                  <button
+                    type="button"
+                    onClick={() => openAiResearch({ row: current.row, prompt: theatrePrompt(current, 1) })}
+                  >
                     Request AI Analysis ↗
                   </button>
                 </div>
@@ -342,7 +363,7 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
                             e.stopPropagation();
                             openAiResearch({
                               row: c.row,
-                              prompt: `Go through the attached record and every linked source for ${c.name}. What does the dossier actually document, which sources support it, and where is the evidence thin?`,
+                              prompt: theatrePrompt(c),
                             });
                           }}
                         >

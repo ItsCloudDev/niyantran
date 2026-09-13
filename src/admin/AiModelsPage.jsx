@@ -11,7 +11,14 @@ export function AiModelsPage() {
         if (r.id !== id) return r;
         const next = { ...r, [field]: value };
         if (field === 'model') {
-          next.provider = String(value).toLowerCase().includes('gemini') ? 'gemini' : 'deepseek';
+          const m = String(value).toLowerCase();
+          next.provider = m.includes('gemini')
+            ? 'gemini'
+            : m.includes('deepseek')
+              ? 'deepseek'
+              : /astra|openai\/|gpt-6|openrouter/.test(m)
+                ? 'openrouter'
+                : 'deepseek';
         }
         return next;
       }),
@@ -34,9 +41,9 @@ export function AiModelsPage() {
     <>
       <h1 className="adm-h1">AI models</h1>
       <p className="adm-lede">
-        Four research roles (all route through Gemini while other providers are parked). Keys are read only from
-        the host environment (<code>GEMINI_API_KEY</code>, optional <code>DEEPSEEK_API_KEY</code>) inside
-        <code> /api/ai/chat </code> — never from the browser. Desk training prompts live on the
+        Research roles pick a provider + model id. Keys are read only from the host environment
+        (<code>GEMINI_API_KEY</code>, <code>OPENROUTER_API_KEY</code>, optional <code>DEEPSEEK_API_KEY</code>)
+        inside <code>/api/ai/chat</code> — never from the browser. Desk training prompts live on the
         <b> AI personas</b> tab.
       </p>
       <form onSubmit={onSave}>
@@ -57,8 +64,9 @@ export function AiModelsPage() {
                 <label className="adm-field">
                   <span>Provider</span>
                   <select value={r.provider} onChange={(e) => patch(r.id, 'provider', e.target.value)}>
-                    <option value="deepseek">DeepSeek</option>
                     <option value="gemini">Gemini</option>
+                    <option value="openrouter">OpenRouter</option>
+                    <option value="deepseek">DeepSeek</option>
                   </select>
                 </label>
                 <label className="adm-field">

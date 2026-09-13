@@ -136,7 +136,7 @@ const PRESETS = [
       { key: 'sector', label: 'SECTOR' },
       { key: 'current_stage', label: 'STAGE', pill: true },
       { key: 'date_introduced', label: 'INTRODUCED', fallback: 'date', date: true },
-      { key: 'probability_score', label: 'PASSAGE SCORE', num: true },
+      { key: 'probability_score', label: 'PASSAGE SCORE', num: true, default: false },
     ],
   },
   {

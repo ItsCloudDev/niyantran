@@ -18,7 +18,6 @@ import { isGlobalResourcesTable } from '../lib/globalResources.js';
 import { isGeonomicsTable } from '../lib/geonomics.js';
 import { isNationalTable } from '../lib/national.js';
 import NationalRecord from '../desks/NationalRecord.jsx';
-import { qualityBannerText } from '../lib/recordChecklist.js';
 
 function recordLabel(row) {
   return String(row?.conflict_name || row?.title || row?.bill_name || row?.name || '').trim();
@@ -86,18 +85,15 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
           {!feed && !loading && (
             <p className="banner">Select a module. Overview clears on every route change.</p>
           )}
-          {gdelt && !terminal && <p className="banner warn">GDELT reporting search — not an official dataset.</p>}
-          {!terminal && qualityBannerText(feed) ? (
-            <p className="banner warn">{qualityBannerText(feed)}</p>
-          ) : null}
-          {feed?.fallback && dataState.id !== 'live' && !status && (
+          {gdelt && !terminal && <p className="banner warn">GDELT reporting search - not an official dataset.</p>}
+          {feed?.fallback && dataState.id !== 'live' && !status && dataState.detail ? (
             <p className="banner">
-              {dataState.label}: {dataState.detail || 'Charts below use archived or cached rows — not a live feed.'}
+              {String(dataState.detail).replace(/\barchiv(e|ed)\b/gi, 'stored snapshot')}
             </p>
-          )}
+          ) : null}
           {terminal && (
             <p className="banner">
-              {dataState.label}. {dataState.detail || 'No records were invented for this module.'}
+              {dataState.detail || 'No records were invented for this module.'}
               {dataState.host ? ` Configured host: ${dataState.host}.` : ''}
             </p>
           )}
@@ -106,7 +102,7 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
 
           {terminal && !selected ? (
             <div className="rail-empty">
-              <p className="muted">Analytics stay empty until live or archive rows exist for this destination.</p>
+              <p className="muted">Analytics stay empty until live or stored rows exist for this destination.</p>
             </div>
           ) : selected && isNationalTable(feed?.feature) ? (
             <NationalRecord

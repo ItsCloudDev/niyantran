@@ -1,4 +1,5 @@
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { emptyIntroVideo, fetchIntroVideo, videoPlayback } from '../lib/marketingIntroVideo.js';
 
 function Ico({ d, size = 18, stroke = 'currentColor' }) {
   return (
@@ -46,12 +47,12 @@ const DESKS = [
     more: 'View All Returns →',
     cols: ['CONTEST', 'STATE'],
     rows: [
-      ['Lok Sabha general election, 2024 — Uttar Pradesh', 'Uttar Pradesh'],
-      ['Assembly by-election, 2025 — Wayanad', 'Kerala'],
-      ['Lok Sabha general election, 2024 — Maharashtra', 'Maharashtra'],
-      ['Assembly election, 2024 — Haryana', 'Haryana'],
-      ['Assembly election, 2024 — Jammu & Kashmir', 'J&K'],
-      ['Lok Sabha general election, 2024 — West Bengal', 'West Bengal'],
+      ['Lok Sabha general election, 2024 - Uttar Pradesh', 'Uttar Pradesh'],
+      ['Assembly by-election, 2025 - Wayanad', 'Kerala'],
+      ['Lok Sabha general election, 2024 - Maharashtra', 'Maharashtra'],
+      ['Assembly election, 2024 - Haryana', 'Haryana'],
+      ['Assembly election, 2024 - Jammu & Kashmir', 'J&K'],
+      ['Lok Sabha general election, 2024 - West Bengal', 'West Bengal'],
     ],
     kpis: [
       ['543', 'blue', 'LS CONSTITUENCIES'],
@@ -186,12 +187,20 @@ const DESKS = [
 ];
 
 const CAPS = [
-  { title: 'Legislative Intelligence', d: 'M4 21h16M4 10h16M12 3l8 7H4zM7 10v11M12 10v11M17 10v11', fg: '#012ea1', copy: 'Track bills, amendments, debates and passage across both houses in real time.' },
-  { title: 'Open Fronts', d: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z', fg: '#c81322', copy: 'Monitor global conflicts, hostilities and crisis hotspots with verified intelligence.' },
+  { title: 'Legislative Intelligence', d: 'M4 21h16M4 10h16M12 3l8 7H4zM7 10v11M12 10v11M17 10v11', fg: '#012ea1', copy: 'Track bills, amendments, debates and passage across both houses as records change.' },
+  { title: 'Open Fronts', d: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z', fg: '#c81322', copy: 'Monitor global conflicts, hostilities and crisis hotspots with linked evidence.' },
   { title: 'Global Diplomacy', d: 'M12 3a9 9 0 100 18 9 9 0 000-18zM3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18', fg: '#012ea1', copy: 'Follow diplomatic relations, treaties, statements and multilateral developments.' },
   { title: 'Economy & Finance', d: 'M4 20h16M7 16V10M12 16V6M17 16v-8', fg: '#c45c26', copy: 'Access economic indicators, markets, budgets, and financial sector data.' },
-  { title: 'Media & Narrative', d: 'M21 15a4 4 0 01-4 4H7l-4 3V7a4 4 0 014-4h10a4 4 0 014 4z', fg: '#4f1d90', copy: 'Analyze media coverage, sentiment, narratives and information landscape.' },
-  { title: 'Strategic Assets', d: 'M12 3l8 18H4zM12 8v5M12 16h.01', fg: '#c81322', copy: 'Explore critical infrastructure, military assets, defense deals and strategic capabilities.' },
+  { title: 'Media & Narrative', d: 'M21 15a4 4 0 01-4 4H7l-4 3V7a4 4 0 014-4h10a4 4 0 014 4z', fg: '#4f1d90', copy: 'Examine media coverage, narratives and the wider information landscape.' },
+  { title: 'Strategic Assets', d: 'M12 3l8 18H4zM12 8v5M12 16h.01', fg: '#c81322', copy: 'Explore critical infrastructure, military assets, defence deals and strategic capabilities.' },
+];
+
+const PERSONAS = [
+  ['Journalists', 'Trace a claim from the headline back to the public record.'],
+  ['Lawyers', 'Move between legislation, judgments and the source documents behind them.'],
+  ['Students', 'Learn a subject through connected records instead of disconnected searches.'],
+  ['Analysts', 'Compare policy, economic and security signals in one working view.'],
+  ['Policy teams', 'Follow institutions, implementation stages and affected sectors.'],
 ];
 
 const CHIPS = [
@@ -212,23 +221,30 @@ function onCardMove(e) {
 
 export default function HomePage({ onLogin, onCoverage }) {
   const heroRef = useRef(null);
-  const [deskId, setDeskId] = useState('legislative');
-  const [tab, setTab] = useState('kpis');
+  const [deskId, setDeskId] = useState('global');
   const [q, setQ] = useState('');
   const [picked, setPicked] = useState(0);
   const [capFocus, setCapFocus] = useState(null);
+  const [introVideo, setIntroVideo] = useState(() => emptyIntroVideo());
   const desk = DESKS.find((d) => d.id === deskId) || DESKS[0];
   const rows = useMemo(() => {
     const needle = q.trim().toLowerCase();
     if (!needle) return desk.rows;
     return desk.rows.filter(([name, house]) => `${name} ${house}`.toLowerCase().includes(needle));
   }, [desk, q]);
+  const playback = useMemo(() => videoPlayback(introVideo), [introVideo]);
+  const showVideoSection = introVideo.enabled !== false;
+
+  useEffect(() => {
+    const ac = new AbortController();
+    fetchIntroVideo(ac.signal).then(setIntroVideo);
+    return () => ac.abort();
+  }, []);
 
   function pickDesk(id) {
     setDeskId(id);
     setQ('');
     setPicked(0);
-    setTab('kpis');
   }
 
   function onHeroMove(e) {
@@ -267,8 +283,8 @@ export default function HomePage({ onLogin, onCoverage }) {
               The Intelligence Layer for <em className="gov">Government</em>, <em className="pol">Policy</em> &amp; Global Affairs.
             </h1>
             <p className="mkt-lede">
-              One terminal that unifies 200+ authoritative data sources — legislation, fronts, markets, carbon
-              and the courts — into a single platform an analyst can interrogate without leaving the desk.
+              One terminal for 200+ authoritative data sources, spanning legislation, fronts, markets, carbon
+              and the courts. Investigate the record without leaving the desk.
             </p>
             <div className="mkt-hero-tele">
               <span>
@@ -356,14 +372,132 @@ export default function HomePage({ onLogin, onCoverage }) {
               <i>
                 <Ico d="M4 5h16v14H4zM8 3v4M16 3v4M4 9h16" />
               </i>
-              1952–Present Comprehensive Coverage
+              1952–2026 Comprehensive Coverage
             </div>
           </div>
         </div>
       </section>
 
-      <section className="mkt-preview">
+      <section className="mkt-intro" aria-labelledby="mkt-intro-title">
+        <div className="mkt-wrap mkt-intro-inner">
+          <p>What nter.pro is</p>
+          <h2 id="mkt-intro-title">A research workspace for public records, current events and institutional data.</h2>
+          <span>Search, compare and ask questions across linked sources while keeping provenance visible.</span>
+          <button type="button" onClick={onLogin}>Open the terminal →</button>
+        </div>
+      </section>
+
+      {showVideoSection ? (
+        <section className="mkt-video" id="walkthrough" aria-labelledby="mkt-video-title">
+          <div className="mkt-wrap mkt-video-inner">
+            <div className="mkt-video-copy">
+              <p>Product walkthrough</p>
+              <h2 id="mkt-video-title">{introVideo.title || 'What nter.pro is'}</h2>
+              <span>{introVideo.subtitle || 'A short look at the terminal before you decide to sign in.'}</span>
+              <button type="button" className="mkt-cta" onClick={onLogin}>
+                Explore Live Terminal
+              </button>
+            </div>
+            <div className="mkt-video-stage">
+              {playback.kind === 'file' ? (
+                <video
+                  key={playback.src}
+                  className="mkt-video-player"
+                  src={playback.src}
+                  poster={playback.poster || undefined}
+                  controls
+                  playsInline
+                  preload="metadata"
+                >
+                  Your browser does not support this video.
+                </video>
+              ) : playback.kind === 'iframe' ? (
+                <iframe
+                  className="mkt-video-player"
+                  src={playback.src}
+                  title={introVideo.title || 'nter.pro walkthrough'}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="mkt-video-empty">
+                  <strong>Video slot ready</strong>
+                  <p>
+                    Upload a walkthrough in Admin → Website → Homepage video, or paste a YouTube / Vimeo link.
+                    Until then this space stays clear for signup-stage visitors.
+                  </p>
+                  <button type="button" className="mkt-cta ghost" onClick={onLogin}>
+                    Continue to sign in
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      <section className="mkt-personas" aria-labelledby="mkt-personas-title">
         <div className="mkt-wrap">
+          <div className="mkt-personas-head">
+            <p>BUILT FOR THE QUESTION BEHIND THE QUESTION</p>
+            <h2 id="mkt-personas-title">Start with your work, not our modules.</h2>
+          </div>
+          <div className="mkt-persona-grid">
+            {PERSONAS.map(([name, copy]) => (
+              <button type="button" className="mkt-persona" key={name} onClick={onLogin}>
+                <strong>{name}</strong>
+                <span>{copy}</span>
+                <em>Explore workspace →</em>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mkt-caps" id="coverage">
+        <div className="mkt-wrap mkt-caps-layout">
+          <div className="mkt-caps-head">
+            <p>POWERFUL CAPABILITIES</p>
+            <h2>
+              One Terminal. <em>Endless</em> Intelligence.
+            </h2>
+            <span className="mkt-caps-copy">
+              Legislatures, fronts, markets, carbon and the courts in one desk. Official sources, labelled
+              provenance, no recommendations.
+            </span>
+            <button type="button" className="mkt-caps-link" onClick={onLogin}>
+              Explore All Desks →
+            </button>
+          </div>
+          <div className="mkt-grid" onMouseLeave={() => setCapFocus(null)}>
+            {CAPS.map((c) => (
+              <article
+                className={`mkt-card${capFocus === c.title ? ' on' : ''}`}
+                style={{ '--glow': c.fg }}
+                key={c.title}
+                onMouseEnter={() => setCapFocus(c.title)}
+                onMouseMove={onCardMove}
+              >
+                <span className="mkt-card-glow" aria-hidden="true" />
+                <div className="ico" style={{ color: c.fg }}>
+                  <Ico d={c.d} size={28} />
+                </div>
+                <div>
+                  <h3>{c.title}</h3>
+                  <p>{c.copy}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mkt-preview" aria-labelledby="mkt-preview-title">
+        <div className="mkt-wrap">
+          <div className="mkt-preview-lead">
+            <p>Inside the terminal</p>
+            <h2 id="mkt-preview-title">Desks you can open after sign-in</h2>
+          </div>
           <div className="mkt-preview-frame">
             <span className="mkt-preview-scan" aria-hidden="true" />
             <aside className="mkt-prev-nav">
@@ -428,87 +562,43 @@ export default function HomePage({ onLogin, onCoverage }) {
             </div>
             <aside className="mkt-prev-rail">
               <div className="mkt-prev-tabs">
-                <button type="button" className={tab === 'kpis' ? 'on' : ''} onClick={() => setTab('kpis')}>
-                  KEY INDICATORS
-                </button>
-                <button type="button" className={tab === 'ai' ? 'on' : ''} onClick={() => setTab('ai')}>
-                  AI RESEARCH
-                </button>
+                <span className="mkt-prev-tab-static">Key indicators</span>
               </div>
-              {tab === 'kpis' ? (
-                <>
-                  <div className="mkt-kpi-grid">
-                    {desk.kpis.map(([n, tone, lab]) => (
-                      <div className="mkt-kpi" key={lab}>
-                        <strong className={tone}>{n}</strong>
-                        <small>{lab}</small>
-                      </div>
-                    ))}
+              <div className="mkt-kpi-grid">
+                {desk.kpis.map(([n, tone, lab]) => (
+                  <div className="mkt-kpi" key={lab}>
+                    <strong className={tone}>{n}</strong>
+                    <small>{lab}</small>
                   </div>
-                  <div className="mkt-bar-lab">STATUS BY STAGE</div>
-                  {desk.bars.map(([lab, count, pct, width, tone]) => (
-                    <div className="mkt-bar" key={`${desk.id}-${lab}`}>
-                      <span>{lab}</span>
-                      <i>
-                        <b className={tone} style={{ width: `${width}%` }} />
-                      </i>
-                      <em>
-                        {count.toLocaleString()} ({pct})
-                      </em>
-                    </div>
-                  ))}
-                </>
-              ) : (
-                <div className="mkt-ai">
-                  <p className="mkt-ai-kicker">SELECTED ROW</p>
-                  <p className="mkt-ai-title">{rows[picked]?.[0] || 'Nothing selected'}</p>
-                  <p>{desk.note}</p>
-                  <p>Evidence sits above any reading. This panel never issues a buy, sell or hold.</p>
-                  <button type="button" className="mkt-prev-more" onClick={onLogin}>
-                    Open in the live terminal →
-                  </button>
+                ))}
+              </div>
+              <div className="mkt-bar-lab">STATUS BY STAGE</div>
+              {desk.bars.map(([lab, count, pct, width, tone]) => (
+                <div className="mkt-bar" key={`${desk.id}-${lab}`}>
+                  <span>{lab}</span>
+                  <i>
+                    <b className={tone} style={{ width: `${width}%` }} />
+                  </i>
+                  <em>
+                    {count.toLocaleString()} ({pct})
+                  </em>
                 </div>
-              )}
+              ))}
+              <p className="mkt-ai" style={{ marginTop: 12 }}>
+                {desk.note}
+              </p>
             </aside>
           </div>
         </div>
       </section>
 
-      <section className="mkt-caps" id="coverage">
-        <div className="mkt-wrap mkt-caps-layout">
-          <div className="mkt-caps-head">
-            <p>POWERFUL CAPABILITIES</p>
-            <h2>
-              One Terminal. <em>Endless</em> Intelligence.
-            </h2>
-            <span className="mkt-caps-copy">
-              Legislatures, fronts, markets, carbon and the courts in one desk — official sources, labelled
-              provenance, no recommendations.
-            </span>
-            <button type="button" className="mkt-caps-link" onClick={onLogin}>
-              Explore All Desks →
-            </button>
-          </div>
-          <div className="mkt-grid" onMouseLeave={() => setCapFocus(null)}>
-            {CAPS.map((c) => (
-              <article
-                className={`mkt-card${capFocus === c.title ? ' on' : ''}`}
-                style={{ '--glow': c.fg }}
-                key={c.title}
-                onMouseEnter={() => setCapFocus(c.title)}
-                onMouseMove={onCardMove}
-              >
-                <span className="mkt-card-glow" aria-hidden="true" />
-                <div className="ico" style={{ color: c.fg }}>
-                  <Ico d={c.d} size={28} />
-                </div>
-                <div>
-                  <h3>{c.title}</h3>
-                  <p>{c.copy}</p>
-                </div>
-              </article>
-            ))}
-          </div>
+      <section className="mkt-trivia">
+        <div className="mkt-wrap mkt-trivia-inner">
+          <span>FIELD NOTE 01</span>
+          <p>
+            India&apos;s parliamentary record spans two houses, but a bill&apos;s path is not a prediction.
+            nter.pro shows the recorded stage and leaves the judgment to you.
+          </p>
         </div>
       </section>
 
@@ -547,7 +637,7 @@ export default function HomePage({ onLogin, onCoverage }) {
                 <Ico d="M4 5h16v14H4zM8 3v4M16 3v4M4 9h16" size={16} />
               </i>
               <div>
-                <div className="n">1952–</div>
+                <div className="n">1952–2026</div>
                 <div className="l">Present Coverage</div>
               </div>
             </div>

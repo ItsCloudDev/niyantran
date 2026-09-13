@@ -653,6 +653,25 @@ export async function fetchArchiveFeature({ tier, feature, signal } = {}) {
     }
   }
 
+  if (/^open fronts$/i.test(name) || dataset === 'geopolitics_war_tracker.csv' || dataset === 'geopolitics_war_tracker') {
+    const rows = await loadEmbedded('geopolitics_war_tracker.csv', signal);
+    if (rows.length) {
+      const mapped = rows.map((r) => ({
+        ...r,
+        title: r.title || r.conflict_name || r.name || '',
+        conflict_name: r.conflict_name || r.title || r.name || '',
+        current_stage: r.current_stage || r.status || '',
+        last_verified: r.last_verified || r.as_of || r.updated || '',
+      }));
+      return envelope({
+        feature: feat,
+        rows: mapped,
+        kind: 'table',
+        note: 'Open Fronts conflict register (static archive).',
+      });
+    }
+  }
+
   if (dataset === 'geo_conflicts' || /^conflicts$/i.test(name) || n === 'conflicts') {
     const rows = geoConflictRows(geoConflicts);
     if (rows.length) {
@@ -662,7 +681,7 @@ export async function fetchArchiveFeature({ tier, feature, signal } = {}) {
         kind: 'dossier',
         timeline: geoConflicts.timeline || [],
         meta: geoConflicts.meta || null,
-        note: 'Open Fronts conflict register (static archive).',
+        note: 'Conflicts theatre monitor (static archive).',
       });
     }
   }

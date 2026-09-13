@@ -811,6 +811,22 @@ a.adm-btn {
   font-size: 11px;
   color: var(--adm-blue);
 }
+.adm-video-preview {
+  margin-top: 16px;
+  border: 1px solid var(--adm-line);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #0b1220;
+  aspect-ratio: 16 / 9;
+  max-width: 640px;
+}
+.adm-video-preview video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #0b1220;
+}
 .adm-field textarea.adm-code,
 .adm-field textarea.adm-policy-body {
   min-height: 160px;
