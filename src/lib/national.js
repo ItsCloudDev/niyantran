@@ -38,6 +38,7 @@ export function isStatementsFeature(name) {
 const FEATURE_DISPLAY_ALIASES = {
   'Global Intelligence': 'Defence Procurement Intelligence',
   'Statement & Quote Tracker with Contradiction Detection': 'Public-Figure Media Mention Monitor',
+  'Supreme Court Order & Judgment Feed': 'Supreme Court Order & Judgements Feed',
 };
 
 export function isIndustryFeature(name) {

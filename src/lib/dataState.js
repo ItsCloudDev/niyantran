@@ -6,8 +6,9 @@
 export const DATA_STATE = {
   live: { id: 'live', label: 'LIVE', tone: 'ok' },
   cached: { id: 'cached', label: 'CACHED', tone: 'warn' },
-  archived: { id: 'archived', label: 'ARCHIVED', tone: 'muted' },
-  curated: { id: 'curated', label: 'CURATED', tone: 'muted' },
+  // Feedback: hide the word "Archived" from headers — keep id for CSS/tone.
+  archived: { id: 'archived', label: '', tone: 'muted', hideBadge: true },
+  curated: { id: 'curated', label: '', tone: 'muted', hideBadge: true },
   offline: { id: 'offline', label: 'OFFLINE', tone: 'warn' },
   planned: { id: 'planned', label: 'PLANNED', tone: 'muted' },
   error: { id: 'error', label: 'ERROR', tone: 'bad' },

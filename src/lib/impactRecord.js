@@ -242,7 +242,7 @@ export function billFacts(row, a) {
       value: pr.similar_bill_count ? `${pr.similar_bill_passed_count} of ${pr.similar_bill_count}` : '—',
       more: {
         body: pr.similar_bill_count
-          ? `${pr.base_rate_label || ''}\nThe base rate comes from this dataset’s own historically tracked bills carrying the same tag — it is what usually happened, not a forecast for this one.`
+          ? `${pr.base_rate_label || ''}\nThe base rate comes from this dataset's own historically tracked bills carrying the same tag. It is what usually happened, not a forecast for this one.`
           : 'No comparable resolved bills on record for this tag.',
         kv: [],
       },
@@ -284,7 +284,7 @@ export function billFacts(row, a) {
         kv: [],
       },
     },
-  ];
+  ].filter((f) => f.value !== '—' && f.value != null && String(f.value).trim() !== '');
 }
 
 function genericFacts(row, a, cfg) {

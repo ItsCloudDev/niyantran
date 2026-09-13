@@ -19,6 +19,7 @@ function matchFeatureName(list, want) {
 
 /**
  * Resolve a desk hash to a tab + feature.
+ * Empty feature = desk walkthrough (do not auto-open the first dropdown module).
  * Never substitute the first sibling module when the user asked for a specific
  * name (that was D1: HTML-ONLY State/Local routes rendering Constituency Register).
  */
@@ -26,7 +27,7 @@ export function resolveDeskRoute(tabId, feature) {
   const tab = TABS.find((t) => t.id === tabId);
   if (!tab || tab.id === 'home') return { tab: 'home', feature: '' };
   const want = String(feature || '').trim();
-  if (!want) return { tab: tab.id, feature: firstFeature(tab.id) };
+  if (!want) return { tab: tab.id, feature: '' };
 
   const navMods = modulesForTier(tab.tier);
   let hit = matchFeatureName(navMods, want);
@@ -44,7 +45,9 @@ export function resolveDeskRoute(tabId, feature) {
 
 export function deskHash(tab, feature) {
   if (!tab || tab === 'home') return '#/';
-  return `#/${encodeURIComponent(tab)}/${encodeURIComponent(feature || '')}`;
+  const feat = String(feature || '').trim();
+  if (!feat) return `#/${encodeURIComponent(tab)}`;
+  return `#/${encodeURIComponent(tab)}/${encodeURIComponent(feat)}`;
 }
 
 export function parseDeskHash(hash = typeof location !== 'undefined' ? location.hash : '') {

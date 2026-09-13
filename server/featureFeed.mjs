@@ -2753,6 +2753,42 @@ export async function serveFeatureFeed(searchParams) {
     }
   }
 
+  // Open Fronts: war-tracker conflict register — never Google News / product-name search.
+  if (
+    /^open fronts$/i.test(feat.htmlFeature || '') ||
+    dataset === 'geopolitics_war_tracker.csv' ||
+    dataset === 'geopolitics_war_tracker'
+  ) {
+    const raw = loadEmbedded('geopolitics_war_tracker.csv') || [];
+    const rows = raw.map((r) => ({
+      ...r,
+      title: r.title || r.conflict_name || r.name || '',
+      conflict_name: r.conflict_name || r.title || r.name || '',
+      current_stage: r.current_stage || r.status || '',
+      last_verified: r.last_verified || r.as_of || r.updated || '',
+      latest_development: r.latest_development || r.latest || '',
+    }));
+    if (rows.length) {
+      const through =
+        rows
+          .map((r) => String(r.as_of || r.last_verified || '').slice(0, 10))
+          .filter(Boolean)
+          .sort()
+          .slice(-1)[0] || '';
+      return envelope({
+        tier,
+        feature: feat,
+        rows,
+        adapter: 'embedded',
+        links: [],
+        coverage: { from: '', through, exhaustive: false },
+        fallback: false,
+        kind: 'table',
+        note: 'Open Fronts conflict register (geopolitics_war_tracker). Structured theatres, not a news search.',
+      });
+    }
+  }
+
   // Conflicts Global monitor: original HTML dossier (NIY_GEO_CONFLICTS), not ReliefWeb/GDELT.
   if (dataset === 'geo_conflicts' || /^conflicts$/i.test(feat.htmlFeature || '')) {
     const pack = loadGeoConflictsPack();

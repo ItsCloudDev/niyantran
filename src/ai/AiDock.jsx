@@ -30,16 +30,7 @@ export default function AiDock({ feed, selected, tab, featureName, lang, onOpenC
   if (!open) return null;
 
   return (
-    <aside className="ai-dock" role="complementary" aria-label="AI research">
-      <header className="ai-dock-h">
-        <div>
-          <b>AI research</b>
-          <span>Drop a table row</span>
-        </div>
-        <button type="button" className="icon-btn" onClick={() => setOpen(false)} aria-label="Close">
-          ×
-        </button>
-      </header>
+    <aside className="ai-dock ai-dock-v2" role="complementary" aria-label="AI research">
       <AiPanel
         feed={feed}
         selected={selected}
@@ -48,6 +39,7 @@ export default function AiDock({ feed, selected, tab, featureName, lang, onOpenC
         lang={lang}
         seed={seed}
         onSeedConsumed={() => setSeed(null)}
+        onClose={() => setOpen(false)}
       />
     </aside>
   );

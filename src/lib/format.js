@@ -146,6 +146,13 @@ export function formatCell(value, col = {}) {
     const d = formatDate(value);
     if (d) return d;
   }
+  // Bills / long titles: Title Case when the source is ALL CAPS or mixed.
+  if (/bill_name|bill|title|policy_name|subject/i.test(key) && col.dot) {
+    const raw = String(value).trim();
+    if (raw === raw.toUpperCase() && /[A-Z]/.test(raw) && raw.length > 8) {
+      return formatStatus(raw);
+    }
+  }
   return String(value);
 }
 

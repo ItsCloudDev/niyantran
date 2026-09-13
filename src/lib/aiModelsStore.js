@@ -1,9 +1,9 @@
-const KEY = 'niyantranAiModels.v3';
+const KEY = 'niyantranAiModels.v4';
 const EVENT = 'niy-ai-models';
 
 /**
- * Models shown in AI research (same set we had before).
- * Gemini slots are live; DeepSeek stays visible but locked until its key is wired.
+ * Models shown in AI research.
+ * Gemini + OpenRouter GPT Astra are live; DeepSeek stays locked until its key is wired.
  */
 export const AI_PROVIDERS = [
   {
@@ -21,6 +21,14 @@ export const AI_PROVIDERS = [
     provider: 'gemini',
     enabled: true,
     hint: 'Heavier synthesis / visual research',
+  },
+  {
+    id: 'gpt-astra',
+    label: 'GPT - Astra',
+    model: 'openai/gpt-6-astra',
+    provider: 'openrouter',
+    enabled: true,
+    hint: 'OpenRouter · OpenAI GPT-6 Astra',
   },
   {
     id: 'deepseek-flash',
@@ -42,7 +50,7 @@ export const AI_PROVIDERS = [
 
 const DEFAULT_PROVIDER = AI_PROVIDERS.find((p) => p.enabled) || AI_PROVIDERS[0];
 
-/** Research role map — routes through Gemini while DeepSeek is parked. */
+/** Research role map — Gemini defaults; UI can override to OpenRouter Astra. */
 export const AI_ROLES = [
   {
     id: 'DEFAULT_ANALYST',
@@ -56,8 +64,8 @@ export const AI_ROLES = [
     id: 'EXPERT_ESCALATION',
     label: 'Expert escalation',
     hint: 'Harder synthesis when the lite pass is not enough.',
-    model: 'gemini-3.7-flash',
-    provider: 'gemini',
+    model: 'openai/gpt-6-astra',
+    provider: 'openrouter',
     key: '',
   },
   {
@@ -82,6 +90,7 @@ function providerOf(model, fallback) {
   const m = String(model || '').toLowerCase();
   if (m.includes('gemini')) return 'gemini';
   if (m.includes('deepseek')) return 'deepseek';
+  if (m.includes('gpt') || m.includes('astra') || m.includes('openai/')) return 'openrouter';
   return fallback || 'gemini';
 }
 
@@ -93,11 +102,12 @@ export function activeAiProvider() {
   return AI_PROVIDERS.find((p) => p.enabled) || DEFAULT_PROVIDER;
 }
 
-/** Compact pill label: `Gemini - Lite`. */
+/** Compact pill label: `Gemini - Lite` / `GPT - Astra`. */
 export function shortModelLabel(role) {
   const hit = AI_PROVIDERS.find((p) => p.model === role?.model || p.id === role?.id);
   if (hit) return hit.label;
   const provider = String(role?.provider || providerOf(role?.model, '')).toLowerCase();
+  if (provider === 'openrouter' || /astra|gpt-6/i.test(role?.model || '')) return 'GPT - Astra';
   const brand = provider === 'deepseek' ? 'DeepSeek' : 'Gemini';
   const m = String(role?.model || '').toLowerCase();
   let tag = '';
@@ -105,7 +115,7 @@ export function shortModelLabel(role) {
   else if (m.includes('lite')) tag = 'Lite';
   else if (m.includes('flash')) tag = 'Flash';
   else {
-    const parts = m.split(/[-_]/).filter(Boolean);
+    const parts = m.split(/[-_/]/).filter(Boolean);
     const last = parts[parts.length - 1] || '';
     tag = last ? last.charAt(0).toUpperCase() + last.slice(1) : '';
   }
@@ -116,17 +126,14 @@ function clean(saved) {
   const byId = new Map((Array.isArray(saved) ? saved : []).map((r) => [r.id, r]));
   return AI_ROLES.map((base) => {
     const extra = byId.get(base.id) || {};
-    // Force Gemini while other providers are parked — ignore stale deepseek localStorage.
     const model = String(extra.model || base.model).trim() || base.model;
-    const forcedGemini = !String(model).toLowerCase().includes('gemini')
-      ? base.model
-      : model;
+    const provider = extra.provider || providerOf(model, base.provider);
     return {
       ...base,
       label: String(extra.label || base.label),
       hint: String(extra.hint || base.hint),
-      model: forcedGemini,
-      provider: 'gemini',
+      model,
+      provider,
       key: '',
     };
   });
@@ -162,8 +169,7 @@ export function getAiRole(id) {
 export function pickAiRole(attachments = [], preferredId) {
   const roles = loadAiModels();
   if (preferredId && preferredId !== 'AUTO') {
-    const hit = roles.find((r) => r.id === preferredId);
-    if (hit) return { ...hit, provider: 'gemini', model: hit.model.includes('gemini') ? hit.model : DEFAULT_PROVIDER.model };
+    return roles.find((r) => r.id === preferredId) || roles[0];
   }
   const kinds = (attachments || [])
     .flatMap((a) => [

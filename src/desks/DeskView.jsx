@@ -9,7 +9,6 @@ import { isGithubCsvRow } from '../lib/githubCsv.js';
 import { cellOf, feedColumns } from '../lib/columns.js';
 import { prepareDeskFeed } from '../lib/prepareDeskFeed.js';
 import { sensitiveNoteFor } from '../lib/sensitiveData.js';
-import { qualityBannerText } from '../lib/recordChecklist.js';
 import { isConflictsFeature } from '../lib/conflictsMonitor.js';
 import { isTransitFeature } from '../lib/transit.js';
 import { isAlliancesFeature } from '../lib/alliances.js';
@@ -498,6 +497,7 @@ export default function DeskView({
   }
 
   const displayTitle = featureMenuLabel({ htmlFeature: featureName }) || featureName || 'FEED';
+  const isGlobalIntelligence = /global intelligence/i.test(String(featureName || ''));
   const coverageLabel = (() => {
     if (loading) return 'Fetching…';
     if (shellState) return dataState.coverage || 'No live rows';
@@ -513,12 +513,18 @@ export default function DeskView({
   })();
 
   return (
-    <div className={`desk desk-wide${isGlobalResourcesTable(featureName) || isGeonomicsTable(featureName) || isNationalTable(featureName) ? ' desk-res' : ''}`}>
+    <div
+      className={`desk desk-wide${isGlobalResourcesTable(featureName) || isGeonomicsTable(featureName) || isNationalTable(featureName) ? ' desk-res' : ''}${
+        tier === 'economics' ? ' desk-economics' : ''
+      }${/carbon/i.test(String(featureName || '')) ? ' desk-carbon' : ''}`}
+    >
       <div className="feed-col compact">
         <div className="feed-head">
           <h1>
-            {displayTitle.toUpperCase()}
-            <span className={`live-feed data-state-${dataState.id}${liveOn ? ' on' : ''}`}>{dataState.label}</span>
+            {displayTitle}
+            {dataState.label ? (
+              <span className={`live-feed data-state-${dataState.id}${liveOn ? ' on' : ''}`}>{dataState.label}</span>
+            ) : null}
           </h1>
           <VizFilterChip vizFilter={vizFilter} onClear={onClearViz} />
           {!shellState && (
@@ -543,9 +549,9 @@ export default function DeskView({
           )}
           <span className="muted">{coverageLabel}</span>
         </div>
-        {feed?.fallback && dataState.id !== 'live' && !shellState && (
-          <p className="banner">{dataState.detail || 'Showing archived or cached rows. Not a live feed.'}</p>
-        )}
+        {feed?.fallback && dataState.id !== 'live' && !shellState && dataState.detail ? (
+          <p className="banner">{String(dataState.detail).replace(/\barchiv(e|ed)\b/gi, 'stored snapshot')}</p>
+        ) : null}
         {(() => {
           const note = sensitiveNoteFor(featureName);
           if (!note || shellState) return null;
@@ -567,15 +573,7 @@ export default function DeskView({
             {feed.meta.boardNote}
           </p>
         )}
-        {(() => {
-          const qText = qualityBannerText(feed);
-          if (!qText || shellState) return null;
-          return (
-            <p className="desk-note desk-quality" role="status">
-              {qText}
-            </p>
-          );
-        })()}
+        {/* Data-check banners removed per product feedback */}
         {feed?.meta?.section && !shellState && (
           <div className="desk-strip">
             <span>{feed.meta.section}</span>
@@ -584,6 +582,11 @@ export default function DeskView({
         )}
         {feed?.meta?.note && !feed?.meta?.sensitive && !shellState && (
           <p className="desk-note">{feed.meta.note}</p>
+        )}
+        {isGlobalIntelligence && !shellState && (
+          <p className="desk-note desk-trivia" role="note">
+            Field note: intelligence rows are reporting context, not threat ratings. Open a record to inspect its source and date.
+          </p>
         )}
         <div className={`table-wrap${loading ? ' is-loading' : ''}`}>
           {loading && <FeedLoader label={`Loading ${featureName || 'feed'}…`} />}
@@ -672,7 +675,11 @@ export default function DeskView({
                                 key={c.key}
                                 title={raw || text}
                                 className={
-                                  [c.num || c.pct || c.inr ? 'num' : '', c.key === 'station' ? 'station-cell' : '']
+                                  [
+                                    c.num || c.pct || c.inr ? 'num' : '',
+                                    c.key === 'station' ? 'station-cell' : '',
+                                    c.key === 'jurisdiction' ? 'jurisdiction-cell' : '',
+                                  ]
                                     .filter(Boolean)
                                     .join(' ') || undefined
                                 }

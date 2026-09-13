@@ -179,8 +179,9 @@ function summarize(quality) {
   if (missing_date) bits.push(`${missing_date} with no date`);
   if (future_date) bits.push(`${future_date} dated in the future`);
   if (duplicate_id) bits.push(`${duplicate_id} duplicate id${duplicate_id === 1 ? '' : 's'}`);
-  if (!bits.length) return 'Basic row check passed for this view.';
-  return `Data check: ${bits.join(' · ')}.`;
+  // Feedback: do not surface "Data check" banners in the UI.
+  if (!bits.length) return '';
+  return '';
 }
 
 /**

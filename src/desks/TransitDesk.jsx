@@ -136,6 +136,7 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
   const lastLiveRef = useRef(0);
   const lastErrRef = useRef('');
   const abortRef = useRef(null);
+  const tilesReadyRef = useRef(false);
 
   const [mode, setMode] = useState('air');
   const [regionId, setRegionId] = useState('india');
@@ -153,6 +154,14 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
   const [foot, setFoot] = useState('OPENSKY NETWORK');
   const [alert, setAlert] = useState('');
   const [tick, setTick] = useState(0);
+  const [tilesReady, setTilesReady] = useState(false);
+  const [showGuide, setShowGuide] = useState(() => {
+    try {
+      return localStorage.getItem('niy-transit-guide-seen') !== '1';
+    } catch {
+      return true;
+    }
+  });
 
   const region = useMemo(() => REGIONS.find((r) => r.id === regionId) || REGIONS[1], [regionId]);
   const liveOn = wsState === 'live';
@@ -260,6 +269,14 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
   }, [mode, region, paused, filter]);
 
   useEffect(() => {
+    const id = window.setTimeout(() => {
+      tilesReadyRef.current = true;
+      setTilesReady(true);
+    }, 350);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  useEffect(() => {
     onLoading?.(true);
     shipsRef.current = new Map();
     airRef.current = new Map();
@@ -294,7 +311,11 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, cssW, cssH);
         const b = viewBox(regionRef.current, viewRef.current);
-        drawSat(ctx, cssW, cssH, b, tilesRef.current);
+        if (tilesReadyRef.current) drawSat(ctx, cssW, cssH, b, tilesRef.current);
+        else {
+          ctx.fillStyle = '#0A121C';
+          ctx.fillRect(0, 0, cssW, cssH);
+        }
         pulseRef.current += 0.05;
         const hits = [];
         if (modeRef.current === 'air') {
@@ -711,6 +732,30 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
             </button>
           </span>
         </div>
+        {showGuide && (
+          <div className="sb-guide" role="note">
+            <div>
+              <strong>First time here?</strong>
+              <span>1. Choose Air or Ships and then pick a region.</span>
+              <span>2. Ship categories below the map are filters; click a colour to hide or show it.</span>
+              <span>3. Scroll to zoom, drag a zoomed map, and click a marker for details.</span>
+              <span>Position lag is time since the provider&apos;s last observation, not journey delay.</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setShowGuide(false);
+                try {
+                  localStorage.setItem('niy-transit-guide-seen', '1');
+                } catch {
+                  /* storage unavailable */
+                }
+              }}
+            >
+              Got it
+            </button>
+          </div>
+        )}
         {alert && (wsState === 'offline' || (mode === 'sea' && count === 0)) && (
           <div className="sb-alert">
             <span className="sb-alert-msg">
@@ -736,6 +781,7 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
           </div>
         )}
         <div className="sb-mapwrap" ref={wrapRef}>
+          {!tilesReady && <div className="sb-tile-wait">Preparing live layer - map tiles load next.</div>}
           <canvas
             className="sb-canvas"
             ref={canvasRef}

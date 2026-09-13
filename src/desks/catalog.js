@@ -393,7 +393,8 @@ export function bucketsFor(mods, tier) {
 }
 
 export function bucketContaining(buckets, featureName) {
-  return buckets.find((b) => b.items.some((m) => m.htmlFeature === featureName)) || buckets[0] || null;
+  if (!featureName) return null;
+  return buckets.find((b) => b.items.some((m) => m.htmlFeature === featureName)) || null;
 }
 
 export function registryEntries(mod) {
