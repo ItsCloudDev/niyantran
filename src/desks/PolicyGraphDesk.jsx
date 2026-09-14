@@ -375,15 +375,7 @@ function PigPanel({ node, model, onGo }) {
       <div className="pig-p-kicker">ECONOMIC SECTOR</div>
       <div className="pig-p-title">{meta.label} Sector</div>
       <p className="muted">{meta.blurb}</p>
-      <div className="pig-metric-row">
-        <div className="pig-metric">
-          <div className="k">GDP share (approx)</div>
-          <div className="v grad">{meta.gdp}%</div>
-        </div>
-        <div className="pig-metric">
-          <div className="k">Employment (approx)</div>
-          <div className="v">{meta.emp}%</div>
-        </div>
+        <div className="pig-metric-row">
         <div className="pig-metric">
           <div className="k">Bills touching sector</div>
           <div className="v">{node.billCount}</div>
@@ -393,7 +385,7 @@ function PigPanel({ node, model, onGo }) {
           <div className="v">{node.passed}</div>
         </div>
       </div>
-      <p className="desk-note">GDP/employment are approximate MoSPI / Economic Survey figures. Passed is current_stage, never when.</p>
+      <p className="desk-note">Passed counts use current_stage on the tracker, not a passing date.</p>
       <div className="pig-sec-h">Policy domains ({node.domainCount})</div>
       <ul className="pig-list">
         {node.children.map((dId) => {

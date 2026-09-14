@@ -208,6 +208,12 @@ export function recordFacts(row, a, cfg) {
   return genericFacts(row, a, cfg);
 }
 
+function factHasValue(value) {
+  if (value == null) return false;
+  const s = String(value).trim();
+  return s !== '' && s !== '—' && s !== '-' && s !== 'Not reported';
+}
+
 export function billFacts(row, a) {
   const pp = a?.passage_probability || {};
   const pr = a?.precedent || {};
@@ -218,11 +224,11 @@ export function billFacts(row, a) {
   const secs = arr(a?.sectors);
   if (!secs.length && row.sector) secs.push(titleCase(row.sector));
   const terms = arr(a?.key_terms);
-  return [
+  const facts = [
     {
       k: 'prob',
       label: 'Passage probability',
-      value: score == null || Number.isNaN(Number(score)) ? '—' : `${Number(score)}%`,
+      value: score == null || Number.isNaN(Number(score)) ? null : `${Number(score)}%`,
       tone: bandOfScore(score),
       bar: score == null || Number.isNaN(Number(score)) ? null : Number(score),
       more: {
@@ -232,14 +238,14 @@ export function billFacts(row, a) {
         kv: [
           pp.comparison_baseline ? ['Baseline', pp.comparison_baseline] : null,
           pp.confidence ? ['Confidence', titleCase(pp.confidence)] : null,
-          ['Stored score', row.probability_score === '' ? '—' : String(row.probability_score)],
+          ['Stored score', row.probability_score === '' ? '-' : String(row.probability_score)],
         ].filter(Boolean),
       },
     },
     {
       k: 'prec',
       label: 'Precedent',
-      value: pr.similar_bill_count ? `${pr.similar_bill_passed_count} of ${pr.similar_bill_count}` : '—',
+      value: pr.similar_bill_count ? `${pr.similar_bill_passed_count} of ${pr.similar_bill_count}` : null,
       more: {
         body: pr.similar_bill_count
           ? `${pr.base_rate_label || ''}\nThe base rate comes from this dataset's own historically tracked bills carrying the same tag. It is what usually happened, not a forecast for this one.`
@@ -250,22 +256,22 @@ export function billFacts(row, a) {
     {
       k: 'stage',
       label: 'Days in stage',
-      value: days == null ? '—' : `${days}d`,
+      value: days == null ? null : `${days}d`,
       more: {
         body: days == null ? 'Time in the current stage has not been computed for this bill.' : '',
         kv: [
           ['Current stage', row.current_stage || 'Unknown'],
           days != null ? ['Days elapsed', String(days)] : null,
           typical != null ? ['Typical for this stage', `~${typical} days`] : null,
-          ['Introduced', String(row.date_introduced || '').split(' ')[0] || '—'],
-          ['House', row.house || '—'],
+          ['Introduced', String(row.date_introduced || '').split(' ')[0] || '-'],
+          ['House', row.house || '-'],
         ].filter(Boolean),
       },
     },
     {
       k: 'sector',
       label: 'Sector it covers',
-      value: secs.length ? clip(secs[0], 18) : '—',
+      value: secs.length ? clip(secs[0], 18) : null,
       sub: secs.length > 1 ? `+${secs.length - 1} more` : '',
       more: {
         body: secs.length ? '' : 'This bill has not been sector-tagged.',
@@ -276,7 +282,7 @@ export function billFacts(row, a) {
     {
       k: 'terms',
       label: 'Key terms',
-      value: terms.length ? clip(terms[0], 13) : '—',
+      value: terms.length ? clip(terms[0], 13) : null,
       sub: terms.length > 1 ? `+${terms.length - 1}` : '',
       more: {
         body: terms.length ? '' : 'No key terms have been extracted for this bill yet.',
@@ -284,7 +290,8 @@ export function billFacts(row, a) {
         kv: [],
       },
     },
-  ].filter((f) => f.value !== '—' && f.value != null && String(f.value).trim() !== '');
+  ];
+  return facts.filter((f) => factHasValue(f.value));
 }
 
 function genericFacts(row, a, cfg) {
@@ -506,7 +513,8 @@ function ontologyLinks(row, a, ontology, cfg) {
 
 export function buildRecordModel(row, a, ontology, cfg) {
   const desk = cfg || DESKS.bill;
-  const name = row[desk.nameF] || row.title || titleCase(desk.noun);
+  const rawName = row[desk.nameF] || row.title || titleCase(desk.noun);
+  const name = desk.key === 'bill' ? titleCase(rawName) : rawName;
   const brief = String(a?.brief || '').trim();
   let sectors = [];
   let segments = [];

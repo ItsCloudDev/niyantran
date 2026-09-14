@@ -101,14 +101,24 @@ async function fetchEnglishPibTitle(prid) {
       }
       // Hindi release pages expose an "English" sibling with a different PRID.
       const enHref =
-        (html.match(/href=['"]([^'"]*PRID=\d+[^'"]*)['"][^>]*>\s*English\s*</i) || [])[1] || '';
+        (html.match(/href=['"]([^'"]*PRID=\d+[^'"]*)['"][^>]*>\s*English(?:\s+Version)?\s*</i) || [])[1] ||
+        (html.match(/href=['"]([^'"]*PRID=\d+[^'"]*Lang=1[^'"]*)['"]/i) || [])[1] ||
+        (html.match(/href=['"]([^'"]*PressReleasePage\.aspx\?PRID=\d+[^'"]*)['"][^>]*>[^<]{0,40}English/i) || [])[1] ||
+        '';
       const enPrid = (String(enHref).match(/PRID=(\d+)/i) || [])[1] || '';
+      // Sometimes English is only in an embedded tweet / quote block.
+      const tweetEn =
+        (html.match(/<blockquote[^>]*>[\s\S]*?<p[^>]*>\s*([A-Za-z][^<]{40,280})\s*</i) || [])[1] ||
+        (html.match(/>([A-Z][A-Za-z0-9 ,.'’\-()]{40,220}(?:crore|minister|cabinet|approves|launches|presents)[^<]{0,80})</i) ||
+          [])[1] ||
+        '';
       return {
         title,
         date,
         source_url: page,
         hindi: isHindiText(title),
         enPrid,
+        tweetEn: decodeBasicEntities(tweetEn).replace(/\s+/g, ' ').trim(),
       };
     } catch {
       return null;
@@ -127,6 +137,9 @@ async function fetchEnglishPibTitle(prid) {
     if (en && !en.hindi && en.title) {
       return { title: en.title, date: en.date || first.date, source_url: en.source_url };
     }
+  }
+  if (first.tweetEn && !isHindiText(first.tweetEn) && first.tweetEn.length > 24) {
+    return { title: first.tweetEn, date: first.date, source_url: first.source_url };
   }
   return null;
 }
@@ -155,24 +168,37 @@ async function enrichPibEnglish(rows) {
       stage: row.stage || 'PIB release',
       source: row.source || 'Press Information Bureau',
     };
-    const title = String(base.title || '');
+    const title = String(base.title || base.topic || base.headline || '');
     const prid = pridOf(base);
-    if (!prid) return base;
+    if (!prid) {
+      return {
+        ...base,
+        title,
+        topic: base.topic || title,
+      };
+    }
     if (!isHindiText(title) && title) {
-      return { ...base, source_url: base.source_url || `https://www.pib.gov.in/PressReleasePage.aspx?PRID=${prid}&Lang=1` };
+      const url = base.source_url || `https://www.pib.gov.in/PressReleasePage.aspx?PRID=${prid}&Lang=1`;
+      return { ...base, title, topic: base.topic || title, source_url: url, language: 'en' };
     }
     const en = await fetchEnglishPibTitle(prid);
-    if (!en) return base;
+    if (!en) {
+      return { ...base, title, topic: base.topic || title };
+    }
     return {
       ...base,
       title: en.title,
+      topic: en.title,
       date: en.date || base.date || '',
       source_url: en.source_url,
       language: 'en',
     };
   });
-  const english = enriched.filter((r) => r?.title && !isHindiText(r.title));
-  return english.length ? english : enriched.filter(Boolean);
+  const english = enriched.filter((r) => {
+    const t = r?.title || r?.topic || '';
+    return t && !isHindiText(t);
+  });
+  return english.length ? english : [];
 }
 
 function featName(feat) {
@@ -563,22 +589,33 @@ export async function serveNational(ctx) {
 
   if (/cabinet decisions/i.test(name)) {
     const live = await tryUrls([PIB_RSS, primary].filter(Boolean));
-    const rows = live.rows.length ? live.rows : archive || [];
+    const liveEn = await enrichPibEnglish(live.rows || []);
+    const shaped = (rows) =>
+      (rows || []).map((r, i) => ({
+        ...r,
+        id: r.id != null ? r.id : `cabinet-${i}`,
+        topic: r.topic || r.title || '',
+        title: r.title || r.topic || '',
+        ministry: r.ministry || r.source || 'Press Information Bureau',
+      }));
+    const archiveRows = shaped(archive || []);
+    const liveRows = shaped(liveEn);
+    const rows = liveRows.length ? liveRows : archiveRows;
     if (!rows.length) return null;
     return envelope({
       tier,
       feature: feat,
       rows,
-      adapter: live.rows.length ? 'live' : 'embedded',
+      adapter: liveRows.length ? 'live' : 'embedded',
       links: [PIB_RSS],
       coverage,
-      fallback: !live.rows.length,
-      note: live.rows.length
-        ? 'PIB RSS — cabinet-tagged items as published.'
-        : 'PIB RSS did not return rows. Showing the last-known-good cabinet register (6 rows). PIB PRID archive is not wired.',
+      fallback: !liveRows.length,
+      note: liveRows.length
+        ? 'PIB RSS with English titles resolved from PressReleasePage (EN cookie).'
+        : 'PIB RSS returned Hindi-only or empty. Showing the English last-known-good cabinet register.',
       meta: {
         section: 'CABINET DECISIONS',
-        status: live.rows.length ? 'LIVE · PIB RSS' : 'ARCHIVE · LAST-KNOWN-GOOD',
+        status: liveRows.length ? 'LIVE · PIB RSS · EN' : 'STORED · LAST-KNOWN-GOOD',
         heading: heading(feat),
       },
     });

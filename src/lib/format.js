@@ -2,6 +2,8 @@
  * Shared display formatters for the desk data-display contract.
  */
 
+import { softenDashes, toTitleCase } from './textStyle.js';
+
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export function parseDate(value) {
@@ -52,7 +54,7 @@ export function formatDateTime(value) {
   return t ? `${day} · ${t}` : day;
 }
 
-export function formatNumber(value, { digits = 0, empty = '—' } = {}) {
+export function formatNumber(value, { digits = 0, empty = '-' } = {}) {
   if (value == null || value === '') return empty;
   const n = typeof value === 'number' ? value : Number(String(value).replace(/,/g, ''));
   if (!Number.isFinite(n)) return empty;
@@ -62,7 +64,7 @@ export function formatNumber(value, { digits = 0, empty = '—' } = {}) {
   });
 }
 
-export function formatPercent(value, { digits = 1, empty = '—' } = {}) {
+export function formatPercent(value, { digits = 1, empty = '-' } = {}) {
   if (value == null || value === '') return empty;
   let n = typeof value === 'number' ? value : Number(String(value).replace(/%/g, '').replace(/,/g, ''));
   if (!Number.isFinite(n)) return empty;
@@ -73,7 +75,7 @@ export function formatPercent(value, { digits = 1, empty = '—' } = {}) {
   return `${n.toFixed(digits)}%`;
 }
 
-export function formatPp(value, { digits = 1, empty = '—' } = {}) {
+export function formatPp(value, { digits = 1, empty = '-' } = {}) {
   if (value == null || value === '') return empty;
   const n = typeof value === 'number' ? value : Number(String(value).replace(/,/g, ''));
   if (!Number.isFinite(n)) return empty;
@@ -85,7 +87,7 @@ export function formatPp(value, { digits = 1, empty = '—' } = {}) {
  * Concise INR display. Exact raw stays for detail rail/export.
  * Accepts rupee strings like "Rs 8,05,85,824~ 8 Crore+".
  */
-export function formatInrCompact(value, { empty = '—' } = {}) {
+export function formatInrCompact(value, { empty = '-' } = {}) {
   if (value == null || value === '') return empty;
   const raw = String(value);
   const croreHint = raw.match(/([\d.]+)\s*Crore/i);
@@ -101,7 +103,7 @@ export function formatInrCompact(value, { empty = '—' } = {}) {
   return `₹${n.toLocaleString('en-IN')}`;
 }
 
-export function formatUsdCompact(value, { empty = '—' } = {}) {
+export function formatUsdCompact(value, { empty = '-' } = {}) {
   if (value == null || value === '') return empty;
   const n = typeof value === 'number' ? value : Number(String(value).replace(/[,$]/g, ''));
   if (!Number.isFinite(n)) return empty;
@@ -114,7 +116,7 @@ export function formatUsdCompact(value, { empty = '—' } = {}) {
  * Null contract: `—` for unavailable, keep `0` for measured zero,
  * `Not reported` when source omitted a field.
  */
-export function formatNull(value, { omitted = false, empty = '—' } = {}) {
+export function formatNull(value, { omitted = false, empty = '-' } = {}) {
   if (omitted) return 'Not reported';
   if (value == null || value === '') return empty;
   if (value === 0 || value === '0') return '0';
@@ -127,7 +129,7 @@ const PCTISH = /(pct|percent|%|vote_share|turnout|utilization|utilisation|gap_pc
 const INRISH = /(asset|liabilit|mplads|outlay|value_inr|budget|sanction)/i;
 
 export function formatCell(value, col = {}) {
-  if (value == null || String(value).trim() === '') return '—';
+  if (value == null || String(value).trim() === '') return '-';
   const key = String(col.key || col.label || '');
   if (col.date || DATEISH.test(key)) {
     return formatDate(value) || formatNull(value);
@@ -146,14 +148,30 @@ export function formatCell(value, col = {}) {
     const d = formatDate(value);
     if (d) return d;
   }
-  // Bills / long titles: Title Case when the source is ALL CAPS or mixed.
-  if (/bill_name|bill|title|policy_name|subject/i.test(key) && col.dot) {
-    const raw = String(value).trim();
-    if (raw === raw.toUpperCase() && /[A-Z]/.test(raw) && raw.length > 8) {
-      return formatStatus(raw);
-    }
+  // Bills + cabinet/decision titles: Title Case every word (uniform; kills ALL CAPS mix).
+  if (/bill_name|^bill$/i.test(key)) {
+    return toTitleCaseEveryWord(String(value).trim());
   }
-  return String(value);
+  if (/title|policy_name|subject|topic|decision|headline/i.test(key) && (col.dot || /topic|decision/i.test(key))) {
+    return toTitleCase(softenDashes(String(value).trim()));
+  }
+  if (/house|sector|stage|current_stage|ministry|party|department/i.test(key)) {
+    return formatStatus(value);
+  }
+  return softenDashes(String(value));
+}
+
+function toTitleCaseEveryWord(value) {
+  const s = String(value || '').trim();
+  if (!s) return '';
+  return s
+    .toLowerCase()
+    .replace(/\b[\w'’]+/g, (word) => {
+      if (/^(ias|ips|un|eu|uk|us|nato|rbi|sebi|gdp|be|re|fy|sc|hc|nclt|nclat|cbi|ed|mplad|gst)$/i.test(word)) {
+        return word.toUpperCase();
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    });
 }
 
 export function truncateTwoLines(text, max = 160) {
@@ -164,7 +182,7 @@ export function truncateTwoLines(text, max = 160) {
 
 /** Controlled Title Case for status / stage pills (not SCREAMING or lowercase mix). */
 export function formatStatus(value) {
-  if (value == null || String(value).trim() === '') return '—';
+  if (value == null || String(value).trim() === '') return '-';
   const s = String(value).trim().replace(/[_/]+/g, ' ').replace(/\s+/g, ' ');
   return s.replace(/\b[\w']+\b/g, (w) => {
     if (/^(IAS|IPS|UN|EU|UK|US|NATO|RBI|SEBI|GDP|BE|RE|FY|SC|HC|NCLT|NCLAT|CBI|ED)$/i.test(w)) {

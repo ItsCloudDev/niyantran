@@ -16,7 +16,7 @@ export default function IndustryDesk({ feed, statusRow, selected, onSelect, vizF
         <TableFilterPop feed={feed} vizFilter={vizFilter} onClearViz={onClearViz} />
       </div>
       <div className="desk-strip">
-        <span>INDUSTRY MONITOR — WORLD BANK WDI</span>
+        <span>INDUSTRY MONITOR · WORLD BANK WDI</span>
         <span>V1 SERIES ONLY · NO MOODY’S</span>
       </div>
       {statusRow ? (

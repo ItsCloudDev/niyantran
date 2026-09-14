@@ -13,6 +13,25 @@ import { VizFilterChip } from '../shell/AnalyticsViz.jsx';
 import { openAiResearch, rowDragProps } from '../lib/aiDrop.js';
 import { downloadJson, withExportProvenance } from '../lib/exportProvenance.js';
 
+function developmentParts(t) {
+  const headline = String(t?.headline || '').trim();
+  const hook = String(t?.hook || '').trim();
+  if (headline && hook) return { headline, hook, sev: t?.sev || 'medium' };
+  const raw = String(t?.text || '').trim();
+  if (!raw) return { headline: 'Update', hook: '', sev: t?.sev || 'medium' };
+  const bits = raw.split(/\s*;\s*/).map((x) => x.trim()).filter(Boolean);
+  if (bits.length >= 2) {
+    const lead = bits[0].replace(/\.$/, '');
+    const rest = bits.slice(1).join(' ');
+    return {
+      headline: lead,
+      hook: `${lead}. ${rest}${/[.!?]$/.test(rest) ? '' : '.'}`,
+      sev: t?.sev || 'medium',
+    };
+  }
+  return { headline: raw.replace(/\.$/, ''), hook: raw.endsWith('.') ? raw : `${raw}.`, sev: t?.sev || 'medium' };
+}
+
 function theatrePrompt(c, angle = 0) {
   const actors = (c.actors || []).slice(0, 4).join(', ') || 'the named actors';
   const posture = statusOf(c.status).label.toLowerCase();
@@ -135,15 +154,10 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
         </div>
       </header>
 
-      <div className="c2-guide" role="note">
-        <strong>On this map</strong>
-        <span>Click a theatre marker to open its sourced dossier. Intensity and posture colours match the legend.</span>
-      </div>
-
       <section className="c2-main">
         <div className="c2-map">
-          <div className="c2-map-title">Global theatre map</div>
-          <div className="c2-map-asof">Click a marker to inspect</div>
+          <div className="c2-map-title">Theatre map</div>
+          <div className="c2-map-asof">{view.length} shown · click a marker</div>
           <div className="c2-markers">
             {view.map((c) => {
               const pos = markerPos(c);
@@ -184,27 +198,27 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
               <i style={{ background: '#2f6eaa' }} />
               Monitored
             </span>
-            <span className="hint">Country boundaries shown for orientation</span>
+            <span className="hint">Boundaries for orientation only</span>
           </div>
         </div>
 
         <aside className="c2-side">
-          <div className="c2-side-head">
-            <b>Selected theatre</b>
-            <span>Source dossier</span>
-          </div>
           <div className="c2-selected">
             {current ? (
               <>
+                <div className="c2-dossier-kicker">Selected theatre</div>
                 <div className="c2-selected-top">
                   <h2>{current.name}</h2>
-                  <span className="c2-posture" style={{ color: st.color }}>
+                  <span className="c2-posture" style={{ '--c2-posture': st.color, color: st.color }}>
                     {st.label}
                   </span>
                 </div>
                 <div className="c2-subline">
-                  {regionGroup(current.region)} · since {current.since}
+                  <span>{regionGroup(current.region)}</span>
+                  {current.since ? <span>Since {current.since}</span> : null}
+                  {current.intensity ? <span>{current.intensity} intensity</span> : null}
                 </div>
+
                 {(current.fatalitiesEst || current.displaced) && (
                   <div className="c2-facts">
                     {current.fatalitiesEst ? (
@@ -221,26 +235,44 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
                     ) : null}
                   </div>
                 )}
-                <div className="c2-latest">
-                  <label>Latest recorded development</label>
-                  <p>{current.latest}</p>
-                </div>
+
+                {current.latest ? (
+                  <div className="c2-latest">
+                    <label>Latest development</label>
+                    <p>{current.latest}</p>
+                  </div>
+                ) : null}
+
                 {current.actors.length > 0 && (
                   <div className="c2-actors">
-                    <b>Actors:</b> {current.actors.slice(0, 4).join(' · ')}
+                    <label>Actors</label>
+                    <div className="c2-actor-list">
+                      {current.actors.slice(0, 6).map((a) => (
+                        <span key={a}>{a}</span>
+                      ))}
+                    </div>
                   </div>
                 )}
+
                 <div className="c2-evidence">
-                  {current.sources.slice(0, 3).map((s) => (
-                    <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer">
-                      {s.label} ↗
-                    </a>
-                  ))}
+                  <label>Sources</label>
+                  <div className="c2-source-list">
+                    {current.sources.length ? (
+                      current.sources.slice(0, 4).map((s) => (
+                        <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer">
+                          {s.label}
+                        </a>
+                      ))
+                    ) : (
+                      <span className="c2-source-empty">No linked sources on this record</span>
+                    )}
+                  </div>
                   <button
                     type="button"
+                    className="c2-ai-btn"
                     onClick={() => openAiResearch({ row: current.row, prompt: theatrePrompt(current, 1) })}
                   >
-                    Request AI Analysis ↗
+                    Ask about this theatre
                   </button>
                 </div>
               </>
@@ -248,9 +280,10 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
               <div className="c2-empty">No theatre matches the current filters.</div>
             )}
           </div>
+
           <div className="c2-side-head">
             <b>Attention queue</b>
-            <span>Posture ordered</span>
+            <span>By posture</span>
           </div>
           <div className="c2-queue">
             {ranked.length === 0 ? (
@@ -270,7 +303,8 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
                     <span>
                       <b>{c.name}</b>
                       <small>
-                        {regionGroup(c.region)} · {c.since}
+                        {regionGroup(c.region)}
+                        {c.since ? ` · ${c.since}` : ''}
                       </small>
                     </span>
                     <em>{s.short}</em>
@@ -285,17 +319,20 @@ export default function ConflictsMonitor({ feed, selected, onSelect, vizFilter, 
       <section className="c2-tape">
         <div className="c2-tape-label">
           <b>Latest developments</b>
-          <span>Most recent recorded changes across the monitor.</span>
+          <span>What moved across theatres in the last recorded window.</span>
         </div>
-        {timeline.map((t) => (
-          <article key={`${t.date}-${t.region}`} className="c2-event">
-            <time>
-              {t.date} · {t.region}
-            </time>
-            <b>{String(t.text || '').split(';')[0]}</b>
-            <p>{t.text}</p>
-          </article>
-        ))}
+        {timeline.map((t) => {
+          const { headline, hook, sev } = developmentParts(t);
+          return (
+            <article key={`${t.date}-${t.region}`} className={`c2-event sev-${sev}`}>
+              <time>
+                {t.date} · {t.region}
+              </time>
+              <b>{headline}</b>
+              <p>{hook}</p>
+            </article>
+          );
+        })}
       </section>
 
       <section className="c2-register">

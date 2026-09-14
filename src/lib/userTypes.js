@@ -23,7 +23,7 @@ export const USER_TYPES = [
     id: 'lawyer',
     label: 'Lawyers',
     short: 'Lawyer',
-    hint: 'Judgments, statute, and parliamentary record.',
+    hint: 'Judgements, statute, and parliamentary record.',
     desks: ['home', 'law', 'national', 'state', 'global'],
     startTab: 'law',
   },

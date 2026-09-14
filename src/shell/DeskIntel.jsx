@@ -95,9 +95,6 @@ export default function DeskIntel({ feed, selected, loading }) {
             <h3>Select a row to organise this entry</h3>
           </div>
         </header>
-        <p className="desk-intel-idle-copy muted">
-          Intelligence runs on the single record you pick in the table — not the whole desk.
-        </p>
       </section>
     );
   }

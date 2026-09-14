@@ -6,7 +6,7 @@ export default function DeskGuide({ tab, label, buckets, onFeature }) {
   const intro = deskIntro(tab);
 
   return (
-    <div className="desk desk-wide desk-guide">
+    <div className="desk desk-wide desk-guide" key={tab}>
       <div className="dg-hero">
         <div className="dg-kicker">
           <Icon name={TAB_ICON[tab] || 'globe'} size={16} />
@@ -28,8 +28,8 @@ export default function DeskGuide({ tab, label, buckets, onFeature }) {
       </div>
 
       <div className="dg-grid">
-        {(buckets || []).map((b) => (
-          <section key={b.label} className="dg-bucket">
+        {(buckets || []).map((b, i) => (
+          <section key={b.label} className="dg-bucket" style={{ '--dg-i': i }}>
             <header>
               <h2>{b.label}</h2>
               <p>{bucketBlurb(b.label)}</p>

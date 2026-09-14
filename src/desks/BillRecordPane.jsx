@@ -318,7 +318,10 @@ export default function BillRecordPane({ row, onClear, onAskAi, liveCount, desk 
 
   const a = analysisFor(row, pack.map);
   const model = useMemo(() => buildRecordModel(row, a, pack.ont, cfg), [row, a, pack.ont, cfg]);
-  const facts = useMemo(() => recordFacts(row, a, cfg), [row, a, cfg]);
+  const facts = useMemo(() => {
+    const all = recordFacts(row, a, cfg);
+    return all.filter((f) => f.value != null && String(f.value).trim() !== '' && f.value !== '—' && f.value !== '-');
+  }, [row, a, cfg]);
   const openFact = facts.find((f) => f.k === factK);
   const nS = model.sectors.length;
   const nC = model.companies.length;

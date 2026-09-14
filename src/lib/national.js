@@ -39,6 +39,9 @@ const FEATURE_DISPLAY_ALIASES = {
   'Global Intelligence': 'Defence Procurement Intelligence',
   'Statement & Quote Tracker with Contradiction Detection': 'Public-Figure Media Mention Monitor',
   'Supreme Court Order & Judgment Feed': 'Supreme Court Order & Judgements Feed',
+  'SUPREME COURT FEED': 'Supreme Court Order & Judgements Feed',
+  'Order Archive by Topic (Cross-Court)': 'Orders by Topic (Cross-Court)',
+  'ORDER ARCHIVE': 'Orders by Topic (Cross-Court)',
 };
 
 export function isIndustryFeature(name) {
@@ -73,11 +76,19 @@ export function isNationalTable(name) {
 }
 
 export function featureMenuLabel(mod) {
-  const raw = String(mod?.workbookFunctions || mod?.htmlFeature || '').trim();
+  // Prefer htmlFeature for UI — workbookFunctions are often short codes ("ORDER ARCHIVE").
+  const raw = String(mod?.htmlFeature || mod?.workbookFunctions || mod || '').trim();
   if (!raw) return '';
   const aliased = FEATURE_DISPLAY_ALIASES[raw] || raw;
-  return aliased.replace(/[A-Za-z]+/g, (w) => {
+  // Prefer British plural "judgements" in all UI labels (route ids stay on Judgment).
+  const spelled = aliased
+    .replace(/\bJudgments?\b/gi, 'Judgements')
+    .replace(/\bJudgement\b/g, 'Judgements')
+    .replace(/\bOrder Archive\b/gi, 'Orders by Topic')
+    .replace(/\bORDER ARCHIVE\b/gi, 'Orders by Topic');
+  return spelled.replace(/[A-Za-z]+/g, (w) => {
     if (/^(IAS|IPS|AGMUT|MP|MLA|PIB|RBI|SEBI|TRAI|CCI|LS|SIR|CAG|GPDP|MGNREGA|BDO|SDO|SDM|EO)$/i.test(w)) return w.toUpperCase();
+    if (/^judgements$/i.test(w)) return 'Judgements';
     return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
   });
 }
