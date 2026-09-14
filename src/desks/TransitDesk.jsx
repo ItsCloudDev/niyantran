@@ -27,7 +27,7 @@ function bboxQuery(b) {
   return `lamin=${b[1].toFixed(3)}&lamax=${b[3].toFixed(3)}&lomin=${b[0].toFixed(3)}&lomax=${b[2].toFixed(3)}`;
 }
 
-function drawSat(ctx, cssW, cssH, b, tiles) {
+function tileWindow(cssW, b) {
   const PI = Math.PI;
   const t = Math.log(Math.tan(Math.PI / 4 + (Math.max(-85.05, Math.min(85.05, b[3])) * Math.PI) / 360));
   const m = Math.log(Math.tan(Math.PI / 4 + (Math.max(-85.05, Math.min(85.05, b[1])) * Math.PI) / 360));
@@ -35,18 +35,44 @@ function drawSat(ctx, cssW, cssH, b, tiles) {
   const fx1 = (b[2] + 180) / 360;
   const fy0 = (PI - t) / (2 * PI);
   const fy1 = (PI - m) / (2 * PI);
-  let z = Math.max(2, Math.min(12, Math.round(Math.log(cssW / 256 / Math.max(1e-6, fx1 - fx0)) / Math.LN2)));
+  let z = Math.max(2, Math.min(11, Math.round(Math.log(cssW / 256 / Math.max(1e-6, fx1 - fx0)) / Math.LN2)));
   let sc = 2 ** z;
-  while (z > 2 && (Math.floor(fx1 * sc) - Math.floor(fx0 * sc) + 1) * (Math.floor(fy1 * sc) - Math.floor(fy0 * sc) + 1) > 48) {
+  while (z > 2 && (Math.floor(fx1 * sc) - Math.floor(fx0 * sc) + 1) * (Math.floor(fy1 * sc) - Math.floor(fy0 * sc) + 1) > 36) {
     z -= 1;
     sc = 2 ** z;
   }
-  const x0 = Math.floor(fx0 * sc);
-  const x1 = Math.floor(fx1 * sc);
-  const y0 = Math.floor(fy0 * sc);
-  const y1 = Math.floor(fy1 * sc);
+  return {
+    z,
+    sc,
+    fx0,
+    fx1,
+    fy0,
+    fy1,
+    x0: Math.floor(fx0 * sc),
+    x1: Math.floor(fx1 * sc),
+    y0: Math.floor(fy0 * sc),
+    y1: Math.floor(fy1 * sc),
+  };
+}
+
+function drawSat(ctx, cssW, cssH, b, tiles) {
+  const win = tileWindow(cssW, b);
+  const { z, sc, fx0, fx1, fy0, fy1, x0, x1, y0, y1 } = win;
   ctx.fillStyle = '#0A121C';
   ctx.fillRect(0, 0, cssW, cssH);
+  // Lightweight grid while imagery is still arriving — keeps the map readable immediately.
+  ctx.strokeStyle = 'rgba(127, 176, 255, 0.08)';
+  ctx.lineWidth = 1;
+  for (let i = 1; i < 8; i += 1) {
+    const x = (cssW * i) / 8;
+    const y = (cssH * i) / 8;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, cssH);
+    ctx.moveTo(0, y);
+    ctx.lineTo(cssW, y);
+    ctx.stroke();
+  }
   let drew = 0;
   for (let ty = Math.max(0, y0); ty <= Math.min(sc - 1, y1); ty++) {
     for (let tx = x0; tx <= x1; tx++) {
@@ -76,30 +102,44 @@ function drawSat(ctx, cssW, cssH, b, tiles) {
   return drew > 0;
 }
 
-function makeTileCache() {
+function makeTileCache(onReady) {
   const cache = {};
   let loading = 0;
+  function request(z, x, y) {
+    const key = `${z}/${y}/${x}`;
+    const t = cache[key];
+    if (t) return t.ok ? t.img : null;
+    if (loading > 40) return null;
+    if (Object.keys(cache).length > 480) {
+      for (const k of Object.keys(cache)) delete cache[k];
+    }
+    const img = new Image();
+    loading += 1;
+    cache[key] = { img, ok: false };
+    img.decoding = 'async';
+    img.onload = () => {
+      cache[key].ok = true;
+      loading -= 1;
+      onReady?.();
+    };
+    img.onerror = () => {
+      loading -= 1;
+      onReady?.();
+    };
+    img.src = `${TILE}/${z}/${y}/${x}`;
+    return null;
+  }
   return {
     get(z, x, y) {
-      const key = `${z}/${y}/${x}`;
-      const t = cache[key];
-      if (t) return t.ok ? t.img : null;
-      if (loading > 22) return null;
-      if (Object.keys(cache).length > 420) {
-        for (const k of Object.keys(cache)) delete cache[k];
+      return request(z, x, y);
+    },
+    warm(b, cssW) {
+      const win = tileWindow(Math.max(640, cssW || 800), b);
+      for (let ty = Math.max(0, win.y0); ty <= Math.min(win.sc - 1, win.y1); ty++) {
+        for (let tx = win.x0; tx <= win.x1; tx++) {
+          request(win.z, ((tx % win.sc) + win.sc) % win.sc, ty);
+        }
       }
-      const img = new Image();
-      loading += 1;
-      cache[key] = { img, ok: false };
-      img.onload = () => {
-        cache[key].ok = true;
-        loading -= 1;
-      };
-      img.onerror = () => {
-        loading -= 1;
-      };
-      img.src = `${TILE}/${z}/${y}/${x}`;
-      return null;
     },
   };
 }
@@ -129,7 +169,7 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
   const panRef = useRef(null);
   const pannedRef = useRef(false);
   const pulseRef = useRef(0);
-  const tilesRef = useRef(makeTileCache());
+  const tilesRef = useRef(null);
   const hitsRef = useRef([]);
   const countsHold = useRef(Object.fromEntries(CAT_ORDER.map((k) => [k, 0])));
   const providerRef = useRef('');
@@ -137,6 +177,8 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
   const lastErrRef = useRef('');
   const abortRef = useRef(null);
   const tilesReadyRef = useRef(false);
+  const dirtyRef = useRef(true);
+  const mapReadyRef = useRef(false);
 
   const [mode, setMode] = useState('air');
   const [regionId, setRegionId] = useState('india');
@@ -155,6 +197,7 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
   const [alert, setAlert] = useState('');
   const [tick, setTick] = useState(0);
   const [tilesReady, setTilesReady] = useState(false);
+  const [mapPainted, setMapPainted] = useState(false);
   const [showGuide, setShowGuide] = useState(() => {
     try {
       return localStorage.getItem('niy-transit-guide-seen') !== '1';
@@ -163,9 +206,18 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
     }
   });
 
+  const bumpPaint = useCallback(() => {
+    dirtyRef.current = true;
+  }, []);
+
+  useEffect(() => {
+    tilesRef.current = makeTileCache(bumpPaint);
+  }, [bumpPaint]);
+
   const region = useMemo(() => REGIONS.find((r) => r.id === regionId) || REGIONS[1], [regionId]);
   const liveOn = wsState === 'live';
   const liveLabel = liveOn ? '✓ LATEST' : wsState === 'connecting' ? 'CONNECTING' : wsState === 'paused' ? 'PAUSED' : 'FEED OFFLINE';
+  const bootBusy = wsState === 'connecting' && !count;
 
   const visibleList = useMemo(() => {
     const b = viewBox(regionRef.current, viewRef.current);
@@ -251,6 +303,7 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
       lastErrRef.current = '';
       setAlert('');
       setWsState('live');
+      dirtyRef.current = true;
       setTick((n) => n + 1);
       publishFeed('live', sea ? shipsRef.current.size : airRef.current.size, d.source);
     } catch (e) {
@@ -269,11 +322,23 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
   }, [mode, region, paused, filter]);
 
   useEffect(() => {
-    const id = window.setTimeout(() => {
+    const wrap = wrapRef.current;
+    const arm = () => {
       tilesReadyRef.current = true;
       setTilesReady(true);
-    }, 350);
-    return () => window.clearTimeout(id);
+      dirtyRef.current = true;
+      const canvas = canvasRef.current;
+      if (canvas && tilesRef.current?.warm) {
+        const b = viewBox(regionRef.current, viewRef.current);
+        tilesRef.current.warm(b, canvas.clientWidth || 800);
+      }
+    };
+    if (wrap?.clientWidth) arm();
+    else {
+      const id = window.setTimeout(arm, 16);
+      return () => window.clearTimeout(id);
+    }
+    return undefined;
   }, []);
 
   useEffect(() => {
@@ -286,6 +351,9 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
     setQuery('');
     setResults([]);
     setWsState('connecting');
+    setMapPainted(false);
+    mapReadyRef.current = false;
+    dirtyRef.current = true;
     poll();
     const id = setInterval(poll, 60000);
     return () => {
@@ -295,15 +363,30 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
   }, [mode, regionId, reload, poll, onLoading]);
 
   useEffect(() => {
+    if (!tilesReady || !tilesRef.current?.warm) return;
+    const canvas = canvasRef.current;
+    const b = viewBox(region, viewRef.current);
+    tilesRef.current.warm(b, canvas?.clientWidth || 800);
+    dirtyRef.current = true;
+  }, [region, tilesReady, mode, zLabel]);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return undefined;
     const ctx = canvas.getContext('2d');
     let raf = 0;
-    const loop = () => {
+    let lastHud = 0;
+    const loop = (now) => {
+      const needsPulse = Boolean(focusRef.current);
+      if (!dirtyRef.current && !needsPulse) {
+        raf = requestAnimationFrame(loop);
+        return;
+      }
+      dirtyRef.current = needsPulse;
       const cssW = canvas.clientWidth;
       const cssH = canvas.clientHeight;
       if (cssW && cssH) {
-        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        const dpr = Math.min(1.75, window.devicePixelRatio || 1);
         if (canvas.width !== Math.round(cssW * dpr) || canvas.height !== Math.round(cssH * dpr)) {
           canvas.width = Math.round(cssW * dpr);
           canvas.height = Math.round(cssH * dpr);
@@ -311,8 +394,13 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
         ctx.clearRect(0, 0, cssW, cssH);
         const b = viewBox(regionRef.current, viewRef.current);
-        if (tilesReadyRef.current) drawSat(ctx, cssW, cssH, b, tilesRef.current);
-        else {
+        if (tilesReadyRef.current && tilesRef.current) {
+          const painted = drawSat(ctx, cssW, cssH, b, tilesRef.current);
+          if (painted && !mapReadyRef.current) {
+            mapReadyRef.current = true;
+            setMapPainted(true);
+          }
+        } else {
           ctx.fillStyle = '#0A121C';
           ctx.fillRect(0, 0, cssW, cssH);
         }
@@ -384,6 +472,13 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
           }
         }
       }
+      if (!lastHud || now - lastHud > 220) {
+        lastHud = now;
+        const vis = hitsRef.current.length;
+        setCount((n) => (n === vis ? n : vis));
+        const next = countsHold.current;
+        setCounts((prev) => (CAT_ORDER.every((k) => prev[k] === next[k]) ? prev : { ...next }));
+      }
       raf = requestAnimationFrame(loop);
     };
     raf = requestAnimationFrame(loop);
@@ -392,17 +487,11 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
       const r = canvas.getBoundingClientRect();
       applyViewZoom(viewRef.current, regionRef.current, ev.deltaY < 0 ? 1.25 : 0.8, ev.clientX - r.left, ev.clientY - r.top, canvas);
       setZLabel(zoomLabel(viewRef.current.z));
+      dirtyRef.current = true;
     };
     canvas.addEventListener('wheel', onWh, { passive: false });
-    const hud = setInterval(() => {
-      const vis = hitsRef.current.length;
-      setCount((n) => (n === vis ? n : vis));
-      const next = countsHold.current;
-      setCounts((prev) => (CAT_ORDER.every((k) => prev[k] === next[k]) ? prev : { ...next }));
-    }, 250);
     return () => {
       cancelAnimationFrame(raf);
-      clearInterval(hud);
       canvas.removeEventListener('wheel', onWh);
     };
   }, []);
@@ -449,6 +538,7 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
     if (!s) return;
     focusRef.current = s;
     hoverRef.current = s;
+    dirtyRef.current = true;
     setPanel({ kind: 'ship', ship: s });
     onSelect?.(rowFromShip(s));
   }
@@ -457,6 +547,7 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
     if (!a) return;
     focusRef.current = a;
     hoverRef.current = a;
+    dirtyRef.current = true;
     setPanel({ kind: 'air', air: a });
     onSelect?.(rowFromAir(a));
   }
@@ -483,10 +574,12 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
       if (Math.abs(dx) + Math.abs(dy) > 4) pannedRef.current = true;
       viewRef.current.cx = panRef.current.cx - (dx / r.width) * (b[2] - b[0]);
       viewRef.current.cy = panRef.current.cy + (dy / r.height) * (b[3] - b[1]);
+      dirtyRef.current = true;
       return;
     }
     const h = hitAt(mx, my);
     const item = h ? h.ship || h.air : null;
+    if (hoverRef.current !== item) dirtyRef.current = true;
     hoverRef.current = item;
     canvas.style.cursor = item ? 'pointer' : viewRef.current.z > 1.001 ? 'grab' : 'default';
     if (item) {
@@ -562,6 +655,7 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
       viewRef.current.cy = null;
     }
     setZLabel(zoomLabel(viewRef.current.z));
+    dirtyRef.current = true;
   }
 
   function onSearch(v) {
@@ -584,6 +678,7 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
   function closePanel() {
     setPanel(null);
     focusRef.current = null;
+    dirtyRef.current = true;
     onSelect?.(null);
   }
 
@@ -706,6 +801,7 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
                 setRegionId(e.target.value);
                 viewRef.current = { z: 1, cx: null, cy: null, rid: null };
                 setZLabel('1x');
+                dirtyRef.current = true;
               }}
             >
               {REGIONS.map((r) => (
@@ -730,16 +826,37 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
             >
               {paused ? '▶ Resume' : '⏸ Pause'}
             </button>
+            <button
+              type="button"
+              className="sb-help"
+              onClick={() => setShowGuide(true)}
+              title="How to use Transit"
+            >
+              How to use
+            </button>
           </span>
         </div>
         {showGuide && (
-          <div className="sb-guide" role="note">
-            <div>
-              <strong>First time here?</strong>
-              <span>1. Choose Air or Ships and then pick a region.</span>
-              <span>2. Ship categories below the map are filters; click a colour to hide or show it.</span>
-              <span>3. Scroll to zoom, drag a zoomed map, and click a marker for details.</span>
-              <span>Position lag is time since the provider&apos;s last observation, not journey delay.</span>
+          <div className="sb-guide" role="dialog" aria-label="How to use Transit">
+            <div className="sb-guide-copy">
+              <strong>How to navigate Transit</strong>
+              <ol>
+                <li>
+                  Start with <b>AIR</b> or <b>SHIPS</b>. Ships without an AISStream key jump to the Baltic automatically.
+                </li>
+                <li>
+                  Pick a <b>region</b> from the dropdown. Markers only load for the area in view.
+                </li>
+                <li>
+                  <b>Scroll</b> to zoom, <b>drag</b> when zoomed, then <b>click a marker</b> for identity and position.
+                </li>
+                <li>
+                  Use search for a callsign or ship name. Coloured chips under the map filter ship types.
+                </li>
+              </ol>
+              <p className="sb-guide-note">
+                “Lag” on a position is time since the provider&apos;s last observation — not journey delay. Imagery fills in behind the markers.
+              </p>
             </div>
             <button
               type="button"
@@ -781,7 +898,31 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
           </div>
         )}
         <div className="sb-mapwrap" ref={wrapRef}>
-          {!tilesReady && <div className="sb-tile-wait">Preparing live layer - map tiles load next.</div>}
+          {bootBusy && (
+            <div className="sb-load" role="status">
+              <div className="sb-load-card">
+                <b>Opening Transit</b>
+                <ul>
+                  <li className={tilesReady || mapPainted ? 'done' : 'on'}>
+                    {tilesReady || mapPainted ? 'Map layer ready' : 'Drawing map layer…'}
+                  </li>
+                  <li className={wsState === 'live' ? 'done' : wsState === 'offline' ? 'bad' : 'on'}>
+                    {wsState === 'live'
+                      ? `${count} live ${mode === 'air' ? 'aircraft' : 'ships'} in view`
+                      : wsState === 'offline'
+                        ? 'Live feed unreachable — try another region'
+                        : `Fetching ${mode === 'air' ? 'aircraft' : 'ships'} for ${region.l}…`}
+                  </li>
+                </ul>
+                <p>
+                  Tip: stay on <b>AIR · India & Arabian Sea</b> for the fastest first pass, or open <b>How to use</b> above.
+                </p>
+              </div>
+            </div>
+          )}
+          {!bootBusy && !tilesReady && !mapPainted && (
+            <div className="sb-tile-wait">Map imagery is still filling in — markers are already live.</div>
+          )}
           <canvas
             className="sb-canvas"
             ref={canvasRef}
@@ -789,6 +930,7 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
             onMouseLeave={() => {
               hoverRef.current = null;
               setTip(null);
+              dirtyRef.current = true;
             }}
             onPointerDown={onCanvasDown}
             onPointerUp={onCanvasUp}
@@ -940,7 +1082,10 @@ export default function TransitDesk({ onFeed, onSelect, onLoading, reload }) {
                 key={k}
                 className={`sb-lg${filter[k] ? '' : ' off'}`}
                 style={{ color: CATS[k].c }}
-                onClick={() => setFilter((f) => ({ ...f, [k]: !f[k] }))}
+                onClick={() => {
+                  setFilter((f) => ({ ...f, [k]: !f[k] }));
+                  dirtyRef.current = true;
+                }}
               >
                 <span className="sw" style={{ background: CATS[k].c }} />
                 {CATS[k].l} <span className="n">{counts[k] || 0}</span>

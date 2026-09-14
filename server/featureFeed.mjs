@@ -1411,7 +1411,7 @@ export async function serveFeatureFeed(searchParams) {
           fallback: false,
           kind: 'law-pack',
           note: lawNote(slice),
-          meta: { heading: feat.htmlFeature, section: slice === 'archive' ? 'ORDER ARCHIVE' : slice === 'nclt' ? 'INSOLVENCY' : 'SUPREME COURT' },
+          meta: { heading: feat.htmlFeature, section: slice === 'archive' ? 'ORDERS BY TOPIC' : slice === 'nclt' ? 'INSOLVENCY' : 'SUPREME COURT' },
         });
       }
     }
@@ -1831,7 +1831,7 @@ export async function serveFeatureFeed(searchParams) {
           coverage: { from: '', through: '', exhaustive: false },
           fallback: false,
           note: carbonNote('news', 'Live outlet RSS.'),
-          meta: { heading: feat.htmlFeature, section: 'CLIMATE NEWSWIRE' },
+          meta: { heading: feat.htmlFeature, section: 'Climate wire' },
         });
       }
     }
@@ -1855,7 +1855,7 @@ export async function serveFeatureFeed(searchParams) {
             'registry',
             'Verra from live RSS. Isometric from the extracted publication list. Puro.earth has no public RSS.',
           ),
-          meta: { heading: feat.htmlFeature, section: 'REGISTRY WIRE' },
+          meta: { heading: feat.htmlFeature, section: 'Registry wire' },
         });
       }
     }
@@ -1881,7 +1881,7 @@ export async function serveFeatureFeed(searchParams) {
           fallback: slice === 'news' || slice === 'registry',
           kind: 'carbon-pack',
           note: carbonNote(slice, slice === 'news' || slice === 'registry' ? 'Live RSS failed; extracted snapshot.' : ''),
-          meta: { heading: feat.htmlFeature, section: String(feat.htmlFeature || '').toUpperCase() },
+          meta: { heading: feat.htmlFeature, section: String(feat.htmlFeature || '') },
         });
       }
     }
@@ -2749,6 +2749,45 @@ export async function serveFeatureFeed(searchParams) {
         kind: 'dossier',
         note: 'Original HTML alliance and bloc register. Source-linked dossiers, not GDELT.',
         meta: { verified: pack.verified, memberFlags: pack.memberFlags || {} },
+      });
+    }
+  }
+
+  // Global Intelligence: defence procurement register — never product-name news search.
+  if (
+    /^global intelligence$/i.test(feat.htmlFeature || '') ||
+    /defence procurement intelligence/i.test(feat.htmlFeature || '') ||
+    dataset === 'geopolitics_defense_procurement.csv' ||
+    dataset === 'geopolitics_defense_procurement'
+  ) {
+    const raw = loadEmbedded('geopolitics_defense_procurement.csv') || [];
+    const rows = raw.map((r) => ({
+      ...r,
+      title: r.title || r.program_name || r.name || '',
+      program_name: r.program_name || r.title || r.name || '',
+      country: r.country || r.vendor_or_origin || '',
+      vendor_or_origin: r.vendor_or_origin || r.country || '',
+      stage: r.stage || r.status || '',
+      decision_date: r.decision_date || r.as_of || r.date || '',
+      as_of: r.as_of || r.decision_date || r.date || '',
+    }));
+    if (rows.length) {
+      const through =
+        rows
+          .map((r) => String(r.as_of || r.decision_date || '').slice(0, 10))
+          .filter(Boolean)
+          .sort()
+          .slice(-1)[0] || '';
+      return envelope({
+        tier,
+        feature: feat,
+        rows,
+        adapter: 'embedded',
+        links: [],
+        coverage: { from: '', through, exhaustive: false },
+        fallback: false,
+        kind: 'table',
+        note: 'Defence procurement register (geopolitics_defense_procurement). Structured programmes, not a news search.',
       });
     }
   }

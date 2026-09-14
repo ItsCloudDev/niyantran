@@ -23,16 +23,64 @@ function recordLabel(row) {
   return String(row?.conflict_name || row?.title || row?.bill_name || row?.name || '').trim();
 }
 
+function isLocalDesk(feed) {
+  if (String(feed?.tier || '').toLowerCase() === 'local') return true;
+  const f = String(feed?.feature || '');
+  return /booth|panchayat|municipal|hyperlocal|local governance|councillor|pradhan|mgnrega|gpdp|gram panchayat|bdo\/sdo|officer directory|swing booth|anchor booth|booth political|booth-level/i.test(
+    f,
+  );
+}
+
+function isCarbonDesk(feed) {
+  if (/^(climate|carbon)$/i.test(String(feed?.tier || ''))) return true;
+  return /carbon|climate|cbam|ccts|ets & tax/i.test(String(feed?.feature || ''));
+}
+
+/** Drop archive / data-check chrome from right-rail KPIs and notes (Local + Law + shared). */
+function sanitizeRailOverview(overview, { carbon = false } = {}) {
+  if (!overview) return overview;
+  const dropRe = /\barchiv(e|ed)|data check|last-known-good|stored snapshot|fallback|single record|one case|whole desk|verification\b/i;
+  const kpis = (overview.kpis || [])
+    .map((k) => {
+      const label = String(k.label || '');
+      const value = String(k.value ?? '');
+      const sub = String(k.sub || '');
+      if (/source|data source|feed state|gdelt|verification|data check/i.test(label) && dropRe.test(`${value} ${sub}`)) {
+        return { ...k, value: carbon ? 'Register' : 'Register', sub: 'rows in this view' };
+      }
+      if (/data check|verification/i.test(label)) return null;
+      if (dropRe.test(sub)) {
+        return { ...k, sub: sub.replace(dropRe, 'register').replace(/\s{2,}/g, ' ').trim() || 'rows in this view' };
+      }
+      if (dropRe.test(value)) {
+        return { ...k, value: 'Register' };
+      }
+      return k;
+    })
+    .filter(Boolean)
+    .filter((k) => !/data check|verification/i.test(`${k.label} ${k.value} ${k.sub}`));
+  const note = overview.note && !dropRe.test(overview.note) ? overview.note : '';
+  const title = String(overview.title || '')
+    .replace(/\bJudgments?\b/gi, 'Judgements')
+    .replace(/\bJudgement\b/g, 'Judgements')
+    .replace(/\barchiv(e|ed)\b/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
+  return { ...overview, title, kpis, note };
+}
+
 export default function RightRail({ feed, selected, onSelect, lang, loading, vizFilter }) {
   const [tab, setTab] = useState('analytics');
   const bodyRef = useRef(null);
   const hi = lang === 'hi';
+  const localDesk = isLocalDesk(feed);
+  const carbonDesk = isCarbonDesk(feed);
   const dataState = resolveDataState(feed, { loading });
   const terminal = isTerminalState(dataState) || feed?.rows?.[0]?.status === 'source_status';
   const overview = (() => {
     if (terminal) return { title: feed?.feature || 'MODULE', kpis: [], charts: [] };
     try {
-      return feedOverview(feed);
+      return sanitizeRailOverview(feedOverview(feed), { carbon: carbonDesk });
     } catch {
       return { title: feed?.feature || 'MODULE', kpis: [], charts: [], note: 'Overview could not be built for this feed.' };
     }
@@ -50,7 +98,9 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
     isGeonomicsTable(feed?.feature) ||
     isNationalTable(feed?.feature);
   const dossier = alliances || sanctions || aid || nuclear;
-  const analyticsTitle = dossier ? 'EVENT ANALYTICS' : overview.title;
+  const analyticsTitle = dossier ? 'Event analytics' : overview.title;
+  const showFallbackBanner =
+    !localDesk && !carbonDesk && feed?.fallback && dataState.id !== 'live' && !status && dataState.detail;
 
   useEffect(() => {
     setTab('analytics');
@@ -58,7 +108,7 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
   }, [selected, feed?.feature]);
 
   return (
-    <aside className="right-rail" key={feed?.feature || 'empty'}>
+    <aside className={`right-rail${localDesk ? ' right-rail-local' : ''}${carbonDesk ? ' right-rail-carbon' : ''}`} key={feed?.feature || 'empty'}>
       <div className="rail-tabs" role="tablist">
         <button
           type="button"
@@ -86,14 +136,16 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
             <p className="banner">Select a module. Overview clears on every route change.</p>
           )}
           {gdelt && !terminal && <p className="banner warn">GDELT reporting search - not an official dataset.</p>}
-          {feed?.fallback && dataState.id !== 'live' && !status && dataState.detail ? (
+          {showFallbackBanner ? (
             <p className="banner">
               {String(dataState.detail).replace(/\barchiv(e|ed)\b/gi, 'stored snapshot')}
             </p>
           ) : null}
           {terminal && (
             <p className="banner">
-              {dataState.detail || 'No records were invented for this module.'}
+              {String(dataState.detail || 'No records were invented for this module.')
+                .replace(/\barchiv(e|ed)\b/gi, 'stored pack')
+                .replace(/\bdata check\b/gi, '')}
               {dataState.host ? ` Configured host: ${dataState.host}.` : ''}
             </p>
           )}

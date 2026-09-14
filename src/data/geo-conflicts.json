@@ -554,49 +554,57 @@
     {
       "date": "2026-07-18",
       "region": "Red Sea",
-      "text": "Houthi USV strike on a tanker off Hodeidah; oil above $90.",
+      "headline": "Tanker hit off Hodeidah",
+      "hook": "A Houthi unmanned surface vessel struck a commercial tanker near Hodeidah, and crude prices moved above $90 as shipping risk priced in.",
       "sev": "high"
     },
     {
       "date": "2026-07-15",
       "region": "Sudan",
-      "text": "RSF assault on El Fasher; UN warns of atrocity risk to civilians.",
+      "headline": "Fighting intensifies at El Fasher",
+      "hook": "RSF forces pressed an assault on El Fasher while UN monitors warned that civilians in the city face a rising risk of atrocity crimes.",
       "sev": "critical"
     },
     {
       "date": "2026-07-12",
       "region": "Eastern DRC",
-      "text": "M23 advances toward Uvira; SADC states weigh response.",
+      "headline": "M23 pushes toward Uvira",
+      "hook": "M23 advanced along approaches to Uvira, and neighbouring SADC governments began weighing a coordinated military and diplomatic response.",
       "sev": "high"
     },
     {
       "date": "2026-07-09",
       "region": "Ukraine",
-      "text": "Large-scale drone/missile barrage on Kyiv & Kharkiv grid.",
+      "headline": "Grid under mass strike",
+      "hook": "A large overnight drone and missile barrage targeted power infrastructure in Kyiv and Kharkiv, extending outages across both urban grids.",
       "sev": "high"
     },
     {
       "date": "2026-07-05",
       "region": "Sahel",
-      "text": "JNIM blockade tightens around Bamako supply routes.",
+      "headline": "Bamako supply routes squeezed",
+      "hook": "JNIM tightened a blockade on roads feeding Bamako, cutting fuel and food corridors that the capital depends on for daily supply.",
       "sev": "high"
     },
     {
       "date": "2026-06-30",
       "region": "Gaza",
-      "text": "Ceasefire phase-2 talks stall over governance & withdrawal maps.",
+      "headline": "Ceasefire talks stall",
+      "hook": "Phase-two ceasefire talks stalled after the parties failed to agree on interim governance arrangements and a sequenced withdrawal map.",
       "sev": "medium"
     },
     {
       "date": "2026-06-24",
       "region": "Myanmar",
-      "text": "Resistance seizes another Rakhine township from junta forces.",
+      "headline": "Rakhine town changes hands",
+      "hook": "Resistance forces seized another Rakhine township from junta units, extending a string of territorial losses for the military along the coast.",
       "sev": "medium"
     },
     {
       "date": "2026-06-19",
       "region": "Haiti",
-      "text": "Gangs storm two more PAP districts; MSS reinforcements delayed.",
+      "headline": "Gangs expand in Port-au-Prince",
+      "hook": "Armed gangs stormed two further districts of Port-au-Prince as MSS reinforcements remained delayed, widening the security vacuum in the capital.",
       "sev": "high"
     }
   ]

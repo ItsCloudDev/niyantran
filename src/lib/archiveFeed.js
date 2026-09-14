@@ -184,15 +184,16 @@ function flattenRow(item) {
   return out;
 }
 
-function envelope({ feature, rows, adapter, note, fallback, kind, meta, timeline }) {
+function envelope({ feature, rows, adapter, note, fallback, kind, meta, timeline, tier }) {
   return {
     ok: true,
+    tier: tier || feature?.htmlTier || '',
     feature: feature.htmlFeature || feature,
     rows: rows || [],
     source: {
       adapter: adapter || 'embedded',
       links: [...new Set((rows || []).map((r) => r.source_url).filter(Boolean))],
-      note: note || 'Last-known-good archive (static host).',
+      note: note || 'Shipped register on this host.',
       gdelt: false,
       kind: kind || '',
     },
@@ -653,6 +654,33 @@ export async function fetchArchiveFeature({ tier, feature, signal } = {}) {
     }
   }
 
+  if (
+    /^global intelligence$/i.test(name) ||
+    /defence procurement intelligence/i.test(name) ||
+    dataset === 'geopolitics_defense_procurement.csv' ||
+    dataset === 'geopolitics_defense_procurement'
+  ) {
+    const rows = await loadEmbedded('geopolitics_defense_procurement.csv', signal);
+    if (rows.length) {
+      const mapped = rows.map((r) => ({
+        ...r,
+        title: r.title || r.program_name || r.name || '',
+        program_name: r.program_name || r.title || r.name || '',
+        country: r.country || r.vendor_or_origin || '',
+        vendor_or_origin: r.vendor_or_origin || r.country || '',
+        stage: r.stage || r.status || '',
+        decision_date: r.decision_date || r.as_of || r.date || '',
+        as_of: r.as_of || r.decision_date || r.date || '',
+      }));
+      return envelope({
+        feature: feat,
+        rows: mapped,
+        kind: 'table',
+        note: 'Defence procurement register (static archive).',
+      });
+    }
+  }
+
   if (/^open fronts$/i.test(name) || dataset === 'geopolitics_war_tracker.csv' || dataset === 'geopolitics_war_tracker') {
     const rows = await loadEmbedded('geopolitics_war_tracker.csv', signal);
     if (rows.length) {
@@ -699,7 +727,8 @@ export async function fetchArchiveFeature({ tier, feature, signal } = {}) {
       return envelope({
         feature: feat,
         rows,
-        note: 'Last-known-good archive from the shipped dataset.',
+        note: 'Shipped register for this module.',
+        tier: feat.htmlTier || tier || '',
       });
     }
   }
@@ -708,6 +737,7 @@ export async function fetchArchiveFeature({ tier, feature, signal } = {}) {
     feature: feat,
     rows: [],
     adapter: 'embedded',
-    note: 'No last-known-good archive for this module on the static host.',
+    note: 'No shipped register for this module on this host.',
+    tier: feat.htmlTier || tier || '',
   });
 }

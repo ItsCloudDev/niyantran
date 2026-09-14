@@ -33,7 +33,7 @@ function pct(a, b) {
 }
 
 function fmtCr(n) {
-  if (n == null) return '—';
+  if (n == null) return '-';
   if (n >= 1e7) return `${(n / 1e7).toFixed(n >= 1e8 ? 0 : 1)} Cr`;
   if (n >= 1e5) return `${(n / 1e5).toFixed(1)} L`;
   return n.toLocaleString('en-IN');
@@ -101,18 +101,18 @@ function bars(pairs, { total, pctMode, filterCol, fmt } = {}) {
 
 export function crimBand(row) {
   const n = toNum(row?.criminal_cases) || 0;
-  return n === 0 ? '0 (clean)' : n <= 2 ? '1–2' : n <= 5 ? '3–5' : '6+';
+  return n === 0 ? '0 (clean)' : n <= 2 ? '1-2' : n <= 5 ? '3-5' : '6+';
 }
 
 export function assetBand(row) {
   const v = parseINR(row?.total_assets);
-  return v < 1e7 ? '< ₹1 Cr' : v < 5e7 ? '₹1–5 Cr' : v < 25e7 ? '₹5–25 Cr' : '₹25 Cr+';
+  return v < 1e7 ? '< ₹1 Cr' : v < 5e7 ? '₹1-5 Cr' : v < 25e7 ? '₹5-25 Cr' : '₹25 Cr+';
 }
 
 export function questionBand(row) {
   const q = toNum(row?.questions_asked);
   if (q == null) return '';
-  return q === 0 ? '0' : q <= 50 ? '1–50' : q <= 150 ? '51–150' : q <= 300 ? '151–300' : '300+';
+  return q === 0 ? '0' : q <= 50 ? '1-50' : q <= 150 ? '51-150' : q <= 300 ? '151-300' : '300+';
 }
 
 export function deadlineLabel(row) {
@@ -146,9 +146,9 @@ function decadeBucket(raw) {
 function sizeBandOf(electors) {
   const e = Number(electors) || 0;
   if (e < 300) return 'under 300';
-  if (e < 600) return '300–600';
-  if (e < 900) return '600–900';
-  if (e < 1200) return '900–1200';
+  if (e < 600) return '300-600';
+  if (e < 900) return '600-900';
+  if (e < 1200) return '900-1200';
   return '1200+';
 }
 
@@ -272,12 +272,12 @@ function crosstab(rows, rowKey, colKey, rowLimit = 10) {
 
 function emptyKpis(note) {
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
       { label: 'RECORDS', value: 0, sub: note || 'no dataset wired' },
-      { label: 'STATUS', value: '—', sub: 'labelled absence, not a zero' },
-      { label: 'CHARTS', value: '—', sub: 'nothing to plot' },
-      { label: 'SOURCE', value: '—', sub: '' },
+      { label: 'STATUS', value: ' - ', sub: 'labelled absence, not a zero' },
+      { label: 'CHARTS', value: ' - ', sub: 'nothing to plot' },
+      { label: 'SOURCE', value: ' - ', sub: '' },
     ],
     charts: [],
     note,
@@ -299,9 +299,9 @@ function billsViz(all) {
     ['Passed Both Houses', passedBoth, ['Passed Both Houses']],
   ].filter((s) => s[1] > 0);
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
-      { label: 'BILLS TRACKED', value: total.toLocaleString('en-IN'), sub: `since ${minYear(all, 'date_introduced') || '—'}` },
+      { label: 'BILLS TRACKED', value: total.toLocaleString('en-IN'), sub: `since ${minYear(all, 'date_introduced') || ' - '}` },
       { label: 'PASSED BOTH HOUSES', value: passedBoth.toLocaleString('en-IN'), sub: `${pct(passedBoth, total)}% of tracked`, tone: 'ok' },
       { label: 'NOT YET ENACTED', value: notYet.toLocaleString('en-IN'), sub: 'introduced → single house', tone: 'warn' },
       { label: 'POLICY SECTORS', value: String(countBy(all, 'sector').size), sub: 'distinct sectors' },
@@ -344,14 +344,14 @@ function policyGraphKpis(all) {
     if (pigStagePassed(r.current_stage)) by[cls.sec].passed += 1;
   });
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
       { label: 'BILLS', value: total.toLocaleString('en-IN'), sub: `${domains.size} domains · live` },
       { label: 'PRIMARY', value: by.Primary.n, sub: `18% GDP · ${by.Primary.passed} passed` },
       { label: 'SECONDARY', value: by.Secondary.n, sub: `27% GDP · ${by.Secondary.passed} passed` },
       { label: 'SERVICES', value: by.Services.n, sub: `55% GDP · ${by.Services.passed} passed` },
     ],
-    charts: [sparkFull(all, 'date_introduced', 1952, 'Bills introduced by year — 1952–present')].filter(Boolean),
+    charts: [sparkFull(all, 'date_introduced', 1952, 'Bills introduced by year  -  1952-present')].filter(Boolean),
     note: 'Passed counts are derived from current_stage, not from a passing date. They tell you how many have passed, never when.',
   };
 }
@@ -364,14 +364,14 @@ function affidavitViz(all) {
   const median = assetVals.length ? assetVals[Math.floor(assetVals.length / 2)] : null;
   const crimBuckets = countByFn(all, (r) => {
     const n = toNum(r.criminal_cases) || 0;
-    return n === 0 ? '0 (clean)' : n <= 2 ? '1–2' : n <= 5 ? '3–5' : '6+';
+    return n === 0 ? '0 (clean)' : n <= 2 ? '1-2' : n <= 5 ? '3-5' : '6+';
   });
-  const crimPairs = ['0 (clean)', '1–2', '3–5', '6+'].map((k) => [k, crimBuckets.get(k) || 0]).filter((p) => p[1]);
+  const crimPairs = ['0 (clean)', '1-2', '3-5', '6+'].map((k) => [k, crimBuckets.get(k) || 0]).filter((p) => p[1]);
   const assetBuckets = countByFn(all, (r) => {
     const v = parseINR(r.total_assets);
-    return v < 1e7 ? '< ₹1 Cr' : v < 5e7 ? '₹1–5 Cr' : v < 25e7 ? '₹5–25 Cr' : '₹25 Cr+';
+    return v < 1e7 ? '< ₹1 Cr' : v < 5e7 ? '₹1-5 Cr' : v < 25e7 ? '₹5-25 Cr' : '₹25 Cr+';
   });
-  const assetPairs = ['< ₹1 Cr', '₹1–5 Cr', '₹5–25 Cr', '₹25 Cr+'].map((k) => [k, assetBuckets.get(k) || 0]).filter((p) => p[1]);
+  const assetPairs = ['< ₹1 Cr', '₹1-5 Cr', '₹5-25 Cr', '₹25 Cr+'].map((k) => [k, assetBuckets.get(k) || 0]).filter((p) => p[1]);
   const byParty = {};
   all.forEach((r) => {
     const p = (r.party || '').trim();
@@ -386,7 +386,7 @@ function affidavitViz(all) {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 8);
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
       { label: 'CANDIDATES', value: total.toLocaleString('en-IN'), sub: 'affidavits analysed' },
       { label: 'WITH CRIMINAL CASES', value: `${pct(withCrim, total)}%`, sub: `${withCrim.toLocaleString('en-IN')} candidates`, tone: 'bad' },
@@ -405,12 +405,12 @@ function questionsViz(all) {
   const minY = minYear(all, 'date');
   const maxY = new Date().getFullYear();
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
       { label: 'QUESTIONS', value: all.length.toLocaleString('en-IN'), sub: 'in loaded sample' },
       { label: 'MINISTRIES', value: String(countBy(all, 'ministry').size), sub: 'addressed' },
       { label: 'MEMBERS', value: String(countBy(all, 'mp_name').size), sub: 'asking questions' },
-      { label: 'COVERAGE', value: `${minY || '—'}–${maxY}`, sub: 'by date' },
+      { label: 'COVERAGE', value: `${minY || ' - '}-${maxY}`, sub: 'by date' },
     ],
     charts: [
       {
@@ -443,12 +443,12 @@ function regulatoryViz(all) {
     : 0;
   const top = topPairs(byReg, 1);
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
       { label: 'ACTIONS', value: String(all.length), sub: 'notifications/orders' },
       { label: 'REGULATORS', value: String(byReg.size), sub: byReg.size === 1 ? 'RBI-only in this register' : 'tracked' },
       { label: 'LAST 30 DAYS', value: String(last30), sub: 'vs latest row, not today', tone: 'warn' },
-      { label: 'MOST ACTIVE', value: top.length ? top[0][0] : '—', sub: top.length ? `${top[0][1]} actions` : '' },
+      { label: 'MOST ACTIVE', value: top.length ? top[0][0] : ' - ', sub: top.length ? `${top[0][1]} actions` : '' },
     ],
     charts: [
       {
@@ -500,7 +500,7 @@ function tendersViz(all) {
     ? bars(topPairs(countBy(all, 'sector'), 8), { filterCol: 'sector' })
     : [];
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
       { label: 'TENDERS', value: String(all.length), sub: `${open} still open by deadline` },
       {
@@ -529,7 +529,7 @@ function tendersViz(all) {
       },
       sectorItems.length
         ? { type: 'bars', title: 'Tenders by sector', items: sectorItems }
-        : { type: 'note', title: 'Tenders by sector', hint: 'No sector data — the column is empty in all rows, so nothing plots.' },
+        : { type: 'note', title: 'Tenders by sector', hint: 'No sector data  -  the column is empty in all rows, so nothing plots.' },
     ].filter(Boolean),
     note: valueEmpty
       ? 'Procurement value is not charted: value_inr is empty, so a ₹0 bar would be a false reading.'
@@ -548,7 +548,7 @@ function transfersViz(all) {
     : 0;
   const jurKey = all[0] && 'jurisdiction' in all[0] ? 'jurisdiction' : 'cadre';
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
       { label: 'TRANSFERS', value: String(all.length), sub: 'posting changes' },
       { label: 'JURISDICTIONS', value: String(countBy(all, jurKey).size), sub: 'state / UT for AGMUT' },
@@ -564,7 +564,7 @@ function transfersViz(all) {
       },
       { type: 'bars', title: 'Officers by batch year', items: bars(topPairs(countBy(all, 'batch_year'), 8), { filterCol: 'batch_year' }) },
     ],
-    note: '29 rows — ordering and any rate reading stay provisional.',
+    note: '29 rows  -  ordering and any rate reading stay provisional.',
   };
 }
 
@@ -589,11 +589,11 @@ function mpViz(all) {
   const buckets = countByFn(all, (r) => {
     const q = toNum(r.questions_asked);
     if (q == null) return null;
-    return q === 0 ? '0' : q <= 50 ? '1–50' : q <= 150 ? '51–150' : q <= 300 ? '151–300' : '300+';
+    return q === 0 ? '0' : q <= 50 ? '1-50' : q <= 150 ? '51-150' : q <= 300 ? '151-300' : '300+';
   });
-  const bucketPairs = ['0', '1–50', '51–150', '151–300', '300+'].map((k) => [k, buckets.get(k) || 0]).filter((p) => p[1]);
+  const bucketPairs = ['0', '1-50', '51-150', '151-300', '300+'].map((k) => [k, buckets.get(k) || 0]).filter((p) => p[1]);
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
       { label: 'MEMBERS', value: all.length.toLocaleString('en-IN'), sub: 'tracked' },
       { label: 'MEDIAN QUESTIONS', value: String(median), sub: 'per member' },
@@ -601,12 +601,12 @@ function mpViz(all) {
       {
         label: 'ATTENDANCE DATA',
         value: `${pct(withAtt, all.length)}%`,
-        sub: withAtt ? 'of members' : 'empty in every row — not a zero attendance',
+        sub: withAtt ? 'of members' : 'empty in every row  -  not a zero attendance',
         tone: withAtt ? '' : 'bad',
       },
     ],
     charts: [
-      { type: 'bars', title: 'Party seat share — 18th Lok Sabha', hint: '543 seats · public record · curated. Click a named party to filter the roster.', items: bars(LS18_SEATS, { filterCol: 'party' }).map((it) => (it.label === 'Others' ? { ...it, filterCol: undefined } : it)) },
+      { type: 'bars', title: 'Party seat share  -  18th Lok Sabha', hint: '543 seats · public record · curated. Click a named party to filter the roster.', items: bars(LS18_SEATS, { filterCol: 'party' }).map((it) => (it.label === 'Others' ? { ...it, filterCol: undefined } : it)) },
       { type: 'bars', title: 'House profile', items: bars(LS18_PROFILE) },
       { type: 'bars', title: 'Legislative activity by party (avg questions)', items: bars(partyAvg, { filterCol: 'party' }) },
       { type: 'bars', title: 'Engagement distribution', items: bars(bucketPairs, { filterCol: '_q_band' }), hint: 'Questions asked, bucketed. Click to cross-filter.' },
@@ -629,7 +629,7 @@ function genericViz(all) {
   }
   if (dateKey) {
     const last = maxYear(all, dateKey);
-    kpis.push({ label: 'LATEST YEAR', value: last || '—', sub: 'most recent year present' });
+    kpis.push({ label: 'LATEST YEAR', value: last || ' - ', sub: 'most recent year present' });
   }
   if (cat2) kpis.push({ label: cat2.replace(/_/g, ' ').toUpperCase(), value: String(countBy(all, cat2).size), sub: 'distinct tracked' });
   while (kpis.length < 4) kpis.push({ label: 'SOURCE', value: 'REGISTER', sub: '' });
@@ -639,12 +639,12 @@ function genericViz(all) {
   if (cat && cat2) {
     charts.push({
       type: 'matrix',
-      title: `Concentration — ${cat.replace(/_/g, ' ')} × ${cat2.replace(/_/g, ' ')}`,
+      title: `Concentration  -  ${cat.replace(/_/g, ' ')} × ${cat2.replace(/_/g, ' ')}`,
       hint: 'Sequential ramp starts above a 2:1 contrast floor so the lowest cell still reads as a shape.',
       matrix: crosstab(all, cat, cat2),
     });
   }
-  return { title: 'KEY INDICATORS', kpis: kpis.slice(0, 4), charts };
+  return { title: 'Desk snapshot', kpis: kpis.slice(0, 4), charts };
 }
 
 function delimViz(rows) {
@@ -655,19 +655,19 @@ function delimViz(rows) {
   const now = data.reduce((s, r) => s + r.now, 0);
   const net = house - now;
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
       { label: 'SEATS BEFORE', value: String(now), sub: 'current house' },
       { label: 'SEATS AFTER', value: String(house), sub: 'this scenario' },
       { label: 'NET CHANGE', value: `${net > 0 ? '+' : ''}${net}`, sub: 'signed', tone: net >= 0 ? 'ok' : 'bad' },
-      { label: 'LARGEST GAINER', value: gain?.name || '—', sub: gain ? `+${gain.d}` : '' },
+      { label: 'LARGEST GAINER', value: gain?.name || ' - ', sub: gain ? `+${gain.d}` : '' },
       ...(lose ? [{ label: 'LARGEST LOSER', value: lose.name, sub: String(lose.d), tone: 'bad' }] : []),
     ],
     charts: [
       {
         type: 'bars',
         title: 'Net seat change by state',
-        hint: 'Largest remainder · NCP 2011–36 projections · illustrative. Diverging scale, not red-to-green.',
+        hint: 'Largest remainder · NCP 2011-36 projections · illustrative. Diverging scale, not red-to-green.',
         items: data.slice(0, 12).map((r) => ({
           label: r.name,
           value: Math.abs(r.d),
@@ -678,7 +678,7 @@ function delimViz(rows) {
         })),
       },
     ],
-    note: 'SIMULATION · LARGEST REMAINDER · NCP 2011–36 PROJECTIONS · ILLUSTRATIVE',
+    note: 'SIMULATION · LARGEST REMAINDER · NCP 2011-36 PROJECTIONS · ILLUSTRATIVE',
   };
 }
 
@@ -687,12 +687,12 @@ function manifestoViz(all) {
   const byDomain = countBy(all, 'domain');
   const byStatus = countBy(all, 'verifiable_status');
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
       { label: 'PROMISES', value: String(all.length), sub: 'Union 2024 tracker' },
-      { label: 'YEARS COVERED', value: [...years].sort().join('–') || '2024', sub: 'one national cycle' },
+      { label: 'YEARS COVERED', value: [...years].sort().join('-') || '2024', sub: 'one national cycle' },
       { label: 'DOMAINS', value: String(byDomain.size), sub: 'in this tracker' },
-      { label: 'PARTIES', value: 'Union', sub: '2024 tracker — not all parties, all elections' },
+      { label: 'PARTIES', value: 'Union', sub: '2024 tracker  -  not all parties, all elections' },
     ],
     charts: [
       { type: 'bars', title: 'Commitments by domain', items: bars(topPairs(byDomain, 8), { filterCol: 'domain' }) },
@@ -709,22 +709,22 @@ function manifestoViz(all) {
 
 function budgetViz() {
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
-      { label: 'TOTAL EXPENDITURE', value: '₹50.65 L Cr', sub: 'Union Budget 2025–26 BE', tone: 'ok' },
+      { label: 'TOTAL EXPENDITURE', value: '₹50.65 L Cr', sub: 'Union Budget 2025-26 BE', tone: 'ok' },
       { label: 'CAPITAL EXPENDITURE', value: '₹11.21 L Cr', sub: 'budget estimate' },
       { label: 'FISCAL DEFICIT', value: '4.4% GDP', sub: 'target' },
-      { label: 'SCHEMES CHARTED', value: '8', sub: 'allocation only — no utilisation' },
+      { label: 'SCHEMES CHARTED', value: '8', sub: 'allocation only  -  no utilisation' },
     ],
     charts: [
       {
         type: 'bars',
         title: 'Major scheme allocations',
-        hint: 'Union Budget 2025–26 BE · ₹ crore · APPROXIMATE. Verify against indiabudget.gov.in. PDF is authoritative.',
+        hint: 'Union Budget 2025-26 BE · ₹ crore · APPROXIMATE. Verify against indiabudget.gov.in. PDF is authoritative.',
         items: bars(BUDGET_SCHEMES, { fmt: (v) => `₹${v.toLocaleString('en-IN')} Cr`, filterCol: 'scheme' }),
       },
     ],
-    note: 'Every figure is an allocation. Scheme-level utilisation exists in no free or paid Indian source — utilisation, if shown later, is ministry-level only.',
+    note: 'Every figure is an allocation. Scheme-level utilisation exists in no free or paid Indian source  -  utilisation, if shown later, is ministry-level only.',
   };
 }
 
@@ -732,11 +732,11 @@ function projectsViz(all) {
   const active = all.filter((r) => /active/i.test(r.activity || r.status)).length;
   const inactive = all.length - active;
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
       { label: 'FLAGSHIP PROGRAMMES', value: String(all.length), sub: 'curated reference, not a project register' },
-      { label: 'ACTIVE', value: String(active), sub: `${inactive} inactive — label + colour`, tone: 'ok' },
-      { label: 'TOTAL BUDGET', value: 'Not in this source', sub: 'PAIMANA not wired — no invented cost' },
+      { label: 'ACTIVE', value: String(active), sub: `${inactive} inactive  -  label + colour`, tone: 'ok' },
+      { label: 'TOTAL BUDGET', value: 'Not in this source', sub: 'PAIMANA not wired  -  no invented cost' },
       { label: 'WINNING BIDDER', value: 'Dropped', sub: 'refuted: no OCDS publisher; CPPP award page is captcha-gated' },
     ],
     charts: [
@@ -787,10 +787,10 @@ function industryViz(rows) {
     .sort((a, b) => a.year - b.year);
   const last = series[series.length - 1];
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
-      { label: 'MANUFACTURING % GDP', value: last ? last.n.toFixed(1) : 'Unreachable', sub: last ? `India · ${last.year} · World Bank` : 'World Bank — will retry' },
-      { label: 'SERIES YEARS', value: series.length || '—', sub: '15-year trend when the API resolves' },
+      { label: 'MANUFACTURING % GDP', value: last ? last.n.toFixed(1) : 'Unreachable', sub: last ? `India · ${last.year} · World Bank` : 'World Bank  -  will retry' },
+      { label: 'SERIES YEARS', value: series.length || ' - ', sub: '15-year trend when the API resolves' },
       { label: 'ISSUING AUTHORITY', value: 'World Bank', sub: 'NV.IND.MANF.ZS / NV.IND.TOTL.ZS' },
       { label: 'REVISION STATUS', value: 'WDI', sub: 'as published by the Bank' },
     ],
@@ -798,7 +798,7 @@ function industryViz(rows) {
       ? [
           {
             type: 'spark',
-            title: 'Manufacturing share of GDP — 15-year trend',
+            title: 'Manufacturing share of GDP  -  15-year trend',
             hint: 'India · % of GDP · World Bank',
             series: series.map((p) => ({ year: p.year, n: p.n })),
             peak: series.reduce((a, b) => (b.n > a.n ? b : a), series[0]),
@@ -817,7 +817,7 @@ function industryViz(rows) {
       : [],
     note: series.length
       ? 'v1 World Bank series only. Fiscal deficit, forex, IIP and WPI are named not-wired. No Moody’s. Implications are not asserted.'
-      : 'World Bank open-data API unreachable from this network — it will retry automatically. Fiscal deficit, forex, IIP and WPI are not wired.',
+      : 'World Bank open-data API unreachable from this network  -  it will retry automatically. Fiscal deficit, forex, IIP and WPI are not wired.',
   };
 }
 
@@ -825,10 +825,10 @@ function statementsViz(feed, rows) {
   const vol = Array.isArray(feed?.meta?.volume) ? feed.meta.volume : [];
   const peak = vol.length ? vol.reduce((a, b) => (b.n > a.n ? b : a), vol[0]) : null;
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
       { label: 'ITEMS', value: String(rows.length), sub: 'in this window' },
-      { label: 'PERSONAS TRACKED', value: '8', sub: 'public officials — no portraits' },
+      { label: 'PERSONAS TRACKED', value: '8', sub: 'public officials  -  no portraits' },
       { label: 'WINDOW', value: '7 days', sub: 'GDELT TimelineVol when the wire resolves' },
       { label: 'KIND', value: 'COVERAGE', sub: 'media volume, not statements' },
     ],
@@ -836,7 +836,7 @@ function statementsViz(feed, rows) {
       ? [
           {
             type: 'spark',
-            title: 'Coverage volume — 7 days',
+            title: 'Coverage volume  -  7 days',
             hint: `${feed?.meta?.person || 'Selected official'} · GDELT TimelineVol · news reporting search`,
             series: vol,
             peak,
@@ -851,7 +851,7 @@ function statementsViz(feed, rows) {
 
 function morningViz(feed, rows) {
   return {
-    title: 'KEY INDICATORS',
+    title: 'Desk snapshot',
     kpis: [
       { label: 'ITEMS', value: String(rows.length), sub: 'in this window' },
       { label: 'PIB', value: feed?.meta?.pib || 'OFFLINE', sub: 'government wire' },
@@ -859,7 +859,7 @@ function morningViz(feed, rows) {
       { label: 'KIND', value: 'DIGEST', sub: 'panel, not a table' },
     ],
     charts: [],
-    note: 'PIB releases arrive through the backend (/api/rss) and it is not reachable — labelled offline, not left loading.',
+    note: 'PIB releases arrive through the backend (/api/rss) and it is not reachable  -  labelled offline, not left loading.',
   };
 }
 
@@ -905,7 +905,33 @@ export function nationalOverview(feed) {
   if (/mp profiles|mp report/i.test(feature)) return mpViz(rows);
   if (/central tender/i.test(feature)) return tendersViz(rows);
   if (/agmut|bureaucratic transfers/i.test(feature)) return transfersViz(rows);
-  if (/policy pipeline|cabinet decisions/i.test(feature)) return genericViz(rows);
+  if (/policy pipeline/i.test(feature)) return genericViz(rows);
+  if (/cabinet decisions/i.test(feature)) {
+    const all = rows.filter((r) => r.status !== 'source_status');
+    if (!all.length) return emptyKpis('No English cabinet rows on this host yet.');
+    const byMinistry = topPairs(countBy(all, 'ministry'), 8);
+    return {
+      title: 'Desk snapshot',
+      kpis: [
+        { label: 'DECISIONS', value: all.length.toLocaleString('en-IN'), sub: 'English titles on this board' },
+        {
+          label: 'TOP MINISTRY',
+          value: byMinistry[0] ? String(byMinistry[0][0]).slice(0, 28) : '-',
+          sub: byMinistry[0] ? `${byMinistry[0][1]} releases` : '',
+        },
+        { label: 'MINISTRIES', value: String(countBy(all, 'ministry').size), sub: 'distinct on record' },
+        { label: 'SOURCE', value: 'PIB', sub: 'Press Information Bureau' },
+      ],
+      charts: [
+        {
+          type: 'bars',
+          title: 'By ministry',
+          items: bars(byMinistry, { filterCol: 'ministry' }),
+          hint: 'Grouped by ministry / issuing office, not by individual headline.',
+        },
+      ],
+    };
+  }
   return genericViz(rows);
 }
 

@@ -9,7 +9,7 @@ const ASSUMPTIONS = [
   'Population figures are projections (NCP 2011–36 path), not a live census count.',
   'Allocation method: largest remainder (Hamilton), with a minimum of 1 seat.',
   'Source year for population path: 2011 baseline → 2036 projection window; seat freeze history cited from 1971/1976 context.',
-  'This is illustrative — not an official delimitation order.',
+  'This is illustrative, not an official delimitation order.',
 ];
 
 export default function DelimitationDesk({ selected, onSelect, onFeed, vizFilter, onClearViz }) {
@@ -148,7 +148,7 @@ export default function DelimitationDesk({ selected, onSelect, onFeed, vizFilter
         <table className="feed-table">
           <thead>
             <tr>
-              <th>State / UT</th>
+              <th className="delim-state">State / UT</th>
               <th>Projected population (M)</th>
               <th>Seats now</th>
               <th>Scenario seats</th>
@@ -163,7 +163,7 @@ export default function DelimitationDesk({ selected, onSelect, onFeed, vizFilter
                 onClick={() => onSelect?.(selected?.name === r.name ? null : r)}
                 {...rowDragProps(r, { title: r.name, feature: 'Delimitation' })}
               >
-                <td>{r.name}</td>
+                <td className="delim-state">{r.name}</td>
                 <td className="num">{(r.pop / 1000).toFixed(1)}</td>
                 <td className="num">{r.now}</td>
                 <td className="num">{r.proj}</td>

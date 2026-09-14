@@ -131,7 +131,7 @@ function relatedPacket(row, feed) {
     .slice(0, 10)
     .map((t) => ({
       date: t.date || t.when || '',
-      text: String(t.text || t.title || t.latest || '').slice(0, 400),
+      text: String(t.hook || t.text || t.headline || t.title || t.latest || '').slice(0, 400),
     }));
   return {
     related_records: related,

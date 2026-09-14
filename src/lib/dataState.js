@@ -4,15 +4,15 @@
  */
 
 export const DATA_STATE = {
-  live: { id: 'live', label: 'LIVE', tone: 'ok' },
-  cached: { id: 'cached', label: 'CACHED', tone: 'warn' },
-  // Feedback: hide the word "Archived" from headers — keep id for CSS/tone.
+  // Feedback: never show Archived / Archive next to desk headers.
   archived: { id: 'archived', label: '', tone: 'muted', hideBadge: true },
   curated: { id: 'curated', label: '', tone: 'muted', hideBadge: true },
+  cached: { id: 'cached', label: '', tone: 'warn', hideBadge: true },
   offline: { id: 'offline', label: 'OFFLINE', tone: 'warn' },
   planned: { id: 'planned', label: 'PLANNED', tone: 'muted' },
   error: { id: 'error', label: 'ERROR', tone: 'bad' },
   loading: { id: 'loading', label: 'LOADING', tone: 'muted' },
+  live: { id: 'live', label: 'LIVE', tone: 'ok' },
 };
 
 const PLANNED_RE =

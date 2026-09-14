@@ -170,7 +170,15 @@ export function dedupeNewsRows(rows) {
 export function applyNewsDedupToFeed(feed) {
   if (!feed || !isNewsWireFeature(feed.feature)) return feed;
   const before = (feed.rows || []).filter((r) => r?.status !== 'source_status').length;
-  const rows = dedupeNewsRows(feed.rows || []);
+  const rows = dedupeNewsRows(feed.rows || []).map((r) => {
+    if (!r || r.status === 'source_status') return r;
+    // Climate Wire: no verification / data-check columns.
+    if (/^climate newswire$/i.test(String(feed.feature || ''))) {
+      const { verification, related_count, related_outlets, related_links, ...rest } = r;
+      return rest;
+    }
+    return r;
+  });
   const after = rows.filter((r) => r?.status !== 'source_status').length;
   const removed = Math.max(0, before - after);
   const noteBits = [feed.meta?.note, feed.source?.note].filter(Boolean);

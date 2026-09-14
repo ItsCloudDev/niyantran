@@ -22,10 +22,10 @@ const DESK_INTRO = {
 };
 
 const MODULE_BLURB = {
-  'Open Fronts': 'Structured conflict register — theatre, region, type, intensity and trend.',
+  'Open Fronts': 'Structured conflict register  -  theatre, region, type, intensity and trend.',
   Conflicts: 'Map of named theatres with sourced dossiers. Click a marker for the record.',
-  'Global Intelligence': 'Defence and security reporting context for the same Security strip.',
-  Transit: 'Live aircraft and ship positions by region. Filters sit under the map.',
+  'Global Intelligence': 'Defence procurement programmes  -  vendor, category, stage and as-of date.',
+  Transit: 'Live aircraft and ships by region. Open How to use on the map for a short walkthrough.',
   Alliances: 'Alliance and bloc register with member flags and source links.',
   Sanctions: 'Sanctions and restrictive-measure dossiers.',
   'Global Aid': 'Humanitarian appeal register and related wire.',
@@ -41,7 +41,7 @@ const MODULE_BLURB = {
   'Global Trade': 'Trade policy and flow tables.',
   'Critical Minerals': 'Critical-mineral supply and policy register.',
   Energy: 'Energy infrastructure and policy desk.',
-  'Bill Passage Probability Index': 'Union bills since 1952 — stage, house and passage fields.',
+  'Bill Passage Probability Index': 'Union bills since 1952  -  stage, house and passage fields.',
   'Policy Intelligence Graph': 'Policy graph over the bill and related national corpus.',
   'Parliamentary Question Database': 'Lok Sabha / Rajya Sabha questions with member and ministry.',
   'Cabinet Decisions': 'Cabinet and PIB decision rows.',

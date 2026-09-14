@@ -459,7 +459,7 @@ function financeOverview(feature, rows, base, feed) {
       { label: 'QUOTES', value: inr(rows.length), sub: 'in this snapshot' },
       { label: 'NSE', value: inr(nse), sub: 'indices / names' },
       { label: 'BSE', value: inr(bse), sub: 'names' },
-      { label: 'SOURCE', value: feed?.source?.kind === 'finance-pack' ? 'INGESTED' : 'LIVE', sub: 'frozen unless live NSE' },
+      { label: 'SOURCE', value: feed?.source?.kind === 'finance-pack' ? 'REGISTER' : 'LIVE', sub: 'delayed quotes' },
     ];
     base.charts = [
       {
@@ -547,7 +547,7 @@ function financeOverview(feature, rows, base, feed) {
     base.note = feed?.source?.note || 'Manifold political markets by volume.';
     base.kpis = [
       { label: 'MARKETS', value: inr(rows.length), sub: 'political only' },
-      { label: 'SOURCE', value: feed?.fallback ? 'ARCHIVE' : 'LIVE', sub: feed?.fallback ? '31-row snapshot' : 'Manifold' },
+      { label: 'SOURCE', value: feed?.fallback ? 'STORED' : 'LIVE', sub: feed?.fallback ? '31-row snapshot' : 'Manifold' },
       { label: 'INDIA', value: 'NONE', sub: 'not an India-election board' },
       { label: 'VOL 24H', value: inr(rows.filter((r) => nnum(r.volume_24h) > 0).length), sub: 'with recent volume' },
     ];
@@ -560,18 +560,18 @@ function carbonOverview(feature, rows, base, feed) {
   const f = String(feature || '');
   if (/^carbon border/i.test(f)) {
     const jus = new Set(rows.map((r) => val(r, 'jurisdiction')).filter(Boolean)).size;
-    base.title = 'CBAM WATCH';
+    base.title = 'CBAM watch';
     base.note = feed?.source?.note || 'Extracted EU/UK CBAM milestones with official sources.';
     base.kpis = [
-      { label: 'MILESTONES', value: inr(rows.length), sub: 'dated instruments' },
-      { label: 'JURISDICTIONS', value: jus, sub: 'EU, UK, India' },
-      { label: 'SOURCE', value: 'INGESTED', sub: 'not a news search' },
-      { label: 'REGIME', value: '2026', sub: 'EU definitive year' },
+      { label: 'Milestones', value: inr(rows.length), sub: 'dated instruments' },
+      { label: 'Jurisdictions', value: jus, sub: 'EU, UK, India' },
+      { label: 'Source', value: 'Register', sub: 'not a news search' },
+      { label: 'Regime', value: '2026', sub: 'EU definitive year' },
     ];
     base.charts = [
       {
         type: 'bars',
-        title: 'BY JURISDICTION',
+        title: 'By jurisdiction',
         hint: 'Counts from the milestone table. Click to filter.',
         items: withTones(countBy(rows, 'jurisdiction'), 'gradient').map((it) => ({ ...it, filterCol: 'jurisdiction' })),
       },
@@ -581,18 +581,18 @@ function carbonOverview(feature, rows, base, feed) {
   if (/^global carbon pricing tracker$/i.test(f)) {
     const withPrice = rows.filter((r) => nnum(r.weighted_price_usd) > 0).length;
     const ets = rows.filter((r) => /ets/i.test(val(r, 'ets_status')) && !/^no ets$/i.test(val(r, 'ets_status'))).length;
-    base.title = 'CARBON PRICING';
+    base.title = 'Carbon pricing';
     base.note = feed?.source?.note || 'Jurisdiction carbon prices. World Bank CO2 emissions were not used.';
     base.kpis = [
-      { label: 'JURISDICTIONS', value: inr(rows.length), sub: 'with a listed instrument' },
-      { label: 'WITH PRICE', value: inr(withPrice), sub: 'USD / tCO2e printed' },
+      { label: 'Jurisdictions', value: inr(rows.length), sub: 'with a listed instrument' },
+      { label: 'With price', value: inr(withPrice), sub: 'USD / tCO2e printed' },
       { label: 'ETS', value: inr(ets), sub: 'not “No ETS”' },
-      { label: 'SOURCE', value: 'INGESTED', sub: 'OWID carbon prices' },
+      { label: 'Source', value: 'Register', sub: 'OWID carbon prices' },
     ];
     base.charts = [
       {
         type: 'bars',
-        title: 'ETS STATUS',
+        title: 'ETS status',
         hint: 'Instrument labels from the extracted table. Click to filter.',
         items: withTones(countBy(rows, 'ets_status').slice(0, 8), 'gradient').map((it) => ({ ...it, filterCol: 'ets_status' })),
       },
@@ -602,60 +602,64 @@ function carbonOverview(feature, rows, base, feed) {
   if (/^carbon price monitor$/i.test(f)) {
     const years = new Set(rows.map((r) => val(r, 'year')).filter(Boolean)).size;
     const jus = new Set(rows.map((r) => val(r, 'jurisdiction')).filter(Boolean)).size;
-    base.title = 'PRICE SERIES';
+    base.title = 'Price series';
     base.note = feed?.source?.note || 'Emissions-weighted USD/tCO2e by jurisdiction and year.';
     base.kpis = [
-      { label: 'POINTS', value: inr(rows.length), sub: 'jurisdiction-years' },
-      { label: 'JURISDICTIONS', value: inr(jus), sub: 'in this series' },
-      { label: 'YEARS', value: inr(years), sub: 'span of the pack' },
-      { label: 'SOURCE', value: 'INGESTED', sub: 'not a live ticker' },
+      { label: 'Points', value: inr(rows.length), sub: 'jurisdiction-years' },
+      { label: 'Jurisdictions', value: inr(jus), sub: 'in this series' },
+      { label: 'Years', value: inr(years), sub: 'span of the pack' },
+      { label: 'Source', value: 'Register', sub: 'not a live ticker' },
     ];
     return base;
   }
   if (/^ets & tax adoption timeline$/i.test(f)) {
     const first = rows.map((r) => Number(val(r, 'first_instrument_year'))).filter(Number.isFinite);
-    base.title = 'ADOPTION TIMELINE';
+    base.title = 'Adoption timeline';
     base.note = feed?.source?.note || 'First carbon-pricing year, ETS against tax.';
     base.kpis = [
-      { label: 'JURISDICTIONS', value: inr(rows.length), sub: 'with a first year' },
-      { label: 'FROM', value: first.length ? Math.min(...first) : '—', sub: 'earliest instrument' },
-      { label: 'INSTRUMENTS', value: new Set(rows.map((r) => val(r, 'instruments')).filter(Boolean)).size, sub: 'ETS / tax / both' },
-      { label: 'SOURCE', value: 'INGESTED', sub: 'adoption table' },
+      { label: 'Jurisdictions', value: inr(rows.length), sub: 'with a first year' },
+      { label: 'From', value: first.length ? Math.min(...first) : '—', sub: 'earliest instrument' },
+      { label: 'Instruments', value: new Set(rows.map((r) => val(r, 'instruments')).filter(Boolean)).size, sub: 'ETS / tax / both' },
+      { label: 'Source', value: 'Register', sub: 'adoption table' },
     ];
     base.charts = [
       {
         type: 'bars',
-        title: 'BY INSTRUMENT MIX',
+        title: 'By instrument mix',
         items: withTones(countBy(rows, 'instruments'), 'gradient').map((it) => ({ ...it, filterCol: 'instruments' })),
       },
     ];
     return base;
   }
   if (/^india ccts/i.test(f)) {
-    base.title = 'INDIA CCTS';
+    base.title = 'India CCTS';
     base.note = feed?.source?.note || 'CCTS and Green Credit Programme milestones.';
     base.kpis = [
-      { label: 'MILESTONES', value: inr(rows.length), sub: 'legal basis and notices' },
-      { label: 'FROM', value: rows[0] ? val(rows[0], 'date') : '—', sub: 'first in table' },
-      { label: 'THROUGH', value: rows.length ? val(rows[rows.length - 1], 'date') : '—', sub: 'latest in table' },
-      { label: 'SOURCE', value: 'INGESTED', sub: 'MoP / BEE / MoEFCC' },
+      { label: 'Milestones', value: inr(rows.length), sub: 'legal basis and notices' },
+      { label: 'From', value: rows[0] ? val(rows[0], 'date') : '—', sub: 'first in table' },
+      { label: 'Through', value: rows.length ? val(rows[rows.length - 1], 'date') : '—', sub: 'latest in table' },
+      { label: 'Source', value: 'Register', sub: 'MoP / BEE / MoEFCC' },
     ];
     return base;
   }
   if (/^carbon registry wire$/i.test(f)) {
     const regs = new Set(rows.map((r) => val(r, 'registry')).filter(Boolean)).size;
-    base.title = 'REGISTRY WIRE';
+    base.title = 'Registry wire';
     base.note = feed?.source?.note || 'Dated registry publications.';
     base.kpis = [
-      { label: 'NOTICES', value: inr(rows.length), sub: 'in this pull' },
-      { label: 'REGISTRIES', value: inr(regs), sub: 'named in the table' },
-      { label: 'SOURCE', value: feed?.source?.kind === 'carbon-pack' ? 'INGESTED' : 'LIVE', sub: feed?.source?.kind === 'carbon-pack' ? 'snapshot' : 'Verra RSS + snapshot' },
-      { label: 'PURO', value: 'ABSENT', sub: 'no public RSS' },
+      { label: 'Notices', value: inr(rows.length), sub: 'in this pull' },
+      { label: 'Registries', value: inr(regs), sub: 'named in the table' },
+      {
+        label: 'Source',
+        value: feed?.source?.kind === 'carbon-pack' ? 'Register' : 'Live',
+        sub: feed?.source?.kind === 'carbon-pack' ? 'snapshot' : 'Verra RSS + snapshot',
+      },
+      { label: 'Puro', value: 'Not listed', sub: 'no public RSS' },
     ];
     base.charts = [
       {
         type: 'bars',
-        title: 'BY REGISTRY',
+        title: 'By registry',
         items: withTones(countBy(rows, 'registry'), 'gradient').map((it) => ({ ...it, filterCol: 'registry' })),
       },
     ];
@@ -663,18 +667,22 @@ function carbonOverview(feature, rows, base, feed) {
   }
   if (/^climate newswire$/i.test(f)) {
     const outlets = new Set(rows.map((r) => val(r, 'outlet')).filter(Boolean)).size;
-    base.title = 'CLIMATE WIRE';
+    base.title = 'Climate wire';
     base.note = feed?.source?.note || 'Carbon Brief, Mongabay India, Climate Home News.';
     base.kpis = [
-      { label: 'HEADLINES', value: inr(rows.length), sub: 'in this pull' },
-      { label: 'OUTLETS', value: inr(outlets), sub: 'named in the table' },
-      { label: 'SOURCE', value: feed?.source?.kind === 'carbon-pack' ? 'ARCHIVE' : 'LIVE', sub: feed?.source?.kind === 'carbon-pack' ? 'snapshot' : 'outlet RSS' },
-      { label: 'GDELT', value: 'UNUSED', sub: 'not a generic climate search' },
+      { label: 'Headlines', value: inr(rows.length), sub: 'in this pull' },
+      { label: 'Outlets', value: inr(outlets), sub: 'named in the table' },
+      {
+        label: 'Source',
+        value: feed?.source?.kind === 'carbon-pack' ? 'Register' : 'Live',
+        sub: feed?.source?.kind === 'carbon-pack' ? 'snapshot' : 'outlet RSS',
+      },
+      { label: 'Coverage', value: 'Outlet RSS', sub: 'not a generic search' },
     ];
     base.charts = [
       {
         type: 'bars',
-        title: 'BY OUTLET',
+        title: 'By outlet',
         items: withTones(countBy(rows, 'outlet'), 'gradient').map((it) => ({ ...it, filterCol: 'outlet' })),
       },
     ];
@@ -1283,7 +1291,7 @@ function computeFeedOverview(feed) {
       { label: 'QUESTIONS', value: n, sub: 'in this view' },
       { label: 'STARRED', value: starred, sub: `${n - starred} unstarred / other` },
       { label: 'MINISTRIES', value: mins, sub: 'named in this table' },
-      { label: 'SOURCE', value: feed?.fallback ? 'ARCHIVE' : 'LIVE', sub: 'Sansad / register' },
+      { label: 'SOURCE', value: feed?.fallback ? 'STORED' : 'LIVE', sub: 'Sansad / register' },
     ];
     base.charts = [{ type: 'bars', title: 'BY MINISTRY', filterCol: 'ministry', items: withTones(countBy(rows, 'ministry').slice(0, 8), 'gradient'), hint: 'Row counts by ministry.' }];
     return base;
@@ -1294,7 +1302,7 @@ function computeFeedOverview(feed) {
     base.kpis = [
       { label: 'ITEMS', value: n, sub: 'circulars / notices' },
       { label: 'REGULATORS', value: new Set(rows.map((r) => val(r, 'regulator')).filter(Boolean)).size, sub: 'in this view' },
-      { label: 'SOURCE', value: feed?.fallback ? 'ARCHIVE' : 'LIVE', sub: 'RSS or register' },
+      { label: 'SOURCE', value: feed?.fallback ? 'STORED' : 'LIVE', sub: 'RSS or register' },
       { label: 'FEED', value: 'WATCH', sub: 'not an enforcement score' },
     ];
     base.charts = [{ type: 'bars', title: 'BY REGULATOR', filterCol: 'regulator', items: withTones(countBy(rows, 'regulator'), 'infra'), hint: 'Row counts by issuing regulator.' }];
@@ -1319,7 +1327,7 @@ function computeFeedOverview(feed) {
       { label: 'MEMBERS', value: n, sub: 'in this roster' },
       { label: 'PARTIES', value: new Set(rows.map((r) => val(r, 'party')).filter(Boolean)).size, sub: 'named' },
       { label: 'STATES', value: new Set(rows.map((r) => val(r, 'state')).filter(Boolean)).size, sub: 'named' },
-      { label: 'SOURCE', value: feed?.fallback ? 'ARCHIVE' : 'LIVE', sub: 'Sansad / register' },
+      { label: 'SOURCE', value: feed?.fallback ? 'STORED' : 'LIVE', sub: 'Sansad / register' },
     ];
     return base;
   }
@@ -1330,10 +1338,14 @@ function computeFeedOverview(feed) {
   const grouped = a ? countBy(rows, a) : [];
   const top = grouped[0];
   base.kpis = [
-    { label: 'ROWS', value: n, sub: feed?.fallback ? 'last-known-good archive' : 'live feed' },
+    { label: 'ROWS', value: n, sub: feed?.fallback ? 'rows in this view' : 'live feed' },
     { label: a ? String(a).replace(/_/g, ' ').toUpperCase() : 'FIELDS', value: distinct || Object.keys(rows[0] || {}).length, sub: a ? 'distinct values' : 'columns present' },
     { label: 'LARGEST GROUP', value: top ? pct(top.value, n) : '—', sub: top ? String(top.label).slice(0, 42) : 'no category field' },
-    { label: 'SOURCE', value: feed?.fallback ? 'ARCHIVE' : feed?.source?.gdelt ? 'GDELT' : 'LIVE', sub: feed?.source?.adapter || '' },
+    {
+      label: 'SOURCE',
+      value: feed?.tier === 'local' ? 'REGISTER' : feed?.fallback ? 'REGISTER' : feed?.source?.gdelt ? 'GDELT' : 'LIVE',
+      sub: feed?.tier === 'local' ? 'local desk pack' : feed?.source?.adapter || '',
+    },
   ];
   if (a && b && a !== b) {
     base.charts.push({

@@ -496,7 +496,19 @@ export default function DeskView({
     );
   }
 
-  const displayTitle = featureMenuLabel({ htmlFeature: featureName }) || featureName || 'FEED';
+  const displayTitle = (() => {
+    const raw = featureMenuLabel({ htmlFeature: featureName }) || featureName || 'FEED';
+    return String(raw)
+      .replace(/\bJudgments?\b/gi, 'Judgements')
+      .replace(/\bJudgement\b/g, 'Judgements')
+      .replace(/\bOrder Archive\b/gi, 'Orders by Topic')
+      .replace(/\barchiv(e|ed)\b/gi, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+  })();
+  const isCarbonDesk =
+    /^(climate|carbon)$/i.test(String(tier || '')) ||
+    /carbon|climate|cbam|ccts|ets & tax/i.test(String(featureName || ''));
   const isGlobalIntelligence = /global intelligence/i.test(String(featureName || ''));
   const coverageLabel = (() => {
     if (loading) return 'Fetching…';
@@ -505,7 +517,7 @@ export default function DeskView({
     const total = feed?.rows?.length;
     if (/open fronts/i.test(featureName || '')) {
       const through = formatDate(feed?.coverage?.through) || feed?.coverage?.through || '';
-      return `${n} conflict${n === 1 ? '' : 's'}${through ? ` · archive through ${through}` : ''}`;
+      return `${n} conflict${n === 1 ? '' : 's'}${through ? ` · through ${through}` : ''}`;
     }
     return `${n}${total && n !== total ? ` / ${total}` : ''} rows${feed?.coverage?.exhaustive ? ' · exhaustive' : ''}${
       usePaging ? ` · page ${safePage + 1}/${pageCount}` : ''
@@ -516,13 +528,15 @@ export default function DeskView({
     <div
       className={`desk desk-wide${isGlobalResourcesTable(featureName) || isGeonomicsTable(featureName) || isNationalTable(featureName) ? ' desk-res' : ''}${
         tier === 'economics' ? ' desk-economics' : ''
-      }${/carbon/i.test(String(featureName || '')) ? ' desk-carbon' : ''}`}
+      }${isCarbonDesk ? ' desk-carbon' : ''}${
+        /cabinet decisions/i.test(String(featureName || '')) ? ' desk-cabinet' : ''
+      }`}
     >
       <div className="feed-col compact">
         <div className="feed-head">
           <h1>
             {displayTitle}
-            {dataState.label ? (
+            {dataState.label && !dataState.hideBadge && !/archiv/i.test(dataState.label) ? (
               <span className={`live-feed data-state-${dataState.id}${liveOn ? ' on' : ''}`}>{dataState.label}</span>
             ) : null}
           </h1>
@@ -549,7 +563,7 @@ export default function DeskView({
           )}
           <span className="muted">{coverageLabel}</span>
         </div>
-        {feed?.fallback && dataState.id !== 'live' && !shellState && dataState.detail ? (
+        {feed?.fallback && dataState.id !== 'live' && !shellState && dataState.detail && tier !== 'local' && !isCarbonDesk ? (
           <p className="banner">{String(dataState.detail).replace(/\barchiv(e|ed)\b/gi, 'stored snapshot')}</p>
         ) : null}
         {(() => {
@@ -576,12 +590,27 @@ export default function DeskView({
         {/* Data-check banners removed per product feedback */}
         {feed?.meta?.section && !shellState && (
           <div className="desk-strip">
-            <span>{feed.meta.section}</span>
-            {feed.meta.status ? <span>{feed.meta.status}</span> : null}
+            <span>
+              {String(feed.meta.section)
+                .replace(/\bJudgments?\b/gi, 'Judgements')
+                .replace(/\bCLIMATE NEWSWIRE\b/gi, 'Climate wire')
+                .replace(/\bREGISTRY WIRE\b/gi, 'Registry wire')
+                .replace(/\barchiv(e|ed)\b/gi, '')
+                .replace(/\s{2,}/g, ' ')
+                .trim()}
+            </span>
+            {feed.meta.status &&
+            String(feed.meta.status).trim() &&
+            !/\barchiv(e|ed)|data check\b/i.test(String(feed.meta.status)) ? (
+              <span>{String(feed.meta.status)}</span>
+            ) : null}
           </div>
         )}
-        {feed?.meta?.note && !feed?.meta?.sensitive && !shellState && (
-          <p className="desk-note">{feed.meta.note}</p>
+        {feed?.meta?.note &&
+          !feed?.meta?.sensitive &&
+          !shellState &&
+          !/\barchiv(e|ed)|data check\b/i.test(String(feed.meta.note)) && (
+          <p className="desk-note">{String(feed.meta.note).replace(/\bJudgments?\b/gi, 'Judgements')}</p>
         )}
         {isGlobalIntelligence && !shellState && (
           <p className="desk-note desk-trivia" role="note">
@@ -598,11 +627,16 @@ export default function DeskView({
               expectedSources={(feed?.source?.links || []).join(', ')}
             />
           ) : (
-            <table className="feed-table">
+            <table className={`feed-table${/bill passage/i.test(String(featureName || '')) ? ' feed-bills' : ''}`}>
               <thead>
                 <tr>
                   {cols.map((c) => (
-                    <th key={c.key}>
+                    <th
+                      key={c.key}
+                      className={
+                        /^(house|sector|current_stage|date_introduced)$/i.test(c.key) ? 'col-meta' : undefined
+                      }
+                    >
                       <button type="button" onClick={() => toggleSort(c.key)}>
                         {c.label}
                         {sort.key === c.key ? (sort.dir === 'asc' ? ' ↑' : ' ↓') : ''}
@@ -663,8 +697,8 @@ export default function DeskView({
                         >
                           {cols.map((c, ci) => {
                             const raw = c.key === '_closes' ? tenderCloseBand(row).label : cellOf(row, c);
-                            const text = formatCell(raw, c) || '—';
-                            const pillText = c.pill && text !== '—' ? formatStatus(raw) : text;
+                            const text = formatCell(raw, c) || '-';
+                            const pillText = c.pill && text !== '-' ? formatStatus(raw) : text;
                             const display = ci === 0 ? truncateTwoLines(text, 160) : cellText(c.pill ? pillText : text);
                             const href =
                               isArticleHref(row.source_url) && row.status !== 'source_status' && !isGithubCsvRow(row)
@@ -679,6 +713,7 @@ export default function DeskView({
                                     c.num || c.pct || c.inr ? 'num' : '',
                                     c.key === 'station' ? 'station-cell' : '',
                                     c.key === 'jurisdiction' ? 'jurisdiction-cell' : '',
+                                    /^(house|sector|current_stage|date_introduced)$/i.test(c.key) ? 'col-meta' : '',
                                   ]
                                     .filter(Boolean)
                                     .join(' ') || undefined
@@ -695,7 +730,7 @@ export default function DeskView({
                                       <span className="name-link">{display}</span>
                                     )}
                                   </span>
-                                ) : c.pill && text !== '—' ? (
+                                ) : c.pill && text !== '-' ? (
                                   <span className="soft-pill">{display}</span>
                                 ) : (
                                   display
@@ -710,15 +745,16 @@ export default function DeskView({
               </tbody>
             </table>
           )}
+        </div>
           {!loading && !shellState && usePaging ? (
             <div className="desk-pager" role="navigation" aria-label="Table pages">
               <button type="button" className="ghost-btn tiny" disabled={safePage <= 0} onClick={() => setPage((p) => Math.max(0, p - 1))}>
                 Previous
               </button>
               <span className="muted">
-                {safePage * LARGE_PAGE + 1}–{Math.min(filtered.length, (safePage + 1) * LARGE_PAGE)} of{' '}
+                {safePage * LARGE_PAGE + 1}-{Math.min(filtered.length, (safePage + 1) * LARGE_PAGE)} of{' '}
                 {filtered.length.toLocaleString('en-IN')}
-                {shouldIndexSearch(feed?.rows?.length) ? ' · indexed search' : ''}
+                {shouldIndexSearch(feed?.rows?.length) ? ' · search index' : ''}
               </span>
               <button
                 type="button"
@@ -730,7 +766,6 @@ export default function DeskView({
               </button>
             </div>
           ) : null}
-        </div>
       </div>
     </div>
   );

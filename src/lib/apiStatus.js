@@ -24,7 +24,7 @@ const CURATED = [
   ['NATIONAL', 'Policy Pipeline Tracker (Draft-to-Gazette)', 'live', 'PIB Press Releases + Features RSS (www.pib.gov.in).'],
   ['GLOBAL', 'Open Fronts', 'live', 'War-tracker conflict register (embedded). Not a news search.'],
   ['GLOBAL', 'Conflicts', 'live', 'Theatre map dossiers (NIY_GEO_CONFLICTS). Shipped dossiers are last-known-good.'],
-  ['GLOBAL', 'Global Intelligence', 'live', 'Google News / GDELT reporting search. HTML pack is last-known-good.'],
+  ['GLOBAL', 'Global Intelligence', 'live', 'Defence procurement register (embedded). Not a news search.'],
   ['GLOBAL', 'Alliances', 'live', 'Google News / GDELT reporting search. Alliance register is last-known-good.'],
   ['GLOBAL', 'Sanctions', 'live', 'OFAC publication API. Local programme register is last-known-good.'],
   ['GLOBAL', 'Global Aid', 'live', 'ReliefWeb RSS. FTS overlay / appeal register is last-known-good.'],

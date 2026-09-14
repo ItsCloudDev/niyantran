@@ -23,12 +23,12 @@ export default function ProjectsDesk({ selected, onSelect, vizFilter, onClearViz
         <TableFilterPop feed={feed} vizFilter={vizFilter} onClearViz={onClearViz} />
       </div>
       <div className="desk-strip">
-        <span>FLAGSHIP PROGRAMMES — CURATED REFERENCE</span>
+        <span>FLAGSHIP PROGRAMMES · CURATED REFERENCE</span>
         <span>CURATED · AS OF JAN 2026 · VERIFY AGAINST MINISTRY DASHBOARDS</span>
       </div>
       <p className="desk-note">
         A reference list, not a project register. Per-project cost and schedule are not in this source (PAIMANA not wired). Winning bidder
-        is dropped — not merely missing: PAIMANA does not carry it and there is no OCDS publisher for India.
+        is dropped, not merely missing: PAIMANA does not carry it and there is no OCDS publisher for India.
       </p>
       <div className="table-wrap">
         <table className="feed-table">

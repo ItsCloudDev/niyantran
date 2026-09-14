@@ -59,7 +59,7 @@ function MpRecord({ row, onClear }) {
         <Tile k="Coverage through" v={coverage} />
       </div>
       <p className="desk-note">
-        Missing metrics say Not reported — not zero. This card is not a ranking. Trends and statements need richer sources than
+        Missing metrics say Not reported, not zero. This card is not a ranking. Trends and statements need richer sources than
         this register.
       </p>
       <div className="nat-rec-actions">
