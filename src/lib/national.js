@@ -36,12 +36,19 @@ export function isStatementsFeature(name) {
 
 /** UI display names — keep htmlFeature / route ids stable. */
 const FEATURE_DISPLAY_ALIASES = {
-  'Global Intelligence': 'Defence Procurement Intelligence',
-  'Statement & Quote Tracker with Contradiction Detection': 'Public-Figure Media Mention Monitor',
   'Supreme Court Order & Judgment Feed': 'Supreme Court Order & Judgements Feed',
   'SUPREME COURT FEED': 'Supreme Court Order & Judgements Feed',
   'Order Archive by Topic (Cross-Court)': 'Orders by Topic (Cross-Court)',
   'ORDER ARCHIVE': 'Orders by Topic (Cross-Court)',
+  'Candidate Affidavit Database (Structured + API)': 'Candidate Affidavit Database',
+  'UP High Court (Allahabad) Order Feed': 'High Court Case Tracker',
+  'HC Judge Profiles & Bench Analytics': 'Judge Profiles & Bench Analytics',
+  'NSE/BSE Delayed Market Feed': 'NSE/BSE Market Feed',
+  'Key Financial Indicators (GDP, CPI, PMI, Emp-to-Pop)':
+    'All Countries Key Financial Indicators (GDP, CPI, PMI, Emp-to-Pop)',
+  'Prediction Market Political Odds': 'Prediction Market',
+  'Music Charts — India Top 25': 'India Music Charts',
+  'Music Charts — Global Top 25': 'Global Music Charts',
 };
 
 export function isIndustryFeature(name) {

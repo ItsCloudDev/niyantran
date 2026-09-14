@@ -6,7 +6,6 @@ export const TABS = [
   { id: 'global', label: 'Global', labelHi: 'वैश्विक', tier: 'geopolitics' },
   { id: 'national', label: 'National', labelHi: 'राष्ट्रीय', tier: 'national' },
   { id: 'state', label: 'State', labelHi: 'राज्य', tier: 'state' },
-  { id: 'local', label: 'Local', labelHi: 'स्थानीय', tier: 'local' },
   { id: 'law', label: 'Law', labelHi: 'विधि', tier: 'judiciary' },
   { id: 'economics', label: 'Economics', labelHi: 'अर्थव्यवस्था', tier: 'finance' },
   { id: 'carbon', label: 'Carbon', labelHi: 'कार्बन', tier: 'climate' },
@@ -20,75 +19,151 @@ export function allModules() {
   return features;
 }
 
-const STATE_DESKS = [
-  'Constituency Register',
-  'Election Results 2017–2024',
-  'Split-Ticket & Competitiveness',
-  'MLA Directory',
-  'MLA Report Card + Statement Tracker',
-  'Roll Demography',
-  'Community Bloc Matrix',
-  'SIR Roll Churn',
-  'Registration Gap',
-  'District Media Monitor (Vernacular District Editions)',
-  'District Performance Tracker (Composite)',
-  'State Governance Brief',
-  'Assembly Proceedings Digest (Vernacular, Translated)',
-  'Governor Assent Tracker',
-  'Cabinet Decisions',
-  'Bureaucrat Transfer & Posting Tracker (State Cadre)',
-  'State Tender Aggregator (State e-Procurement)',
-  'CAG Audit Tracker',
-  'State Fiscal Deep-Dive',
-  'Centre-State Fund Flow Tracker',
-];
+/**
+ * Curated module lists per desk (product nav). Route ids stay on htmlFeature names
+ * from the feature map; display aliases live in featureMenuLabel.
+ */
+const DESK_FEATURES = {
+  geopolitics: [
+    'Open Fronts',
+    'Global Intelligence',
+    'Alliances',
+    'Sanctions',
+    'Global Aid',
+    'Infra',
+    'Nuclear Watch',
+    'Satellite Infrastructure',
+    'Maritime Choke-Points',
+    'World Constitutions',
+    'Growth Indicators',
+    'Geopolitics News Wire',
+    'Heads of State',
+    'Global Commodities',
+    'Global Trade',
+    'Energy',
+  ],
+  national: [
+    'Bill Passage Probability Index',
+    'Policy Intelligence Graph',
+    'Parliamentary Question Database',
+    'Regulatory Body Watch (RBI/SEBI/TRAI/CCI)',
+    'Candidate Affidavit Database (Structured + API)',
+    'MP Profiles & Performance (MPLAD, attendance, debates)',
+    'Central Tender Aggregator + Constituency Filter',
+    'Bureaucratic Transfers — AGMUT Cadre',
+    'Cabinet Decisions',
+    'Centre-sanctioned Projects & Completion Rate',
+    'Budget Utilisation & Schemes',
+    'Industry Updates (Ministry Data)',
+  ],
+  // State nav includes former Local booth / municipal modules (still local-tier in the map).
+  state: [
+    'Constituency Register',
+    'MLA Directory',
+    'MLA Report Card + Statement Tracker',
+    'Roll Demography',
+    'Community Bloc Matrix',
+    'Cabinet Decisions',
+    'Bureaucrat Transfer & Posting Tracker (State Cadre)',
+    'State Tender Aggregator (State e-Procurement)',
+    'Booth-level Results Database',
+    'Booth Political History',
+    'Municipal Watch',
+    'Panchayat Watch',
+    'Municipal & Panchayat Tender Aggregator',
+  ],
+  judiciary: [
+    'Supreme Court Order & Judgment Feed',
+    'Order Archive by Topic (Cross-Court)',
+    'UP High Court (Allahabad) Order Feed',
+    'District Court Case Tracker',
+    'NGT Environmental Litigation Tracker',
+    'CAT & Consumer Disputes (NCDRC) Watch',
+    'HC Judge Profiles & Bench Analytics',
+    'ICC Proceedings',
+    'ICJ Proceedings',
+    'WTO Dispute Settlement',
+    'NCLT / NCLAT (Insolvency)',
+    'Sector Tribunals (ITAT / TDSAT / SAT / DRT)',
+  ],
+  finance: [
+    'NSE/BSE Delayed Market Feed',
+    'Live Global Stock Exchanges',
+    'Key Financial Indicators (GDP, CPI, PMI, Emp-to-Pop)',
+    'Sector Policy — Power/Energy/Green/Critical Minerals',
+    'AI & the Tech Industry',
+    'Prediction Market Political Odds',
+  ],
+  climate: [
+    'Carbon Border (CBAM) Watch',
+    'Global Carbon Pricing Tracker',
+    'India CCTS & Green Credits',
+    'Carbon Registry Wire',
+  ],
+  sports: [
+    'Cricket Wire',
+    'Football Wire',
+    'ISL Tracker',
+    'Indian Sports Wire',
+    'Sports Governance & Policy',
+    'Athlete Index',
+  ],
+  entertainment: [
+    'TV & Streaming Tonight',
+    'Box Office Tracker',
+    'Music Charts — India Top 25',
+    'Music Charts — Global Top 25',
+    'OTT & Studio Intelligence',
+  ],
+};
 
-const LOCAL_DESKS = [
-  'Local Governance Brief',
-  'Booth-level Results Database',
-  'Booth Register',
-  'Booth Demography',
-  'Booth Bloc Composition',
-  'Booth-level Roll Churn',
-  'Booth Political History',
-  'Swing Booths',
-  'Anchor Booths',
-  'Hyperlocal News Aggregator',
-  'Municipal Watch',
-  'Panchayat Watch',
-  'Municipal & Panchayat Tender Aggregator',
-  'Municipal Finance & Solvency',
-  'MGNREGA Works & Muster Roll Tracker',
-  'Gram Panchayat Development Plan (GPDP) Fund Tracker',
-  'Councillor & Pradhan Profiles + Report Cards',
-  'Local Officer Directory + Transfer Tracker (BDO/SDO/EO)',
-];
-
-const STATE_DESK_SET = new Set(STATE_DESKS);
-const LOCAL_DESK_SET = new Set(LOCAL_DESKS);
+const DESK_FEATURE_SET = Object.fromEntries(
+  Object.entries(DESK_FEATURES).map(([tier, list]) => [tier, new Set(list)]),
+);
 
 /** Registry mapping with no shipped view — must never borrow a sibling desk's rows. */
 export function isHtmlOnlyModule(mod) {
   return String(mod?.mapping || '').toUpperCase() === 'HTML-ONLY';
 }
 
+function featureIndex(tier, name) {
+  const list = DESK_FEATURES[tier] || [];
+  const i = list.indexOf(name);
+  return i === -1 ? 999 : i;
+}
+
 export function modulesForTier(tier) {
-  const list = features.filter((f) => f.htmlTier === tier);
-  if (tier === 'state') {
-    return list.filter((f) => STATE_DESK_SET.has(f.htmlFeature) || isHtmlOnlyModule(f));
+  const allow = DESK_FEATURE_SET[tier];
+  if (!allow) return features.filter((f) => f.htmlTier === tier);
+
+  // State desk also surfaces curated local-tier booth / municipal modules.
+  const list = features.filter((f) => {
+    if (!allow.has(f.htmlFeature)) return false;
+    if (tier === 'state') return f.htmlTier === 'state' || f.htmlTier === 'local';
+    return f.htmlTier === tier;
+  });
+
+  // Prefer the tier-native copy when the same title exists on two tiers (e.g. Cabinet Decisions).
+  const byName = new Map();
+  for (const m of list) {
+    const prev = byName.get(m.htmlFeature);
+    if (!prev) {
+      byName.set(m.htmlFeature, m);
+      continue;
+    }
+    if (m.htmlTier === tier && prev.htmlTier !== tier) byName.set(m.htmlFeature, m);
   }
-  if (tier === 'local') {
-    return list.filter((f) => LOCAL_DESK_SET.has(f.htmlFeature) || isHtmlOnlyModule(f));
-  }
-  return list;
+
+  return [...byName.values()].sort(
+    (a, b) => featureIndex(tier, a.htmlFeature) - featureIndex(tier, b.htmlFeature),
+  );
 }
 
 export function catalogModules() {
   return TABS.filter((t) => t.id !== 'home').flatMap((t) => modulesForTier(t.tier));
 }
 
-// Match HTML BUCKET_REMAP in public/legacy/js/074.js so Security includes
-// Global Intelligence (Defense Intelligence), not Strategic Assets.
+// Match HTML BUCKET_REMAP so Security includes Global Intelligence, not Strategic Assets.
 const GEO_BUCKET_LABEL = [
   { re: /^(conflict intelligence|defense intelligence|maritime & border security)$/i, label: 'Security' },
   { re: /^diplomacy/i, label: 'Diplomacy' },
@@ -112,26 +187,23 @@ const BUCKET_REMAP = {
     'Roll Integrity': 'The Roll',
     'Community & Society': 'The Roll',
     'News & Media Monitoring': 'Districts',
-    'Development Indicators': 'Districts',
+    'Development Indicators': 'Local watch',
     Governance: 'Legislature',
     'Legislative & Policy Intelligence': 'Legislature',
     'Government Operations': 'Government Operations',
     'Public Finance': 'Public Finance',
-    'Audit & Oversight': 'Public Finance',
+    'Audit & Oversight': 'Local watch',
     'Electoral Data & Analytics': 'State of Play',
     'Representative Intelligence': 'State of Play',
     'Political Operations Intelligence': 'State of Play',
     'Comparative Analytics': 'Districts',
-  },
-  local: {
-    'Audit & Oversight': 'Panchayats',
-    'Development Indicators': 'Municipality',
-    'News & Media Monitoring': 'Local Wires',
-    'Hyperlocal Intelligence': 'Local Wires',
-    'Electoral Data & Analytics': 'Contest Analysis',
-    'Public Finance': 'Municipality',
-    'Service Delivery': 'Municipality',
-    'Representative Intelligence': 'Representatives',
+    Assembly: 'Booths',
+    Booths: 'Booths',
+    'Contest Analysis': 'Booths',
+    'Local Wires': 'Local watch',
+    Municipality: 'Local watch',
+    Panchayats: 'Local watch',
+    Representatives: 'Local watch',
   },
   judiciary: { 'Legal Research': 'Judicial Analytics' },
   finance: {
@@ -150,46 +222,17 @@ const BUCKET_ORDER = {
     'Government Operations',
     'Economy, Finance & Industry',
   ],
-  state: [
-    'State of Play',
-    'The Roll',
-    'Districts',
-    'Legislature',
-    'Government Operations',
-    'Public Finance',
-  ],
-  local: [
-    'Assembly',
-    'Booths',
-    'Contest Analysis',
-    'Local Wires',
-    'Municipality',
-    'Panchayats',
-    'Representatives',
-  ],
-  judiciary: [
-    'Judicial Intelligence',
-    'Judicial Analytics',
-    'International Courts',
-    'Comparative Jurisprudence',
-    'Tribunals',
-    'Court Operations',
-    'Justice System Data',
-  ],
-  finance: [
-    'Market Intelligence',
-    'Macro, Trade & Economy',
-    'Sector & Industry Intelligence',
-    'Prediction Markets',
-  ],
+  state: ['State of Play', 'The Roll', 'Government Operations', 'Booths', 'Local watch'],
+  judiciary: ['Judicial Intelligence', 'Judicial Analytics', 'International Courts', 'Tribunals'],
+  finance: ['Market Intelligence', 'Macro, Trade & Economy', 'Sector & Industry Intelligence', 'Prediction Markets'],
   climate: ['Border Mechanisms', 'Carbon Markets', 'India Carbon Market', 'Registries & Wire'],
   sports: ['Scores & Fixtures', 'Football Desk', 'India Sports Desk', 'Sports Business'],
-  entertainment: ['Screens & Streaming', 'Industry Wire', 'Music', 'Screen Intelligence'],
+  entertainment: ['Screens & Streaming', 'Music', 'Screen Intelligence'],
 };
 
 const FEATURE_ORDER = {
   geopolitics: {
-    Security: ['Open Fronts', 'Conflicts', 'Global Intelligence', 'Transit'],
+    Security: ['Open Fronts', 'Global Intelligence'],
     Diplomacy: ['Alliances', 'Sanctions', 'Global Aid'],
     'Strategic Assets': ['Infra', 'Nuclear Watch', 'Satellite Infrastructure', 'Maritime Choke-Points'],
     'Global Resources': [
@@ -199,26 +242,17 @@ const FEATURE_ORDER = {
       'Heads of State',
       'Global Commodities',
     ],
-    Geonomics: ['Global Trade', 'Critical Minerals', 'Energy'],
+    Geonomics: ['Global Trade', 'Energy'],
   },
   national: {
     'Legislative & Policy Intelligence': [
       'Bill Passage Probability Index',
       'Policy Intelligence Graph',
-      'Policy Pipeline Tracker (Draft-to-Gazette)',
       'Parliamentary Question Database',
       'Regulatory Body Watch (RBI/SEBI/TRAI/CCI)',
     ],
-    'Electoral Data & Analytics': [
-      'Candidate Affidavit Database (Structured + API)',
-      'Delimitation Impact Simulator',
-      'LS Manifestos & Promises Tracker',
-    ],
-    'Representative & Media Intelligence': [
-      'Statement & Quote Tracker with Contradiction Detection',
-      'MP Profiles & Performance (MPLAD, attendance, debates)',
-      'National Morning Brief (Auto-digest)',
-    ],
+    'Electoral Data & Analytics': ['Candidate Affidavit Database (Structured + API)'],
+    'Representative & Media Intelligence': ['MP Profiles & Performance (MPLAD, attendance, debates)'],
     'Government Operations': [
       'Central Tender Aggregator + Constituency Filter',
       'Bureaucratic Transfers — AGMUT Cadre',
@@ -228,124 +262,54 @@ const FEATURE_ORDER = {
     'Economy, Finance & Industry': ['Budget Utilisation & Schemes', 'Industry Updates (Ministry Data)'],
   },
   state: {
-    'State of Play': [
-      'Constituency Register',
-      'Election Results 2017–2024',
-      'Split-Ticket & Competitiveness',
-      'MLA Directory',
-      'MLA Report Card + Statement Tracker',
-    ],
-    'The Roll': ['Roll Demography', 'Community Bloc Matrix', 'SIR Roll Churn', 'Registration Gap'],
-    Districts: [
-      'District Media Monitor (Vernacular District Editions)',
-      'District Performance Tracker (Composite)',
-    ],
-    Legislature: [
-      'State Governance Brief',
-      'Assembly Proceedings Digest (Vernacular, Translated)',
-      'Governor Assent Tracker',
-    ],
+    'State of Play': ['Constituency Register', 'MLA Directory', 'MLA Report Card + Statement Tracker'],
+    'The Roll': ['Roll Demography', 'Community Bloc Matrix'],
     'Government Operations': [
       'Cabinet Decisions',
       'Bureaucrat Transfer & Posting Tracker (State Cadre)',
       'State Tender Aggregator (State e-Procurement)',
     ],
-    'Public Finance': ['CAG Audit Tracker', 'State Fiscal Deep-Dive', 'Centre-State Fund Flow Tracker'],
-  },
-  local: {
-    Assembly: ['Local Governance Brief', 'Booth-level Results Database'],
-    Booths: ['Booth Register', 'Booth Demography', 'Booth Bloc Composition', 'Booth-level Roll Churn'],
-    'Contest Analysis': ['Booth Political History', 'Swing Booths', 'Anchor Booths'],
-    'Local Wires': ['Hyperlocal News Aggregator', 'Municipal Watch', 'Panchayat Watch'],
-    Municipality: ['Municipal & Panchayat Tender Aggregator', 'Municipal Finance & Solvency'],
-    Panchayats: [
-      'MGNREGA Works & Muster Roll Tracker',
-      'Gram Panchayat Development Plan (GPDP) Fund Tracker',
-    ],
-    Representatives: [
-      'Councillor & Pradhan Profiles + Report Cards',
-      'Local Officer Directory + Transfer Tracker (BDO/SDO/EO)',
-    ],
+    Booths: ['Booth-level Results Database', 'Booth Political History'],
+    'Local watch': ['Municipal Watch', 'Panchayat Watch', 'Municipal & Panchayat Tender Aggregator'],
   },
   judiciary: {
     'Judicial Intelligence': [
       'Supreme Court Order & Judgment Feed',
       'Order Archive by Topic (Cross-Court)',
-      'District Court Case Tracker',
       'UP High Court (Allahabad) Order Feed',
+      'District Court Case Tracker',
       'NGT Environmental Litigation Tracker',
       'CAT & Consumer Disputes (NCDRC) Watch',
-      'Constitutional Bench Tracker',
-      'HC Constitutional & PIL Tracker',
-      'HC vs State Government Litigation',
     ],
-    'Judicial Analytics': [
-      'Judge Analytics (Ruling Patterns)',
-      'Case Pendency & Disposal Analytics',
-      'Precedent / Citation Network',
-      'HC Pendency & Disposal Analytics',
-      'HC Judge Profiles & Bench Analytics',
-      'District Court Pendency & Disposal',
-      'Professional Case-Law Database',
-    ],
-    'International Courts': [
-      'ICC Proceedings',
-      'ICJ Proceedings',
-      'WTO Dispute Settlement',
-      "Regional Int'l Courts (ECtHR / CJEU / ITLOS)",
-    ],
-    'Comparative Jurisprudence': [
-      'Supreme Courts & precedent — United States',
-      'Supreme Courts & precedent — other common-law jurisdictions',
-    ],
-    Tribunals: [
-      'NCLT / NCLAT (Insolvency)',
-      'Sector Tribunals (ITAT / TDSAT / SAT / DRT)',
-    ],
-    'Court Operations': [
-      'Cause-List / Hearing Scheduler',
-      'HC Case Status & Cause Lists',
-      'District Court Cause Lists',
-      'Local Judge & Court Directory',
-    ],
-    'Justice System Data': ['Undertrial & Prison Data', 'Legal Aid & Lok Adalat Tracker'],
+    'Judicial Analytics': ['HC Judge Profiles & Bench Analytics'],
+    'International Courts': ['ICC Proceedings', 'ICJ Proceedings', 'WTO Dispute Settlement'],
+    Tribunals: ['NCLT / NCLAT (Insolvency)', 'Sector Tribunals (ITAT / TDSAT / SAT / DRT)'],
   },
   finance: {
     'Market Intelligence': ['NSE/BSE Delayed Market Feed', 'Live Global Stock Exchanges'],
-    'Macro, Trade & Economy': [
-      'Economic Overview of All Countries',
-      'Key Financial Indicators (GDP, CPI, PMI, Emp-to-Pop)',
-      'Trade Agreements & Economic Sanctions',
-      'Economic Simulator',
-    ],
+    'Macro, Trade & Economy': ['Key Financial Indicators (GDP, CPI, PMI, Emp-to-Pop)'],
     'Sector & Industry Intelligence': [
       'Sector Policy — Power/Energy/Green/Critical Minerals',
-      'Top Financial & Business Players',
       'AI & the Tech Industry',
     ],
-    'Prediction Markets': ['Prediction Market Political Odds', 'Election Forecast Aggregator'],
+    'Prediction Markets': ['Prediction Market Political Odds'],
   },
   climate: {
     'Border Mechanisms': ['Carbon Border (CBAM) Watch'],
-    'Carbon Markets': [
-      'Global Carbon Pricing Tracker',
-      'Carbon Price Monitor',
-      'ETS & Tax Adoption Timeline',
-    ],
+    'Carbon Markets': ['Global Carbon Pricing Tracker'],
     'India Carbon Market': ['India CCTS & Green Credits'],
-    'Registries & Wire': ['Carbon Registry Wire', 'Climate Newswire'],
+    'Registries & Wire': ['Carbon Registry Wire'],
   },
   sports: {
-    'Scores & Fixtures': ['Cricket Wire', 'Fixtures & Results — World Leagues'],
+    'Scores & Fixtures': ['Cricket Wire'],
     'Football Desk': ['Football Wire', 'ISL Tracker'],
     'India Sports Desk': ['Indian Sports Wire', 'Sports Governance & Policy'],
-    'Sports Business': ['Sports Business & Media Rights', 'Athlete Index'],
+    'Sports Business': ['Athlete Index'],
   },
   entertainment: {
     'Screens & Streaming': ['TV & Streaming Tonight', 'Box Office Tracker'],
-    'Industry Wire': ['Entertainment News Wire', 'Bollywood & Film Wire'],
     Music: ['Music Charts — India Top 25', 'Music Charts — Global Top 25'],
-    'Screen Intelligence': ['OTT & Studio Intelligence', 'Celebrity Influence Index'],
+    'Screen Intelligence': ['OTT & Studio Intelligence'],
   },
 };
 
@@ -374,14 +338,18 @@ export function bucketsFor(mods, tier) {
   const list = [...merged.values()]
     .map((b) => {
       const featOrder = featOrderByBucket[b.label];
-      if (!featOrder) return b;
-      // Keep curated order first; append HTML-ONLY / unlisted modules — never drop them
-      // (dropping forced the router to fall through to a sibling desk's rows — D1).
+      if (!featOrder) {
+        // Only curated modules — drop unlisted extras.
+        const allow = DESK_FEATURE_SET[tier];
+        return {
+          ...b,
+          items: allow ? b.items.filter((m) => allow.has(m.htmlFeature)) : b.items,
+        };
+      }
       const ordered = featOrder
         .map((name) => b.items.find((m) => m.htmlFeature === name))
         .filter(Boolean);
-      const extras = b.items.filter((m) => !featOrder.includes(m.htmlFeature));
-      return { ...b, items: [...ordered, ...extras] };
+      return { ...b, items: ordered };
     })
     .filter((b) => b.items.length);
   if (!order) return list;

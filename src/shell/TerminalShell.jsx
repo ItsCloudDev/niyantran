@@ -47,6 +47,15 @@ export default function TerminalShell({ onLogout }) {
     () => (tab === 'home' ? [] : bucketsFor(modulesForTier(active.tier), active.tier)),
     [tab, active.tier],
   );
+  const activeModule = useMemo(() => {
+    if (!featureName || tab === 'home') return null;
+    return (
+      modulesForTier(active.tier).find((m) => m.htmlFeature === featureName) ||
+      catalogModules().find((m) => m.htmlFeature === featureName) ||
+      null
+    );
+  }, [tab, active.tier, featureName]);
+  const feedTier = activeModule?.htmlTier || active.tier;
 
   useEffect(() => {
     function onViz(e) {
@@ -131,10 +140,12 @@ export default function TerminalShell({ onLogout }) {
     };
   }, [typeId]);
 
-  const allowedTiers = useMemo(
-    () => new Set(deskTabs.map((t) => t.tier)),
-    [deskTabs],
-  );
+  const allowedTiers = useMemo(() => {
+    const s = new Set(deskTabs.map((t) => t.tier));
+    // Booth / municipal modules live under State in the nav but remain local-tier in the map.
+    if (s.has('state')) s.add('local');
+    return s;
+  }, [deskTabs]);
 
   const hits = useMemo(() => {
     const n = q.trim().toLowerCase();
@@ -174,7 +185,8 @@ export default function TerminalShell({ onLogout }) {
   }
 
   function openHit(mod) {
-    const dest = deskTabs.find((t) => t.tier === mod.htmlTier);
+    let dest = deskTabs.find((t) => t.tier === mod.htmlTier);
+    if (!dest && mod.htmlTier === 'local') dest = deskTabs.find((t) => t.id === 'state');
     if (!dest) return;
     onOpen({ tab: dest.id, feature: mod.htmlFeature });
   }
@@ -282,8 +294,8 @@ export default function TerminalShell({ onLogout }) {
             />
           ) : (
             <DeskView
-              key={`${active.tier}:${featureName}`}
-              tier={active.tier}
+              key={`${feedTier}:${featureName}`}
+              tier={feedTier}
               featureName={featureName}
               onFeed={onFeed}
               selected={selected}

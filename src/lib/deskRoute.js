@@ -40,6 +40,13 @@ export function resolveDeskRoute(tabId, feature) {
   }
   // Keep the requested title even when unknown — DeskView shows Planned/empty.
   // Do not fall through to firstFeature (borrows sibling rows under the wrong name).
+  // Booth / municipal modules may live on State nav while their map tier is local.
+  if (!hit && tab.id === 'state') {
+    hit = matchFeatureName(
+      features.filter((f) => f.htmlTier === 'local'),
+      want,
+    );
+  }
   return { tab: tab.id, feature: hit?.htmlFeature || want };
 }
 
@@ -66,6 +73,8 @@ export function parseDeskHash(hash = typeof location !== 'undefined' ? location.
   } catch {
     /* keep raw segments */
   }
+  // Local desk folded into State — keep old bookmarks working.
+  if (/^local$/i.test(tabId)) tabId = 'state';
   return resolveDeskRoute(tabId, feature);
 }
 

@@ -8,7 +8,7 @@ export const USER_TYPES = [
     label: 'Students + UPSC/PSC Aspirants',
     short: 'Student / UPSC',
     hint: 'Polity, current affairs, and exam-facing desks.',
-    desks: ['home', 'national', 'state', 'local', 'law', 'economics', 'global', 'carbon'],
+    desks: ['home', 'national', 'state', 'law', 'economics', 'global', 'carbon'],
     startTab: 'national',
   },
   {
@@ -32,7 +32,7 @@ export const USER_TYPES = [
     label: 'Policy',
     short: 'Policy',
     hint: 'Legislation, government operations, and briefs.',
-    desks: ['home', 'national', 'state', 'local', 'global', 'law', 'carbon', 'economics'],
+    desks: ['home', 'national', 'state', 'global', 'law', 'carbon', 'economics'],
     startTab: 'national',
   },
   {
