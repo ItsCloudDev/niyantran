@@ -36,7 +36,7 @@ export const AI_PROVIDERS = [
     model: 'deepseek-v4-flash',
     provider: 'deepseek',
     enabled: false,
-    hint: 'Not connected yet',
+    hint: 'DeepSeek key not connected on the server yet',
   },
   {
     id: 'deepseek-pro',
@@ -44,7 +44,7 @@ export const AI_PROVIDERS = [
     model: 'deepseek-v4-pro',
     provider: 'deepseek',
     enabled: false,
-    hint: 'Not connected yet',
+    hint: 'DeepSeek key not connected on the server yet',
   },
 ];
 

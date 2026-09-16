@@ -249,11 +249,7 @@ export function applyRecordChecklistToFeed(feed) {
 }
 
 /** Short banner line when hard gaps exist (or many soft gaps). */
-export function qualityBannerText(feed) {
-  const q = feed?.meta?.quality;
-  if (!q || !q.checked) return '';
-  const { counts, hardCount } = q;
-  const softHeavy = (counts.missing_date || 0) / q.checked >= 0.35;
-  if (!hardCount && !softHeavy) return '';
-  return `${q.summary} (screen check only — source feeds are not yet locked to one shared format.)`;
+export function qualityBannerText(_feed) {
+  // CR-11: do not surface "Data check: N with no date" (or similar) banners in the UI.
+  return '';
 }

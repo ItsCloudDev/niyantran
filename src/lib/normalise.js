@@ -104,5 +104,9 @@ export function isArticleHref(url) {
   const s = String(url || '');
   if (!/^https?:\/\//i.test(s)) return false;
   if (/[?&=]/.test(s) && /\/api\/|format=json|sparql/i.test(s)) return false;
+  // A-02: Sansad listing hubs 404 for a specific bill — only link document/getFile URLs.
+  if (/sansad\.in\/(?:ls|rs)\/legislation\/?$/i.test(s.replace(/\/+$/, ''))) return false;
+  if (/sansad\.in\/(?:ls|rs)\/legislation\/?$/i.test(s)) return false;
+  if (/^https?:\/\/sansad\.in\/?(?:ls|rs)?\/?legislation\/?$/i.test(s)) return false;
   return true;
 }

@@ -18,6 +18,29 @@ import { filesFromDrop, materializeAiDrop, openAiResearch, readAiDrag } from '..
 import { AiBrandIcon } from './AiBrandIcon.jsx';
 import AiMarkdown from './AiMarkdown.jsx';
 
+const FOCUS_OPTS = [
+  { id: 'attached', en: 'Attached only', hi: 'केवल संलग्न', hint: 'Pins and files in this chat' },
+  { id: 'selection', en: 'Selection + pins', hi: 'चयन + पिन', hint: 'Selected desk row plus attachments' },
+  { id: 'desk', en: 'Desk sample', hi: 'डेस्क नमूना', hint: 'A few rows from the open module plus pins' },
+  { id: 'broad', en: 'Broad context', hi: 'विस्तृत संदर्भ', hint: 'Pins, selection, and desk sample' },
+];
+
+const DOCS_EN = [
+  'Answers are grounded in the retrieval scope you set — not the whole internet.',
+  'If a fact is missing from that scope, the assistant should say “Not in record.”',
+  'Attach desk rows or files for evidence. Evidence is listed before interpretation.',
+  'No buy / sell / hold language. No invented citations or fake typing.',
+  'Work mode keeps replies denser: Evidence → Read → Gaps → Confidence.',
+];
+
+const DOCS_HI = [
+  'उत्तर आपके चुने हुए पुनर्प्राप्ति दायरे में आधारित हैं — पूरे इंटरनेट पर नहीं।',
+  'यदि तथ्य दायरे में नहीं है, सहायक को “Not in record” कहना चाहिए।',
+  'साक्ष्य के लिए पंक्तियाँ या फ़ाइलें जोड़ें। व्याख्या से पहले साक्ष्य।',
+  'खरीद/बेच/होल्ड भाषा नहीं। बनावटी उद्धरण या नकली टाइपिंग नहीं।',
+  'Work mode घने उत्तर रखता है: Evidence → Read → Gaps → Confidence।',
+];
+
 function contextLabel({ attachments, selected, featureName }) {
   const attached = (attachments || []).map((a) => a.title || a.feature).filter(Boolean);
   const picked =
@@ -75,9 +98,66 @@ function contextualPrompts({ attachments, selected, featureName }) {
   ];
 }
 
+function slimRow(row) {
+  if (!row || typeof row !== 'object') return null;
+  const out = {};
+  for (const [k, v] of Object.entries(row)) {
+    if (v == null || v === '') continue;
+    if (typeof v === 'object') continue;
+    out[k] = String(v).slice(0, 500);
+  }
+  return Object.keys(out).length ? out : null;
+}
+
+function buildDeskContext(feed, tab, featureName) {
+  if (!feed) return null;
+  const rows = (feed.rows || []).filter((r) => r && r.status !== 'source_status').slice(0, 8).map(slimRow).filter(Boolean);
+  return {
+    feature: featureName || feed.feature || '',
+    tab: tab || feed.tier || '',
+    note: feed.fallback ? 'Desk is on a labelled fallback / archive pass.' : '',
+    rows,
+  };
+}
+
+function exportChatMarkdown(chat, picked) {
+  const lines = [
+    `# ${chat?.title || 'AI research'}`,
+    '',
+    `_Exported from Niyantran · model ${picked?.label || ''} · ${new Date().toISOString()}_`,
+    '',
+  ];
+  for (const m of chat?.messages || []) {
+    if (m.role === 'system') continue;
+    const who = m.role === 'user' ? 'You' : m.model || 'Assistant';
+    lines.push(`## ${who}`);
+    lines.push('');
+    lines.push(String(m.content || ''));
+    lines.push('');
+  }
+  const pins = chat?.attachments || [];
+  if (pins.length) {
+    lines.push('## Attachments');
+    lines.push('');
+    for (const a of pins) lines.push(`- ${a.title || a.feature || a.kind}`);
+    lines.push('');
+  }
+  return lines.join('\n');
+}
+
 function Ico({ name, size = 16 }) {
   const s = size;
-  const common = { width: s, height: s, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '1.8', strokeLinecap: 'round', strokeLinejoin: 'round', 'aria-hidden': true };
+  const common = {
+    width: s,
+    height: s,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: '1.8',
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+    'aria-hidden': true,
+  };
   switch (name) {
     case 'sparkles':
       return (
@@ -125,6 +205,19 @@ function Ico({ name, size = 16 }) {
           <path d="M5 12l4 4L19 6" />
         </svg>
       );
+    case 'export':
+      return (
+        <svg {...common}>
+          <path d="M12 3v12M8 7l4-4 4 4M5 14v5a2 2 0 002 2h10a2 2 0 002-2v-5" />
+        </svg>
+      );
+    case 'info':
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 10v6M12 7h.01" />
+        </svg>
+      );
     default:
       return null;
   }
@@ -137,6 +230,8 @@ function pickRoleForProvider(id) {
 }
 
 const RECOMMENDED_IDS = ['gemini-lite', 'gemini-flash'];
+const FOCUS_KEY = 'niyantranAiFocus';
+const WORK_KEY = 'niyantranAiWorkMode';
 
 export default function AiPanel({ feed, selected, tab, featureName, lang, seed, onSeedConsumed, compact, onClose }) {
   const hi = lang === 'hi';
@@ -147,10 +242,27 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
   const [err, setErr] = useState('');
   const [dragOver, setDragOver] = useState(false);
   const [modelOpen, setModelOpen] = useState(false);
+  const [focusOpen, setFocusOpen] = useState(false);
+  const [docsOpen, setDocsOpen] = useState(false);
+  const [focus, setFocus] = useState(() => {
+    try {
+      return localStorage.getItem(FOCUS_KEY) || 'attached';
+    } catch {
+      return 'attached';
+    }
+  });
+  const [workMode, setWorkMode] = useState(() => {
+    try {
+      return localStorage.getItem(WORK_KEY) === '1';
+    } catch {
+      return false;
+    }
+  });
   const scroller = useRef(null);
   const box = useRef(null);
   const fileRef = useRef(null);
   const modelRef = useRef(null);
+  const focusRef = useRef(null);
 
   const chat = useMemo(
     () => state.chats.find((c) => c.id === state.activeId) || state.chats[0] || null,
@@ -160,6 +272,7 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
   const attachments = chat?.attachments || [];
   const messages = (chat?.messages || []).filter((m) => m.role !== 'system');
   const emptyThread = messages.length === 0;
+  const focusMeta = FOCUS_OPTS.find((o) => o.id === focus) || FOCUS_OPTS[0];
 
   useEffect(() => subscribeAiChats(setState), []);
   useEffect(() => {
@@ -172,13 +285,30 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
   }, [chat?.messages?.length, busy]);
 
   useEffect(() => {
-    if (!modelOpen) return undefined;
+    if (!modelOpen && !focusOpen) return undefined;
     function onDoc(e) {
-      if (modelRef.current && !modelRef.current.contains(e.target)) setModelOpen(false);
+      if (modelOpen && modelRef.current && !modelRef.current.contains(e.target)) setModelOpen(false);
+      if (focusOpen && focusRef.current && !focusRef.current.contains(e.target)) setFocusOpen(false);
     }
     document.addEventListener('mousedown', onDoc);
     return () => document.removeEventListener('mousedown', onDoc);
-  }, [modelOpen]);
+  }, [modelOpen, focusOpen]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(FOCUS_KEY, focus);
+    } catch {
+      /* ignore */
+    }
+  }, [focus]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(WORK_KEY, workMode ? '1' : '0');
+    } catch {
+      /* ignore */
+    }
+  }, [workMode]);
 
   useEffect(() => {
     if (!seed) return undefined;
@@ -255,6 +385,20 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
     if (chat) setChatRole(chat.id, pickRoleForProvider(p.id));
   }
 
+  function onExport() {
+    if (!chat) return;
+    const md = exportChatMarkdown(chat, picked);
+    const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${String(chat.title || 'research')
+      .replace(/[^\w\-]+/g, '_')
+      .slice(0, 48)}.md`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   async function send(e) {
     e?.preventDefault();
     const text = draft.trim();
@@ -280,6 +424,10 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
         userType: sessionUser()?.type,
         model: model.model,
         provider: model.provider,
+        focus,
+        workMode,
+        selection: focus === 'selection' || focus === 'broad' ? slimRow(selected) : null,
+        deskContext: focus === 'desk' || focus === 'broad' ? buildDeskContext(feed, tab, featureName) : null,
       });
       appendAiMessage(id, {
         role: 'assistant',
@@ -304,10 +452,11 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
 
   const recommended = AI_PROVIDERS.filter((p) => RECOMMENDED_IDS.includes(p.id));
   const others = AI_PROVIDERS.filter((p) => !RECOMMENDED_IDS.includes(p.id));
+  const docs = hi ? DOCS_HI : DOCS_EN;
 
   return (
     <div
-      className={`ai-shell ai-shell-v2${compact ? ' compact' : ''}${dragOver ? ' drop' : ''}`}
+      className={`ai-shell ai-shell-v2${compact ? ' compact' : ''}${dragOver ? ' drop' : ''}${workMode ? ' work' : ''}`}
       onDragOver={(e) => {
         e.preventDefault();
         setDragOver(true);
@@ -320,48 +469,79 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
           <Ico name="sparkles" size={18} />
           <b>{hi ? 'एआई अनुसंधान' : 'AI Research'}</b>
         </div>
-        {onClose ? (
-          <button type="button" className="ai-v2-close" onClick={onClose} aria-label={hi ? 'बंद करें' : 'Close'}>
-            ×
+        <div className="ai-v2-head-actions">
+          <button
+            type="button"
+            className={`ai-v2-icon-btn${docsOpen ? ' on' : ''}`}
+            aria-expanded={docsOpen}
+            aria-label={hi ? 'दस्तावेज़' : 'Docs'}
+            title={hi ? 'दस्तावेज़' : 'How AI research works'}
+            onClick={() => setDocsOpen((v) => !v)}
+          >
+            <Ico name="info" size={15} />
           </button>
-        ) : null}
+          <button
+            type="button"
+            className="ai-v2-icon-btn"
+            aria-label={hi ? 'निर्यात' : 'Export'}
+            title={hi ? 'चैट निर्यात करें' : 'Export chat as Markdown'}
+            disabled={!messages.length}
+            onClick={onExport}
+          >
+            <Ico name="export" size={15} />
+          </button>
+          {onClose ? (
+            <button type="button" className="ai-v2-close" onClick={onClose} aria-label={hi ? 'बंद करें' : 'Close'}>
+              ×
+            </button>
+          ) : null}
+        </div>
       </header>
 
-      <div className="ai-v2-tabs" role="tablist" aria-label={hi ? 'चैट' : 'Chats'}>
-        <button
-          type="button"
-          className="ai-v2-new"
-          onClick={() => createAiChat({ roleId: chat?.roleId || 'AUTO' })}
-        >
-          <Ico name="doc" size={14} />
-          {hi ? 'नया अनुसंधान' : 'New research'}
-        </button>
-        <div className="ai-v2-tab-scroll">
-          {(state.chats || []).map((c) => (
-            <div key={c.id} className={`ai-v2-tab${c.id === chat?.id ? ' on' : ''}`}>
-              <button type="button" role="tab" aria-selected={c.id === chat?.id} onClick={() => setActiveAiChat(c.id)}>
-                {c.title || (hi ? 'नया अनुसंधान' : 'New research')}
-              </button>
-              {(state.chats || []).length > 1 ? (
-                <button
-                  type="button"
-                  className="ai-v2-tab-x"
-                  aria-label="Delete chat"
-                  onClick={() => {
-                    deleteAiChat(c.id);
-                    ensureAiChat();
-                  }}
-                >
-                  ×
-                </button>
-              ) : null}
-            </div>
-          ))}
+      <div className="ai-v2-chrome">
+        <div className={`ai-v2-docs${docsOpen ? '' : ' hide'}`} role="note" hidden={!docsOpen}>
+          <b>{hi ? 'एआई अनुसंधान कैसे काम करता है' : 'How AI research works'}</b>
+          <ul>
+            {docs.map((line) => (
+              <li key={line}>{line}</li>
+            ))}
+          </ul>
         </div>
-      </div>
 
-      <div className="ai-v2-body">
-        <div className="ai-v2-attach-row">
+        <div className="ai-v2-tabs" role="tablist" aria-label={hi ? 'चैट' : 'Chats'}>
+          <button
+            type="button"
+            className="ai-v2-new"
+            onClick={() => createAiChat({ roleId: chat?.roleId || 'AUTO' })}
+          >
+            <Ico name="doc" size={14} />
+            {hi ? 'नया अनुसंधान' : 'New research'}
+          </button>
+          <div className="ai-v2-tab-scroll">
+            {(state.chats || []).map((c) => (
+              <div key={c.id} className={`ai-v2-tab${c.id === chat?.id ? ' on' : ''}`}>
+                <button type="button" role="tab" aria-selected={c.id === chat?.id} onClick={() => setActiveAiChat(c.id)}>
+                  {c.title || (hi ? 'नया अनुसंधान' : 'New research')}
+                </button>
+                {(state.chats || []).length > 1 ? (
+                  <button
+                    type="button"
+                    className="ai-v2-tab-x"
+                    aria-label="Delete chat"
+                    onClick={() => {
+                      deleteAiChat(c.id);
+                      ensureAiChat();
+                    }}
+                  >
+                    ×
+                  </button>
+                ) : null}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="ai-v2-toolbar" aria-label={hi ? 'चैट विकल्प' : 'Chat options'}>
           <button type="button" className="ai-v2-attach-btn" onClick={() => fileRef.current?.click()}>
             <Ico name="clip" size={14} />
             {hi ? 'फ़ाइलें जोड़ें' : 'Attach files'}
@@ -374,8 +554,64 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
             accept=".pdf,.csv,.txt,.json,.png,.jpg,.jpeg,.webp"
             onChange={onPickFiles}
           />
-        </div>
+          <div className="ai-v2-focus" ref={focusRef}>
+            <button
+              type="button"
+              className={`ai-v2-tool-btn${focusOpen ? ' open' : ''}`}
+              aria-expanded={focusOpen}
+              onClick={() => {
+                setFocusOpen((v) => !v);
+                setModelOpen(false);
+              }}
+            >
+              <span className="ai-v2-tool-k">{hi ? 'फोकस' : 'Focus'}</span>
+              <span className="ai-v2-tool-v">{hi ? focusMeta.hi : focusMeta.en}</span>
+              <Ico name="chevron" size={12} />
+            </button>
+            {focusOpen ? (
+              <div className="ai-v2-pop" role="listbox" aria-label={hi ? 'फोकस' : 'Focus'}>
+                {FOCUS_OPTS.map((o) => (
+                  <button
+                    key={o.id}
+                    type="button"
+                    role="option"
+                    aria-selected={o.id === focus}
+                    className={`ai-v2-pop-opt${o.id === focus ? ' on' : ''}`}
+                    onClick={() => {
+                      setFocus(o.id);
+                      setFocusOpen(false);
+                    }}
+                  >
+                    <span>{hi ? o.hi : o.en}</span>
+                    <small>{o.hint}</small>
+                    {o.id === focus ? <Ico name="check" size={14} /> : null}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
 
+          <button
+            type="button"
+            className={`ai-v2-work${workMode ? ' on' : ''}`}
+            aria-pressed={workMode}
+            title={
+              workMode
+                ? hi
+                  ? 'Work mode चालू — घने, साक्ष्य-पहले उत्तर'
+                  : 'Work mode on — dense, evidence-first answers'
+                : hi
+                  ? 'Work mode बंद'
+                  : 'Work mode off'
+            }
+            onClick={() => setWorkMode((v) => !v)}
+          >
+            Work mode
+          </button>
+        </div>
+      </div>
+
+      <div className="ai-v2-body">
         <div className={`ai-v2-drop${dragOver ? ' on' : ''}${attachments.length ? ' has-files' : ''}`}>
           <Ico name="doc-plus" size={28} />
           <p>{hi ? 'तालिका से पंक्ति खींचें — या फ़ाइलें यहाँ छोड़ें' : 'Drag a row from the table — or drop files here'}</p>
@@ -405,7 +641,7 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
           {busy ? (
             <div className="ai-msg ai-msg-assistant">
               <span>{picked.label}</span>
-              {hi ? 'पढ़ रहा है…' : 'Reading attached sources…'}
+              {hi ? 'संलग्न स्रोत पढ़ रहा है…' : 'Reading attached sources…'}
             </div>
           ) : null}
         </div>
@@ -454,55 +690,82 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
           </button>
         </form>
 
-        <div className="ai-v2-model" ref={modelRef}>
-          <button
-            type="button"
-            className={`ai-v2-model-btn${modelOpen ? ' open' : ''}`}
-            aria-expanded={modelOpen}
-            onClick={() => setModelOpen((v) => !v)}
-          >
-            <AiBrandIcon id={picked.provider} size={16} />
-            <span>{picked.label.replace(/\s*-\s*/, ' ')}</span>
-            <Ico name="chevron" size={14} />
-          </button>
-          {modelOpen ? (
-            <div className="ai-v2-model-menu" role="listbox" aria-label={hi ? 'मॉडल' : 'Model'}>
-              <p className="ai-v2-model-sec">{hi ? 'अनुशंसित' : 'Recommended'}</p>
-              {recommended.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  role="option"
-                  aria-selected={p.id === picked.id}
-                  className={`ai-v2-model-opt${p.id === picked.id ? ' on' : ''}${p.enabled ? '' : ' locked'}`}
-                  disabled={!p.enabled}
-                  title={p.enabled ? p.hint : p.hint}
-                  onClick={() => selectProvider(p)}
-                >
-                  <AiBrandIcon id={p.provider} size={16} />
-                  <span>{p.label.replace(/\s*-\s*/, ' ')}</span>
-                  {p.id === picked.id ? <Ico name="check" size={14} /> : null}
-                </button>
-              ))}
-              <p className="ai-v2-model-sec">{hi ? 'अन्य मॉडल' : 'Other models'}</p>
-              {others.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  role="option"
-                  aria-selected={p.id === picked.id}
-                  className={`ai-v2-model-opt${p.id === picked.id ? ' on' : ''}${p.enabled ? '' : ' locked'}`}
-                  disabled={!p.enabled}
-                  title={p.enabled ? p.hint : p.hint}
-                  onClick={() => selectProvider(p)}
-                >
-                  <AiBrandIcon id={p.provider} size={16} />
-                  <span>{p.label.replace(/\s*-\s*/, ' ')}</span>
-                  {p.id === picked.id ? <Ico name="check" size={14} /> : null}
-                </button>
-              ))}
-            </div>
-          ) : null}
+        <div className="ai-v2-model-row">
+          <div className="ai-v2-model" ref={modelRef}>
+            <button
+              type="button"
+              className={`ai-v2-model-btn${modelOpen ? ' open' : ''}`}
+              aria-expanded={modelOpen}
+              onClick={() => {
+                setModelOpen((v) => !v);
+                setFocusOpen(false);
+              }}
+            >
+              <AiBrandIcon id={picked.provider} size={16} />
+              <span>{picked.label.replace(/\s*-\s*/, ' ')}</span>
+              <Ico name="chevron" size={14} />
+            </button>
+            {modelOpen ? (
+              <div className="ai-v2-model-menu" role="listbox" aria-label={hi ? 'मॉडल' : 'Model'}>
+                <p className="ai-v2-model-sec">{hi ? 'अनुशंसित' : 'Recommended'}</p>
+                {recommended.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    role="option"
+                    aria-selected={p.id === picked.id}
+                    className={`ai-v2-model-opt${p.id === picked.id ? ' on' : ''}${p.enabled ? '' : ' locked'}`}
+                    disabled={!p.enabled}
+                    title={p.hint}
+                    onClick={() => selectProvider(p)}
+                  >
+                    <AiBrandIcon id={p.provider} size={16} />
+                    <span className="ai-v2-model-copy">
+                      <em>{p.label.replace(/\s*-\s*/, ' ')}</em>
+                      <small>{p.hint}</small>
+                    </span>
+                    {p.id === picked.id ? <Ico name="check" size={14} /> : null}
+                  </button>
+                ))}
+                <p className="ai-v2-model-sec">{hi ? 'अन्य मॉडल' : 'Other models'}</p>
+                {others.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    role="option"
+                    aria-selected={p.id === picked.id}
+                    className={`ai-v2-model-opt${p.id === picked.id ? ' on' : ''}${p.enabled ? '' : ' locked'}`}
+                    disabled={!p.enabled}
+                    title={p.hint}
+                    onClick={() => selectProvider(p)}
+                  >
+                    <AiBrandIcon id={p.provider} size={16} />
+                    <span className="ai-v2-model-copy">
+                      <em>{p.label.replace(/\s*-\s*/, ' ')}</em>
+                      <small>{p.enabled ? p.hint : p.hint || (hi ? 'अभी उपलब्ध नहीं' : 'Unavailable')}</small>
+                    </span>
+                    {p.id === picked.id ? <Ico name="check" size={14} /> : null}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+          </div>
+          <div className="ai-v2-model-chips" aria-label={hi ? 'मॉडल' : 'Models'}>
+            {AI_PROVIDERS.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className={`ai-v2-chip${p.id === picked.id ? ' on' : ''}${p.enabled ? '' : ' locked'}`}
+                disabled={!p.enabled}
+                title={p.hint}
+                onClick={() => selectProvider(p)}
+              >
+                <AiBrandIcon id={p.provider} size={12} />
+                <span>{p.label.replace(/^.*\s-\s*/, '')}</span>
+                {!p.enabled ? <small>{hi ? 'जल्द' : 'Soon'}</small> : null}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </div>

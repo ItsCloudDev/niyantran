@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { ensureDeskBrief } from '../lib/deskBrief.js';
-import { BarList, ColumnChart, DonutChart, Heatmap, PieChart, Sparkline, VizCard } from './AnalyticsViz.jsx';
 
 const BAND_CLS = {
   strong: 'ok',
@@ -166,23 +165,7 @@ export default function DeskIntel({ feed, selected, loading }) {
             </div>
           ) : null}
 
-          {brief.charts?.map((c) => (
-            <VizCard key={`${c.type}-${c.title}`} title={c.title} hint={c.hint || 'Chart from this entry’s fields.'}>
-              {c.type === 'bars' ? <BarList items={c.items} /> : null}
-              {c.type === 'columns' ? <ColumnChart items={c.items} /> : null}
-              {c.type === 'pie' ? <PieChart items={c.items} /> : null}
-              {c.type === 'donut' ? <DonutChart items={c.items} unit="parts" /> : null}
-              {c.type === 'matrix' && c.matrix ? <Heatmap matrix={c.matrix} /> : null}
-              {c.type === 'spark' ? (
-                <Sparkline
-                  series={c.series}
-                  peak={c.peak || c.series?.reduce((a, b) => ((b.n || 0) > (a?.n || 0) ? b : a), c.series?.[0])}
-                  from={c.from}
-                  through={c.through}
-                />
-              ) : null}
-            </VizCard>
-          ))}
+          {/* CR-15/16: entry brief keeps summary/findings; auto charts stay off the record panel. */}
 
           {brief.caveats?.length ? (
             <p className="desk-note desk-intel-caveats">{brief.caveats.join(' · ')}</p>
