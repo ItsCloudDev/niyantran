@@ -86,19 +86,27 @@ export async function homeMarketsFromStatic(signal) {
 }
 
 export async function homeLatestFromStatic(signal) {
-  const snap = await getStaticJson('/data/news.json', signal);
+  // CR-09: Latest column is nter.news — do not substitute third-party RSS as if it were nter.
+  const snap = await getStaticJson('/data/nter-news.json', signal);
   const rows = Array.isArray(snap?.rows) ? snap.rows : [];
   if (rows.length) {
     return {
       ok: true,
       rows,
-      note: snap.note || 'Saved home-desk headlines.',
+      note: snap.note || 'Latest from nter.news.',
       archive: true,
       ageH: snap.updated ? (Date.now() - new Date(snap.updated).getTime()) / 3600000 : null,
       updated: snap.updated,
+      source: 'nter.news',
     };
   }
-  return { ok: true, rows: [], note: 'Live wire unreachable on this host. No headlines were invented.', archive: true };
+  return {
+    ok: true,
+    rows: [],
+    note: snap?.note || 'nter.news feed not configured on this build. No headlines were invented.',
+    archive: true,
+    source: 'nter.news',
+  };
 }
 
 export async function homePulseFromStatic(signal) {

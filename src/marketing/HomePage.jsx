@@ -1,5 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { emptyIntroVideo, fetchIntroVideo, videoPlayback } from '../lib/marketingIntroVideo.js';
+import { PERSONAS } from '../lib/personas.js';
+import BillAiDropDemo from './BillAiDropDemo.jsx';
+
+/** Provisional CR hook line — replace when client finalises. */
+const HOOK = 'See what a record touches — before you argue about it.';
+/** Provisional CR product definition. */
+const PRODUCT_DEF =
+  'A research terminal for public records, events and institutional data — with provenance visible.';
 
 function Ico({ d, size = 18, stroke = 'currentColor' }) {
   return (
@@ -14,30 +22,8 @@ const DESKS = [
     id: 'legislative',
     label: 'Legislative & Policy Intelligence',
     d: 'M4 21h16M4 10h16M12 3l8 7H4z',
-    title: 'BILL PASSAGE INDEX',
-    more: 'View All Bills →',
-    cols: ['BILL', 'HOUSE'],
-    rows: [
-      ['The Constitution (One Hundred and Twenty-Eighth Amendment) Bill, 2026', 'Lok Sabha'],
-      ['The Finance Bill, 2026', 'Lok Sabha'],
-      ['The Bharatiya Vayuyan Vidheyak, 2024', 'Rajya Sabha'],
-      ['The Oilfields (Regulation and Development) Amendment Bill, 2024', 'Lok Sabha'],
-      ['The Boilers Bill, 2024', 'Lok Sabha'],
-      ['The Banking Laws (Amendment) Bill, 2024', 'Lok Sabha'],
-    ],
-    kpis: [
-      ['4,576', 'blue', 'BILLS TRACKED'],
-      ['816', 'ok', 'PASSED BOTH HOUSES'],
-      ['3,760', 'warn', 'NOT YET ENACTED'],
-      ['70', 'gold', 'POLICY SECTORS'],
-    ],
-    bars: [
-      ['Introduced', 620, '14%', 14, ''],
-      ['In Committee', 48, '1%', 4, 'sand'],
-      ['Passed One House', 3092, '68%', 68, ''],
-      ['Passed Both Houses', 816, '18%', 18, 'red'],
-    ],
-    note: 'Passage stage is taken from the bill record. This panel does not infer what a house will do next.',
+    title: 'ASK AI · BILL DROP',
+    demo: true,
   },
   {
     id: 'electoral',
@@ -195,23 +181,6 @@ const CAPS = [
   { title: 'Strategic Assets', d: 'M12 3l8 18H4zM12 8v5M12 16h.01', fg: '#c81322', copy: 'Explore critical infrastructure, military assets, defence deals and strategic capabilities.' },
 ];
 
-const PERSONAS = [
-  ['Journalists', 'Trace a claim from the headline back to the public record.'],
-  ['Lawyers', 'Move between legislation, judgments and the source documents behind them.'],
-  ['Students', 'Learn a subject through connected records instead of disconnected searches.'],
-  ['Analysts', 'Compare policy, economic and security signals in one working view.'],
-  ['Policy teams', 'Follow institutions, implementation stages and affected sectors.'],
-];
-
-const CHIPS = [
-  { cls: 'blue c1', cap: 'Open Fronts', d: 'M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6l8-3z', label: 'Open Fronts' },
-  { cls: 'fill-purple c2', cap: 'Legislative Intelligence', d: 'M4 21h16M4 10h16M12 3l8 7H4z', label: 'Legislative Tracker' },
-  { cls: 'blue c3', cap: 'Global Diplomacy', d: 'M12 3a9 9 0 100 18 9 9 0 000-18zM3 12h18', label: 'Global Diplomacy' },
-  { cls: 'fill-red c4', cap: 'Strategic Assets', d: 'M12 3l8 18H4z', label: 'Strategic Assets' },
-  { cls: 'fill-purple c5', cap: 'Media & Narrative', d: 'M21 15a4 4 0 01-4 4H7l-4 3V7a4 4 0 014-4h10a4 4 0 014 4z', label: 'Media & Narrative' },
-  { cls: 'fill-sand c6', cap: 'Economy & Finance', d: 'M4 20h16M7 16V10M12 16V6M17 16v-8', label: 'Economy & Finance' },
-];
-
 function onCardMove(e) {
   const el = e.currentTarget;
   const r = el.getBoundingClientRect();
@@ -221,13 +190,17 @@ function onCardMove(e) {
 
 export default function HomePage({ onLogin, onCoverage }) {
   const heroRef = useRef(null);
-  const [deskId, setDeskId] = useState('global');
+  const carouselRef = useRef(null);
+  const [deskId, setDeskId] = useState('legislative');
   const [q, setQ] = useState('');
   const [picked, setPicked] = useState(0);
   const [capFocus, setCapFocus] = useState(null);
+  const [heroPersona, setHeroPersona] = useState(null);
+  const [carouselIdx, setCarouselIdx] = useState(0);
   const [introVideo, setIntroVideo] = useState(() => emptyIntroVideo());
   const desk = DESKS.find((d) => d.id === deskId) || DESKS[0];
   const rows = useMemo(() => {
+    if (desk.demo || !desk.rows) return [];
     const needle = q.trim().toLowerCase();
     if (!needle) return desk.rows;
     return desk.rows.filter(([name, house]) => `${name} ${house}`.toLowerCase().includes(needle));
@@ -241,6 +214,17 @@ export default function HomePage({ onLogin, onCoverage }) {
     return () => ac.abort();
   }, []);
 
+  function scrollPersonaTo(i) {
+    const next = ((i % PERSONAS.length) + PERSONAS.length) % PERSONAS.length;
+    setCarouselIdx(next);
+    const el = carouselRef.current;
+    if (!el) return;
+    const card = el.querySelector(`[data-pi="${next}"]`);
+    if (!card) return;
+    const left = card.offsetLeft - (el.clientWidth - card.clientWidth) / 2;
+    el.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
+  }
+
   function pickDesk(id) {
     setDeskId(id);
     setQ('');
@@ -250,13 +234,14 @@ export default function HomePage({ onLogin, onCoverage }) {
   function onHeroMove(e) {
     const el = heroRef.current;
     if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     const r = el.getBoundingClientRect();
     const x = (e.clientX - r.left) / Math.max(1, r.width);
     const y = (e.clientY - r.top) / Math.max(1, r.height);
     el.style.setProperty('--mx', `${(x * 100).toFixed(2)}%`);
     el.style.setProperty('--my', `${(y * 100).toFixed(2)}%`);
-    el.style.setProperty('--px', `${((x - 0.5) * 24).toFixed(2)}px`);
-    el.style.setProperty('--py', `${((y - 0.5) * 16).toFixed(2)}px`);
+    el.style.setProperty('--px', `${((x - 0.5) * 12).toFixed(2)}px`);
+    el.style.setProperty('--py', `${((y - 0.5) * 8).toFixed(2)}px`);
   }
 
   return (
@@ -276,15 +261,16 @@ export default function HomePage({ onLogin, onCoverage }) {
           <div className="mkt-hero-copy">
             <p className="mkt-kicker">
               <span className="live">● LIVE</span>
-              <span className="mid">REAL-TIME</span>
+              <span className="mid">RESEARCH TERMINAL</span>
               <span className="sys">SYS/READY_</span>
             </p>
             <h1>
               The Intelligence Layer for <em className="gov">Government</em>, <em className="pol">Policy</em> &amp; Global Affairs.
             </h1>
+            <p className="mkt-hook">{HOOK}</p>
             <p className="mkt-lede">
-              One terminal for 200+ authoritative data sources, spanning legislation, fronts, markets, carbon
-              and the courts. Investigate the record without leaving the desk.
+              Official sources across legislation, fronts, markets, carbon and the courts — with every
+              connection labelled. Investigate the record without leaving the desk.
             </p>
             <div className="mkt-hero-tele">
               <span>
@@ -293,7 +279,7 @@ export default function HomePage({ onLogin, onCoverage }) {
               </span>
               <span>
                 <i />
-                BILLS 4,576
+                BILLS 9,819
               </span>
               <span>
                 <i />
@@ -303,7 +289,7 @@ export default function HomePage({ onLogin, onCoverage }) {
             </div>
             <div className="mkt-hero-actions">
               <button type="button" className="mkt-cta" onClick={onLogin}>
-                Explore Live Terminal
+                Open the terminal
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M5 12h14M13 6l6 6-6 6" />
                 </svg>
@@ -313,44 +299,40 @@ export default function HomePage({ onLogin, onCoverage }) {
               </button>
             </div>
           </div>
-          <div className="mkt-orb-wrap" aria-hidden="true">
+          <div className="mkt-orb-wrap" aria-hidden="false">
             <div className="mkt-orb-layer">
-              <div className="mkt-orb-fx">
+              <div className="mkt-orb-fx mkt-orb-fx-quiet">
                 <span className="mkt-halo" />
-                <span className="mkt-ring r1" />
-                <span className="mkt-ring r2" />
-                <span className="mkt-ring r3" />
-                <span className="mkt-spark s1" />
-                <span className="mkt-spark s2" />
-                <span className="mkt-spark s3" />
-                <span className="mkt-spark s4" />
-                <span className="mkt-spark s5" />
               </div>
               <svg className="mkt-hero-orbits" viewBox="0 0 400 400">
                 <ellipse cx="200" cy="200" rx="188" ry="72" fill="none" stroke="#e4dfd6" strokeWidth="1" strokeDasharray="3 6" transform="rotate(-22 200 200)" />
                 <ellipse cx="200" cy="200" rx="176" ry="58" fill="none" stroke="#ebe6de" strokeWidth="1" strokeDasharray="2 7" transform="rotate(16 200 200)" />
                 <circle cx="200" cy="200" r="152" fill="none" stroke="#ddd8cf" strokeWidth="1" strokeDasharray="2 4" />
-                <ellipse cx="200" cy="200" rx="72" ry="152" fill="none" stroke="#e6e1d8" strokeWidth="0.8" strokeDasharray="2 5" />
-                <ellipse cx="200" cy="200" rx="152" ry="48" fill="none" stroke="#e6e1d8" strokeWidth="0.8" strokeDasharray="2 5" />
-                <ellipse cx="200" cy="200" rx="152" ry="100" fill="none" stroke="#ece7de" strokeWidth="0.7" strokeDasharray="2 6" />
-                <circle cx="318" cy="118" r="3" fill="#c81322" />
-                <circle cx="86" cy="168" r="3" fill="#012ea1" />
-                <circle cx="274" cy="286" r="2.5" fill="#c81322" />
               </svg>
-              <img className="mkt-globe" src="/brand/globe.png?v=3" alt="" />
+              <img className="mkt-globe mkt-globe-slow" src="/brand/globe.png?v=3" alt="" />
             </div>
-            {CHIPS.map((chip) => (
-              <div
-                key={chip.label}
-                className={`mkt-chip ${chip.cls}${capFocus === chip.cap ? ' on' : ''}`}
-                onMouseEnter={() => setCapFocus(chip.cap)}
-                onMouseLeave={() => setCapFocus(null)}
+            {PERSONAS.map((p, i) => (
+              <button
+                type="button"
+                key={p.id}
+                className={`mkt-pchip c${i + 1} tone-${p.tone}${heroPersona === p.id ? ' on' : ''}`}
+                onMouseEnter={() => setHeroPersona(p.id)}
+                onMouseLeave={() => setHeroPersona(null)}
+                onFocus={() => setHeroPersona(p.id)}
+                onBlur={() => setHeroPersona(null)}
+                onClick={onLogin}
+                aria-expanded={heroPersona === p.id}
               >
                 <i>
-                  <Ico d={chip.d} size={14} />
+                  <Ico d={p.d} size={14} />
                 </i>
-                {chip.label}
-              </div>
+                <span className="lab">{p.label}</span>
+                <span className="gets">
+                  {p.gets.map((g) => (
+                    <em key={g}>{g}</em>
+                  ))}
+                </span>
+              </button>
             ))}
           </div>
         </div>
@@ -360,19 +342,19 @@ export default function HomePage({ onLogin, onCoverage }) {
               <i>
                 <Ico d="M12 3a9 9 0 100 18 9 9 0 000-18zM3 12h18" />
               </i>
-              211+ Live Endpoints
+              12 desks · curated modules
             </div>
             <div className="mkt-mini-stat t-purple">
               <i>
                 <Ico d="M4 21h16M4 10h16M12 3l8 7H4z" />
               </i>
-              4,576+ Bills Tracked
+              9,819 bills on the tracker
             </div>
             <div className="mkt-mini-stat t-sand">
               <i>
                 <Ico d="M4 5h16v14H4zM8 3v4M16 3v4M4 9h16" />
               </i>
-              1952–2026 Comprehensive Coverage
+              Coverage from 1952 onward
             </div>
           </div>
         </div>
@@ -381,9 +363,11 @@ export default function HomePage({ onLogin, onCoverage }) {
       <section className="mkt-intro" aria-labelledby="mkt-intro-title">
         <div className="mkt-wrap mkt-intro-inner">
           <p>What nter.pro is</p>
-          <h2 id="mkt-intro-title">A research workspace for public records, current events and institutional data.</h2>
-          <span>Search, compare and ask questions across linked sources while keeping provenance visible.</span>
-          <button type="button" onClick={onLogin}>Open the terminal →</button>
+          <h2 id="mkt-intro-title">{PRODUCT_DEF}</h2>
+          <span>Provisional product line — search, compare and ask across linked sources while keeping provenance visible.</span>
+          <button type="button" onClick={onLogin}>
+            Open the terminal →
+          </button>
         </div>
       </section>
 
@@ -395,7 +379,7 @@ export default function HomePage({ onLogin, onCoverage }) {
               <h2 id="mkt-video-title">{introVideo.title || 'What nter.pro is'}</h2>
               <span>{introVideo.subtitle || 'A short look at the terminal before you decide to sign in.'}</span>
               <button type="button" className="mkt-cta" onClick={onLogin}>
-                Explore Live Terminal
+                Open the terminal
               </button>
             </div>
             <div className="mkt-video-stage">
@@ -436,19 +420,64 @@ export default function HomePage({ onLogin, onCoverage }) {
         </section>
       ) : null}
 
-      <section className="mkt-personas" aria-labelledby="mkt-personas-title">
+      <section className="mkt-personas mkt-persona-carousel-sec" aria-labelledby="mkt-personas-title">
         <div className="mkt-wrap">
           <div className="mkt-personas-head">
-            <p>BUILT FOR THE QUESTION BEHIND THE QUESTION</p>
-            <h2 id="mkt-personas-title">Start with your work, not our modules.</h2>
+            <p>BUILT FOR THE WAY YOU WORK</p>
+            <h2 id="mkt-personas-title">Six ways into the same record.</h2>
           </div>
-          <div className="mkt-persona-grid">
-            {PERSONAS.map(([name, copy]) => (
-              <button type="button" className="mkt-persona" key={name} onClick={onLogin}>
-                <strong>{name}</strong>
-                <span>{copy}</span>
-                <em>Explore workspace →</em>
-              </button>
+          <div className="mkt-persona-rail">
+            <button
+              type="button"
+              className="mkt-persona-arrow prev"
+              aria-label="Previous persona"
+              onClick={() => scrollPersonaTo(carouselIdx - 1)}
+            >
+              ‹
+            </button>
+            <div className="mkt-persona-carousel" ref={carouselRef}>
+              {PERSONAS.map((p, i) => (
+                <article
+                  className={`mkt-persona-slide tone-${p.tone}${i === carouselIdx ? ' on' : ''}`}
+                  key={p.id}
+                  data-pi={i}
+                >
+                  <header>
+                    <i>
+                      <Ico d={p.d} size={22} />
+                    </i>
+                    <strong>{p.label}</strong>
+                  </header>
+                  <p>{p.useCase}</p>
+                  <ul>
+                    {p.gets.map((g) => (
+                      <li key={g}>{g}</li>
+                    ))}
+                  </ul>
+                  <button type="button" onClick={onLogin}>
+                    Start as {p.label} →
+                  </button>
+                </article>
+              ))}
+            </div>
+            <button
+              type="button"
+              className="mkt-persona-arrow next"
+              aria-label="Next persona"
+              onClick={() => scrollPersonaTo(carouselIdx + 1)}
+            >
+              ›
+            </button>
+          </div>
+          <div className="mkt-persona-dots" role="tablist" aria-label="Personas">
+            {PERSONAS.map((p, i) => (
+              <button
+                type="button"
+                key={p.id}
+                className={i === carouselIdx ? 'on' : ''}
+                aria-label={p.label}
+                onClick={() => scrollPersonaTo(i)}
+              />
             ))}
           </div>
         </div>
@@ -521,73 +550,93 @@ export default function HomePage({ onLogin, onCoverage }) {
                 All Desks
               </button>
             </aside>
-            <div className="mkt-prev-table">
-              <div className="mkt-prev-top">
-                <h3>
-                  {desk.title}
-                  <span className="mkt-prev-live">
-                    <i />
-                    LIVE FEED
-                  </span>
-                </h3>
-                <div className="mkt-prev-search">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <circle cx="11" cy="11" r="7" />
-                    <path d="M20 20l-3-3" />
-                  </svg>
-                  <input
-                    value={q}
-                    placeholder="Filter this table"
-                    onChange={(e) => {
-                      setQ(e.target.value);
-                      setPicked(0);
-                    }}
-                  />
+            {desk.demo ? (
+              <div className="mkt-prev-table mkt-prev-demo">
+                <div className="mkt-prev-top">
+                  <h3>
+                    {desk.title}
+                    <span className="mkt-prev-live">
+                      <i />
+                      DEMO
+                    </span>
+                  </h3>
                 </div>
-              </div>
-              <div className="mkt-prev-cols">
-                <span>{desk.cols[0]}</span>
-                <span>{desk.cols[1]}</span>
-              </div>
-              {rows.length === 0 && <div className="mkt-prev-empty">No rows match this filter.</div>}
-              {rows.map(([name, house], i) => (
-                <button type="button" className={`mkt-prev-row${i === picked ? ' on' : ''}`} key={name} onClick={() => setPicked(i)}>
-                  <b>{name}</b>
-                  <span>{house}</span>
+                <BillAiDropDemo />
+                <button type="button" className="mkt-prev-more" onClick={onLogin}>
+                  Try it in the terminal →
                 </button>
-              ))}
-              <button type="button" className="mkt-prev-more" onClick={onLogin}>
-                {desk.more}
-              </button>
-            </div>
-            <aside className="mkt-prev-rail">
-              <div className="mkt-prev-tabs">
-                <span className="mkt-prev-tab-static">Key indicators</span>
               </div>
-              <div className="mkt-kpi-grid">
-                {desk.kpis.map(([n, tone, lab]) => (
-                  <div className="mkt-kpi" key={lab}>
-                    <strong className={tone}>{n}</strong>
-                    <small>{lab}</small>
+            ) : (
+              <>
+                <div className="mkt-prev-table">
+                  <div className="mkt-prev-top">
+                    <h3>
+                      {desk.title}
+                      <span className="mkt-prev-live">
+                        <i />
+                        LIVE FEED
+                      </span>
+                    </h3>
+                    <div className="mkt-prev-search">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <circle cx="11" cy="11" r="7" />
+                        <path d="M20 20l-3-3" />
+                      </svg>
+                      <input
+                        value={q}
+                        placeholder="Filter this table"
+                        onChange={(e) => {
+                          setQ(e.target.value);
+                          setPicked(0);
+                        }}
+                      />
+                    </div>
                   </div>
-                ))}
-              </div>
-              <div className="mkt-bar-lab">STATUS BY STAGE</div>
-              {desk.bars.map(([lab, count, pct, width, tone]) => (
-                <div className="mkt-bar" key={`${desk.id}-${lab}`}>
-                  <span>{lab}</span>
-                  <i>
-                    <b className={tone} style={{ width: `${width}%` }} />
-                  </i>
-                  <em>
-                    {count.toLocaleString()} ({pct})
-                  </em>
+                  <div className="mkt-prev-cols">
+                    <span>{desk.cols[0]}</span>
+                    <span>{desk.cols[1]}</span>
+                  </div>
+                  {rows.length === 0 && <div className="mkt-prev-empty">No rows match this filter.</div>}
+                  {rows.map(([name, house], i) => (
+                    <button type="button" className={`mkt-prev-row${i === picked ? ' on' : ''}`} key={name} onClick={() => setPicked(i)}>
+                      <b>{name}</b>
+                      <span>{house}</span>
+                    </button>
+                  ))}
+                  <button type="button" className="mkt-prev-more" onClick={onLogin}>
+                    {desk.more}
+                  </button>
                 </div>
-              ))}
-              <p className="mkt-ai" style={{ marginTop: 12 }}>
-                {desk.note}
-              </p>
-            </aside>
+                <aside className="mkt-prev-rail">
+                  <div className="mkt-prev-tabs">
+                    <span className="mkt-prev-tab-static">Key indicators</span>
+                  </div>
+                  <div className="mkt-kpi-grid">
+                    {desk.kpis.map(([n, tone, lab]) => (
+                      <div className="mkt-kpi" key={lab}>
+                        <strong className={tone}>{n}</strong>
+                        <small>{lab}</small>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mkt-bar-lab">STATUS BY STAGE</div>
+                  {desk.bars.map(([lab, count, pct, width, tone]) => (
+                    <div className="mkt-bar" key={`${desk.id}-${lab}`}>
+                      <span>{lab}</span>
+                      <i>
+                        <b className={tone} style={{ width: `${width}%` }} />
+                      </i>
+                      <em>
+                        {count.toLocaleString()} ({pct})
+                      </em>
+                    </div>
+                  ))}
+                  <p className="mkt-ai" style={{ marginTop: 12 }}>
+                    {desk.note}
+                  </p>
+                </aside>
+              </>
+            )}
           </div>
         </div>
       </section>
@@ -628,7 +677,7 @@ export default function HomePage({ onLogin, onCoverage }) {
                 <Ico d="M4 21h16M4 10h16M12 3l8 7H4z" size={16} />
               </i>
               <div>
-                <div className="n">4,576+</div>
+                <div className="n">9,819</div>
                 <div className="l">Bills Tracked</div>
               </div>
             </div>

@@ -14,6 +14,8 @@ export const DEFAULT_PERSONA_PROMPTS = {
   lawyer: String(lawyerPrompt || '').trim(),
   policy: String(policyPrompt || '').trim(),
   analyst: String(analystPrompt || '').trim(),
+  // Academic reuses the student research stance until a dedicated prompt ships.
+  academic: String(studentPrompt || '').trim(),
 };
 
 function emptyMap() {
@@ -62,6 +64,16 @@ export function resetPersonaPrompt(typeId) {
   return savePersonaPrompts(next);
 }
 
+/** Shipped markdown only — live desk / server path (A-07). */
+export function shippedPersonaPromptFor(typeId) {
+  const id = userTypeOf(typeId).id;
+  return String(DEFAULT_PERSONA_PROMPTS[id] || '').trim();
+}
+
+/**
+ * Admin drafts (localStorage). Do not use for live /api/ai/chat —
+ * those resolve shipped prompts on the server unless probe=true.
+ */
 export function personaPromptFor(typeId) {
   const id = userTypeOf(typeId).id;
   const map = loadPersonaPrompts();

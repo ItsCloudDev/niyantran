@@ -191,15 +191,13 @@ export default function RightRail({ feed, selected, onSelect, lang, loading, viz
               onResearch={() => openAiResearch({ row: selected, attachFeed: true })}
             />
           ) : selected && !indicators ? (
-            <>
-              <RecordDetail row={selected} feed={feed} onClear={() => onSelect?.(null)} />
-              <h3 className="rd-charts-label">{overview.title}</h3>
-            </>
+            <RecordDetail row={selected} feed={feed} onClear={() => onSelect?.(null)} />
           ) : !indicators ? (
             <p className="rail-empty">Select a row in the feed to inspect the record.</p>
           ) : null}
 
-          {!dossier && !(selected && isNationalTable(feed?.feature)) && (
+          {/* CR-15/16: when a row is selected, keep the record panel — do not stack feed-level auto charts under it. */}
+          {!dossier && !(selected && isNationalTable(feed?.feature)) && !selected && (
             <>
               <div className="kpi-grid">
                 {overview.kpis.slice(0, 4).map((k) => (

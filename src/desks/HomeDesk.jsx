@@ -15,6 +15,7 @@ import { aiDragProps } from '../lib/aiDrop.js';
 import { dedupeNewsRows } from '../lib/newsDedup.js';
 import { applyRecordChecklistToFeed } from '../lib/recordChecklist.js';
 import { prepareHomeMarketQuotes } from '../lib/homeMarkets.js';
+import { loadHomeTickerItems } from '../lib/homeTicker.js';
 
 async function getJson(path, signal) {
   const route = String(path).split('?')[0];
@@ -69,10 +70,10 @@ function Spark({ values, up }) {
   );
 }
 
-function AgentBadge({ ageH }) {
+function SnapshotBadge({ ageH }) {
   if (ageH == null || !Number.isFinite(Number(ageH))) return null;
   const label = ageH < 1 ? '<1h' : `${Math.round(ageH)}h`;
-  return <span className="nh-agent">↻ agent · {label} ago</span>;
+  return <span className="nh-agent">snapshot · {label} ago</span>;
 }
 
 export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }) {
@@ -87,6 +88,7 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
   });
   const [ad, setAd] = useState(0);
   const [loading, setLoading] = useState(!homeCacheHasRows(boot));
+  const [topics, setTopics] = useState([]);
   const prevReload = useRef(reload);
 
   const featured = zine[0];
@@ -132,6 +134,16 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
     const t = setInterval(() => setAd((i) => (i + 1) % ads.length), 5000);
     return () => clearInterval(t);
   }, []);
+
+  useEffect(() => {
+    let alive = true;
+    loadHomeTickerItems().then((items) => {
+      if (alive) setTopics(items);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [reload]);
 
   useEffect(() => {
     const ac = new AbortController();
@@ -247,6 +259,29 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
 
   return (
     <div className="nh">
+      {topics.length ? (
+        <div className="nh-topics" aria-label="Hot topics">
+          <span className="nh-topics-label">HOT TOPICS</span>
+          <div className="nh-topics-viewport">
+            <div className="nh-topics-track">
+              {[0, 1].map((copy) =>
+                topics.map((it, i) => (
+                  <button
+                    key={`${copy}-${it.key}-${i}`}
+                    type="button"
+                    className="nh-topic"
+                    aria-hidden={copy === 1 || undefined}
+                    onClick={() => onOpen({ tab: it.tab, feature: it.feature })}
+                  >
+                    <span className={`nh-topic-cat cat-${it.key}`}>{it.cat}</span>
+                    <span className="nh-topic-text">{it.text}</span>
+                  </button>
+                )),
+              )}
+            </div>
+          </div>
+        </div>
+      ) : null}
       <div className="nh-strip" aria-label="Market quotes">
         <div className="nh-strip-track">
           {[0, 1].map((copy) =>
@@ -355,7 +390,7 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
             <div className="bh">
               <span>
                 MARKETS
-                <AgentBadge ageH={meta.markets?.ageH} />
+                <SnapshotBadge ageH={meta.markets?.ageH} />
               </span>
               <button type="button" className="nh-link" onClick={() => onOpen({ tab: 'economics', feature: 'NSE/BSE Delayed Market Feed' })} {...aiDragProps({ kind: 'feature', tab: 'economics', feature: 'NSE/BSE Delayed Market Feed', title: 'NSE/BSE Delayed Market Feed' })}>
                 Economics desk →
@@ -390,12 +425,18 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
 
           <section className="nh-box">
             <div className="bh">
-              LATEST
-              <AgentBadge ageH={meta.latest?.ageH} />
+              <span>
+                LATEST FROM NTER.NEWS
+                <SnapshotBadge ageH={meta.latest?.ageH} />
+              </span>
             </div>
             <ul className="nh-latest">
               {loading && !latest.length && <li className="muted">Loading…</li>}
-              {!loading && !latestShown.length && <li className="muted">Wire quiet. Headlines arrive from RSS when the proxy can reach the publishers.</li>}
+              {!loading && !latestShown.length && (
+                <li className="muted">
+                  {meta.latest?.note || 'nter.news feed not configured on this build. No headlines were invented.'}
+                </li>
+              )}
               {latestShown.map((r, i) => (
                 <li key={`${r.link}-${i}`} {...aiDragProps({ kind: 'row', title: r.title, row: { title: r.title, source_url: r.link, src: r.src } })}>
                   <a href={r.link} target="_blank" rel="noreferrer">
@@ -416,7 +457,7 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
             <div className="bh">
               CONFLICT PULSE{' '}
               <small>{meta.pulse?.gdelt ? 'GDELT · LIVE' : meta.pulse?.rows?.length ? 'OPEN FRONTS' : ''}</small>
-              <AgentBadge ageH={meta.pulse?.ageH} />
+              <SnapshotBadge ageH={meta.pulse?.ageH} />
             </div>
             <ul className="nh-pulse">
               {loading && !pulse.length && <li className="muted">Loading…</li>}

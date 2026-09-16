@@ -1,5 +1,4 @@
 import { pickAiRole, activeAiProvider, AI_PROVIDERS } from './aiModelsStore.js';
-import { personaPromptFor } from './personaPromptsStore.js';
 import { sessionUser, userTypeOf } from './userStore.js';
 
 export async function sendAiChat({
@@ -10,14 +9,20 @@ export async function sendAiChat({
   signal,
   userType,
   personaPrompt: override,
+  probe = false,
   model: modelOverride,
   provider: providerOverride,
+  focus = 'attached',
+  workMode = false,
+  selection = null,
+  deskContext = null,
 }) {
   const role = pickAiRole(attachments, roleId);
   const live = activeAiProvider();
   const picked =
     AI_PROVIDERS.find((p) => p.enabled && p.model === modelOverride) ||
     AI_PROVIDERS.find((p) => p.enabled && p.id === providerOverride) ||
+    AI_PROVIDERS.find((p) => p.enabled && p.provider === providerOverride) ||
     live;
   const model = (modelOverride && String(modelOverride).trim()) || picked.model || role.model || live.model;
   let provider = String(
@@ -32,28 +37,38 @@ export async function sendAiChat({
   if (provider === 'openai' || provider === 'gpt') provider = 'openrouter';
 
   const typeId = userTypeOf(userType || sessionUser()?.type).id;
-  const personaPrompt = override != null ? String(override) : personaPromptFor(typeId);
+
+  // A-07: live chats never send client-editable persona text. Admin probe may.
+  const body = {
+    roleId: role.id,
+    model,
+    provider,
+    userType: typeId,
+    focus: String(focus || 'attached'),
+    workMode: Boolean(workMode),
+    messages,
+    attachments,
+    files: files || attachments?.flatMap((a) => a.files || []) || [],
+    selection: selection || undefined,
+    deskContext: deskContext || undefined,
+  };
+  if (probe === true) {
+    body.probe = true;
+    body.personaPrompt = override != null ? String(override) : '';
+  }
+
   const res = await fetch('/api/ai/chat', {
     method: 'POST',
     signal,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      roleId: role.id,
-      model,
-      provider,
-      userType: typeId,
-      personaPrompt,
-      messages,
-      attachments,
-      files: files || attachments?.flatMap((a) => a.files || []) || [],
-    }),
+    body: JSON.stringify(body),
   });
-  const body = await res.json().catch(() => null);
-  if (!res.ok || !body?.ok) {
-    throw new Error(body?.error || `AI HTTP ${res.status}`);
+  const data = await res.json().catch(() => null);
+  if (!res.ok || !data?.ok) {
+    throw new Error(data?.error || `AI HTTP ${res.status}`);
   }
   return {
-    ...body,
-    role: { ...role, provider: body.provider || provider, model: body.model || model },
+    ...data,
+    role: { ...role, provider: data.provider || provider, model: data.model || model },
   };
 }

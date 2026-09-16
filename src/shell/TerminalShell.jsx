@@ -16,7 +16,10 @@ import { isGithubCsvRow } from '../lib/githubCsv.js';
 import { parseDeskHash, resolveDeskRoute, writeDeskHash } from '../lib/deskRoute.js';
 import { kickHomeRefreshIfDue } from '../lib/homeCache.js';
 import { canOpenDesk, clearSessionUser, sessionUser, tabsForType, userTypeOf } from '../lib/userStore.js';
+import { setPageTitle } from '../lib/siteHead.js';
 import AiDock from '../ai/AiDock.jsx';
+import OnboardingTour from './OnboardingTour.jsx';
+import { clearPersonaPrefs } from '../lib/personas.js';
 
 export default function TerminalShell({ onLogout }) {
   const start = parseDeskHash();
@@ -31,6 +34,7 @@ export default function TerminalShell({ onLogout }) {
   const [loading, setLoading] = useState(false);
   const [vizFilter, setVizFilter] = useState(null);
   const [aiOpen, setAiOpen] = useState(false);
+  const [liveTvOpen, setLiveTvOpen] = useState(false);
   const user = sessionUser();
   const typeId = userTypeOf(user?.type).id;
   const typeMeta = userTypeOf(typeId);
@@ -38,6 +42,30 @@ export default function TerminalShell({ onLogout }) {
 
   const active = deskTabs.find((t) => t.id === tab) || TABS.find((t) => t.id === tab) || TABS[0];
   const hi = lang === 'hi';
+
+  useEffect(() => {
+    const desk = active?.label || tab || 'Terminal';
+    const feat = String(featureName || '').trim();
+    setPageTitle(feat ? `${feat} · ${desk}` : desk === 'Home' ? 'Terminal' : desk);
+  }, [tab, featureName, active?.label]);
+
+  useEffect(() => {
+    if (!liveTvOpen) return undefined;
+    function onDoc(e) {
+      if (e.target?.closest?.('.tv-wrap')) return;
+      setLiveTvOpen(false);
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') setLiveTvOpen(false);
+    }
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [liveTvOpen]);
+
   const onFeed = useCallback((body) => setFeed(body), []);
   const onSelect = useCallback((row) => setSelected(row), []);
   const onLoading = useCallback((v) => setLoading(Boolean(v)), []);
@@ -240,13 +268,34 @@ export default function TerminalShell({ onLogout }) {
           <button type="button" className="icon-btn" onClick={() => setLang(hi ? 'en' : 'hi')}>
             {hi ? 'HI' : 'EN'}
           </button>
-          <button type="button" className="icon-btn" disabled title="Notifications not configured">
+          <button type="button" className="icon-btn" disabled title="Notifications not configured (Beta)">
             <Icon name="bell" />
           </button>
-          <button type="button" className="tv-btn" disabled title="Live TV placeholder">
-            <span className="live-dot" />
-            LIVE TV
-          </button>
+          <div className="tv-wrap">
+            <button
+              type="button"
+              className="tv-btn"
+              onClick={() => setLiveTvOpen((v) => !v)}
+              title="Live TV is in Beta — no stream connected yet"
+              aria-expanded={liveTvOpen}
+            >
+              <span className="live-dot" />
+              LIVE TV
+              <span className="beta-pill">Beta</span>
+            </button>
+            {liveTvOpen ? (
+              <div className="live-tv-pop" role="dialog" aria-label="Live TV">
+                <header>
+                  <strong>Live TV</strong>
+                  <span className="beta-pill">Beta</span>
+                  <button type="button" className="ghost-btn tiny" onClick={() => setLiveTvOpen(false)}>
+                    Close
+                  </button>
+                </header>
+                <p>No stream is connected on this build. The control is labelled Beta until a feed URL is wired.</p>
+              </div>
+            ) : null}
+          </div>
           <button
             type="button"
             className={`icon-btn${loading ? ' spin' : ''}`}
@@ -272,6 +321,7 @@ export default function TerminalShell({ onLogout }) {
             className="logout-btn"
             onClick={() => {
               clearSessionUser();
+              clearPersonaPrefs();
               if (typeof location !== 'undefined') location.hash = '#/';
               onLogout?.();
             }}
@@ -312,6 +362,7 @@ export default function TerminalShell({ onLogout }) {
         )}
         <AiDock feed={feed} selected={selected} tab={tab} featureName={featureName} lang={lang} onOpenChange={setAiOpen} />
       </div>
+      {tab === 'home' ? <OnboardingTour kind="home" /> : <OnboardingTour kind="desk" deskId={tab} />}
     </div>
   );
 }

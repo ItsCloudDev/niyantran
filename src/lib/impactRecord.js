@@ -100,11 +100,62 @@ export function loadOntology() {
   return ontologyP;
 }
 
+function catNorm(s) {
+  return String(s || '')
+    .toLowerCase()
+    .replace(/[^a-z]+/g, '');
+}
+
+/** Analysis JSON is keyed "1"…"N"; tracker rows use Sansad-style ids. Join by bill_number + category. */
+const analysisIndexCache = new WeakMap();
+
+function analysisIndex(map) {
+  let ix = analysisIndexCache.get(map);
+  if (ix) return ix;
+  const byNumCat = new Map();
+  const byNum = new Map();
+  for (const [k, v] of Object.entries(map)) {
+    if (!v || typeof v !== 'object') continue;
+    const n = String(v.enrichment?.bill_number || '').trim();
+    if (!n) {
+      // numeric string keys remain direct lookups via map[k]
+      continue;
+    }
+    const cat = catNorm(v.enrichment?.bill_category);
+    const nc = `${n}|${cat}`;
+    if (!byNumCat.has(nc)) byNumCat.set(nc, v);
+    const bucket = byNum.get(n) || [];
+    bucket.push(v);
+    byNum.set(n, bucket);
+  }
+  ix = { byNumCat, byNum };
+  analysisIndexCache.set(map, ix);
+  return ix;
+}
+
 export function analysisFor(row, map) {
   if (!row || !map) return null;
   if (row.id != null && (map[String(row.id)] || map[row.id])) return map[String(row.id)] || map[row.id];
   if (row.__idx != null && map[String(row.__idx)]) return map[String(row.__idx)];
+  const n = String(row.bill_number || '').trim();
+  if (!n) return null;
+  const ix = analysisIndex(map);
+  const cat = catNorm(row.bill_category);
+  const byCat = ix.byNumCat.get(`${n}|${cat}`);
+  if (byCat) return byCat;
+  const bucket = ix.byNum.get(n) || [];
+  if (bucket.length === 1) return bucket[0];
   return null;
+}
+
+function computeDaysInStage(row, du) {
+  if (du?.days_in_current_stage != null && Number.isFinite(Number(du.days_in_current_stage))) {
+    return Number(du.days_in_current_stage);
+  }
+  const raw = row?.date_introduced || row?.occurred_at || row?.source_date_raw || '';
+  const d = Date.parse(String(raw).replace(' ', 'T'));
+  if (!Number.isFinite(d)) return null;
+  return Math.max(0, Math.round((Date.now() - d) / 86400000));
 }
 
 function titleCase(s) {
@@ -219,7 +270,7 @@ export function billFacts(row, a) {
   const pr = a?.precedent || {};
   const du = a?.stage_duration || {};
   const score = pp.score == null ? (row.probability_score === '' ? null : Number(row.probability_score)) : pp.score;
-  const days = du.days_in_current_stage;
+  const days = computeDaysInStage(row, du);
   const typical = du.typical_days_for_stage;
   const secs = arr(a?.sectors);
   if (!secs.length && row.sector) secs.push(titleCase(row.sector));

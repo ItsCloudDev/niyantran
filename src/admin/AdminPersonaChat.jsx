@@ -55,6 +55,7 @@ export default function AdminPersonaChat({ typeId, personaPrompt }) {
         attachments: [],
         userType: probeType,
         personaPrompt,
+        probe: true,
       });
       setThreads((map) => ({
         ...map,
@@ -107,7 +108,8 @@ export default function AdminPersonaChat({ typeId, personaPrompt }) {
       <div ref={scroller} className="adm-mini-log">
         {!messages.length && !busy ? (
           <p className="adm-mini-empty">
-            Same hidden system prompt the live desk uses. Switch types above — each type keeps its own thread.
+            Admin probe may override the shipped prompt for this thread. Live desk chats always use{' '}
+            <code>src/data/personas/*.md</code> on the server.
           </p>
         ) : null}
         {messages.map((m, i) => (

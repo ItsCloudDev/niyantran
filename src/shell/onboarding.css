@@ -1,0 +1,175 @@
+/* CR-07 / CR-08 — persona chooser + first-run tours */
+
+.persona-chooser {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: linear-gradient(160deg, #0b1220 0%, #152238 55%, #1a2740 100%);
+  color: #e8edf2;
+}
+.persona-chooser-card {
+  width: min(980px, 100%);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+.persona-kicker {
+  margin: 0 0 8px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #93a4b8;
+}
+.persona-chooser-card h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  font-weight: 700;
+}
+.persona-lead {
+  margin: 0 0 20px;
+  color: #b9c2cc;
+  line-height: 1.45;
+}
+.persona-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+@media (max-width: 860px) {
+  .persona-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 520px) {
+  .persona-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.persona-card {
+  text-align: left;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(13, 22, 36, 0.85);
+  color: inherit;
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 150px;
+}
+.persona-card strong {
+  font-size: 15px;
+}
+.persona-blurb {
+  font-size: 12px;
+  color: #9aa8b8;
+  line-height: 1.4;
+}
+.persona-gets {
+  display: none;
+  margin: 0;
+  padding-left: 16px;
+  font-size: 11px;
+  color: #c5d0dc;
+  line-height: 1.35;
+}
+.persona-card:hover .persona-gets,
+.persona-card.on .persona-gets,
+.persona-card:focus-visible .persona-gets {
+  display: block;
+}
+.persona-card:hover,
+.persona-card.on {
+  border-color: #6ea8fe;
+  box-shadow: 0 0 0 1px rgba(110, 168, 254, 0.35);
+}
+.persona-followups {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 16px;
+}
+.persona-followups label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: #c5ced8;
+}
+.persona-followups select {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: #0d1624;
+  color: #e8edf2;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font: inherit;
+}
+.persona-continue {
+  justify-self: start;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 16px;
+  background: #e8edf2;
+  color: #0b1220;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.niy-tour {
+  position: fixed;
+  inset: auto 16px 72px auto;
+  z-index: 70;
+  max-width: min(380px, calc(100vw - 32px));
+}
+.niy-tour-card {
+  background: var(--panel, #fff);
+  color: var(--fg, #0f172a);
+  border: 1px solid var(--line, #dbe3ee);
+  border-radius: 12px;
+  padding: 14px 16px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.18);
+}
+.niy-tour-kicker {
+  margin: 0 0 6px;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted, #64748b);
+}
+.niy-tour-card h2 {
+  margin: 0 0 6px;
+  font-size: 15px;
+}
+.niy-tour-card p {
+  margin: 0 0 12px;
+  font-size: 13px;
+  color: var(--muted, #64748b);
+  line-height: 1.45;
+}
+.niy-tour-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+.niy-tour-actions button {
+  border-radius: 8px;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--line, #dbe3ee);
+  background: var(--panel, #fff);
+}
+.niy-tour-actions button:not(.ghost) {
+  background: #0f172a;
+  color: #fff;
+  border-color: #0f172a;
+}
+.niy-tour-actions .ghost {
+  color: var(--muted, #64748b);
+}

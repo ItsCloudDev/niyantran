@@ -20,15 +20,16 @@ export function AiPersonasPage() {
 
   function onSave() {
     savePersonaPrompts(drafts);
-    setMsg('Persona prompts saved. Live chats pick them up on the next message — the user never sees this text.');
+    setMsg('Persona drafts saved for the admin probe only. Live desk chats keep using shipped src/data/personas/*.md on the server.');
   }
 
   return (
     <>
       <h1 className="adm-h1">AI personas</h1>
       <p className="adm-lede">
-        Hidden training for each login type. Switch a type, edit the prompt, and probe it in the mini chat — the same
-        system instruction the live desk uses, never shown to the user.
+        Shipped persona files power live desk chats (server-side). Edits here are for the admin probe only and are not
+        sent to production chats — save locally to try wording, then promote by updating{' '}
+        <code>src/data/personas/*.md</code>. Never shown to the user.
       </p>
       <div className="adm-persona-types" role="tablist">
         {USER_TYPES.map((t) => (
