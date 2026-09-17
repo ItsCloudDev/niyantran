@@ -184,7 +184,7 @@ function flattenRow(item) {
   return out;
 }
 
-function envelope({ feature, rows, adapter, note, fallback, kind, meta, timeline, tier }) {
+function envelope({ feature, rows, adapter, note, fallback, kind, meta, timeline, tier, coverage }) {
   return {
     ok: true,
     tier: tier || feature?.htmlTier || '',
@@ -197,8 +197,10 @@ function envelope({ feature, rows, adapter, note, fallback, kind, meta, timeline
       gdelt: false,
       kind: kind || '',
     },
-    coverage: { from: '', through: '', exhaustive: false },
-    fallback: fallback !== false,
+    // Primary embedded registers are the product dataset — not a degraded live fallback.
+    // Only mark fallback when the caller sets it explicitly (e.g. live API failed → pack).
+    coverage: coverage || { from: '', through: '', exhaustive: false },
+    fallback: Boolean(fallback),
     timeline: Array.isArray(timeline) ? timeline : [],
     meta: meta || null,
   };
@@ -724,10 +726,30 @@ export async function fetchArchiveFeature({ tier, feature, signal } = {}) {
   for (const key of archiveKeys) {
     const rows = await loadEmbedded(key, signal);
     if (rows.length) {
+      const isBillRegister =
+        /bill passage|policy intelligence graph/i.test(name) || /national_bill_tracker/i.test(String(key));
+      if (isBillRegister) {
+        return envelope({
+          feature: feat,
+          rows,
+          adapter: 'bill-history',
+          note: 'national_bill_tracker.csv — 1952–present. Sansad getBills is not wired for refresh on this host.',
+          fallback: false,
+          coverage: { from: '1952-01-01', through: 'present', exhaustive: true },
+          meta: {
+            section: 'BILL PASSAGE INDEX',
+            status: 'REGISTER · SANSAD / PRS ARCHIVE',
+            heading: 'BILL PASSAGE INDEX',
+          },
+          tier: feat.htmlTier || tier || '',
+        });
+      }
       return envelope({
         feature: feat,
         rows,
-        note: 'Shipped register for this module.',
+        note: 'Primary register for this module (embedded dataset).',
+        fallback: false,
+        coverage: { from: '', through: 'present', exhaustive: true },
         tier: feat.htmlTier || tier || '',
       });
     }

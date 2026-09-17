@@ -133,12 +133,11 @@ export async function fetchFeature({ tier, feature, signal } = {}) {
       return {
         ...archive,
         ok: true,
-        fallback: Boolean(archive.fallback) && hasRealRows(archive),
+        // Honour the pack flag only; never invent a fallback just because the host is static.
+        fallback: Boolean(archive.fallback),
         source: {
           ...(archive.source || {}),
-          note:
-            archive.source?.note ||
-            'Shipped pack on this host (live feature-feed not deployed).',
+          note: archive.source?.note || 'Embedded register on this host.',
         },
       };
     }
