@@ -6,6 +6,7 @@ import {
   setSessionUser,
   userTypeOf,
 } from '../lib/userStore.js';
+import { hydrateUserPrefs } from '../lib/userPrefsSync.js';
 
 export default function LoginPage({ onSuccess, onSignup }) {
   const [error, setError] = useState('');
@@ -58,6 +59,7 @@ export default function LoginPage({ onSuccess, onSignup }) {
       applyPersonaForUser({ ...res.user, type, personaId: type });
       setSessionUser({ ...res.user, type, personaId: type });
       sessionStorage.setItem('niyantranLand', userTypeOf(type).startTab);
+      await hydrateUserPrefs(res.user.email);
       onSuccess();
       return;
     }

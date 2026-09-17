@@ -4,6 +4,8 @@ import { isGithubCsvRow } from '../lib/githubCsv.js';
 import { formatDate, formatDateTime } from '../lib/format.js';
 import CsvTablePane from './CsvTablePane.jsx';
 import { sensitiveNoteFor } from '../lib/sensitiveData.js';
+import { useEffect, useState } from 'react';
+import { resolveOrganisedBrief } from '../lib/sourceDoc.js';
 
 const SKIP = new Set([
   'source_url',
@@ -172,6 +174,70 @@ function sourcePairs(row) {
   return out;
 }
 
+function SourceBriefBlock({ row, title, analysisBrief, feature, tier }) {
+  const [text, setText] = useState('');
+  const [bullets, setBullets] = useState([]);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => {
+    if (analysisBrief && String(analysisBrief).length > 40) {
+      setText('');
+      setBullets([]);
+      setBusy(false);
+      return undefined;
+    }
+    const ac = new AbortController();
+    let alive = true;
+    setBusy(true);
+    resolveOrganisedBrief(row, {
+      title,
+      feature: feature || feedFeatureFallback(row),
+      tier: tier || '',
+      signal: ac.signal,
+    })
+      .then((got) => {
+        if (!alive) return;
+        setText(got.text || '');
+        setBullets(Array.isArray(got.bullets) ? got.bullets : []);
+      })
+      .catch((err) => {
+        if (!alive || err?.name === 'AbortError') return;
+        setText('');
+        setBullets([]);
+      })
+      .finally(() => {
+        if (alive) setBusy(false);
+      });
+    return () => {
+      alive = false;
+      ac.abort();
+    };
+  }, [row, title, analysisBrief, feature, tier]);
+
+  if (analysisBrief && String(analysisBrief).length > 40) return null;
+  if (!busy && !text && !bullets.length) return null;
+  return (
+    <div className="rd-section rd-ai">
+      <div className="rd-sec-label">SOURCE BRIEF</div>
+      {busy && !text && !bullets.length ? (
+        <div className="rd-ai-brief">Organising a short summary from the source…</div>
+      ) : bullets.length ? (
+        <ul className="rd-ai-bullets">
+          {bullets.map((b) => (
+            <li key={b}>{b}</li>
+          ))}
+        </ul>
+      ) : (
+        <div className="rd-ai-brief">{text}</div>
+      )}
+    </div>
+  );
+}
+
+function feedFeatureFallback(row) {
+  return row?.bill_name ? 'Bill Passage Probability Index' : row?.title || 'Record';
+}
+
 export default function RecordDetail({ row, feed, onClear }) {
   if (!row) return null;
   const entries = entriesOf(row);
@@ -318,6 +384,10 @@ export default function RecordDetail({ row, feed, onClear }) {
           </div>
         </div>
       )}
+
+      {!csvFile && !analysis ? (
+        <SourceBriefBlock row={row} title={title} analysisBrief="" feature={feed?.feature} tier={feed?.tier} />
+      ) : null}
 
       {!csvFile && summary ? <div className="rd-summary">{summary}</div> : null}
 

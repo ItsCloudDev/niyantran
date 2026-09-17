@@ -1,7 +1,70 @@
-/** First-run tours — localStorage only (no server accounts yet). */
+/** First-run tours — localStorage working copy; SQLite sync via userPrefsSync (A-15). */
 
 export const HOME_TOUR_KEY = 'niyOnboardHomeDone';
 const DESK_TOUR_PREFIX = 'niyTour:';
+const DESK_TOUR_INDEX = 'niyTourDesks';
+
+function emitDirty() {
+  try {
+    window.dispatchEvent(new CustomEvent('niy-prefs-dirty', { detail: { kind: 'tours' } }));
+  } catch {
+    /* ignore */
+  }
+}
+
+function readDeskMap() {
+  try {
+    const raw = localStorage.getItem(DESK_TOUR_INDEX);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === 'object') return parsed;
+    }
+  } catch {
+    /* ignore */
+  }
+  // Migrate scattered niyTour:* keys into one map when present.
+  const desks = {};
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith(DESK_TOUR_PREFIX) && localStorage.getItem(k) === '1') {
+        desks[k.slice(DESK_TOUR_PREFIX.length)] = true;
+      }
+    }
+  } catch {
+    /* ignore */
+  }
+  return desks;
+}
+
+function writeDeskMap(desks) {
+  localStorage.setItem(DESK_TOUR_INDEX, JSON.stringify(desks || {}));
+}
+
+export function readToursState() {
+  return {
+    home: isHomeTourDone(),
+    desks: readDeskMap(),
+  };
+}
+
+/** Apply server tours without re-pushing. Union with local (done wins). */
+export function applyToursFromServer(tours) {
+  if (!tours || typeof tours !== 'object') return readToursState();
+  const local = readToursState();
+  const home = Boolean(tours.home || local.home);
+  const desks = { ...local.desks, ...(tours.desks || {}) };
+  try {
+    if (home) localStorage.setItem(HOME_TOUR_KEY, '1');
+    writeDeskMap(desks);
+    for (const id of Object.keys(desks)) {
+      if (desks[id]) localStorage.setItem(`${DESK_TOUR_PREFIX}${id}`, '1');
+    }
+  } catch {
+    /* ignore */
+  }
+  return { home, desks };
+}
 
 export function isHomeTourDone() {
   try {
@@ -14,6 +77,7 @@ export function isHomeTourDone() {
 export function markHomeTourDone() {
   try {
     localStorage.setItem(HOME_TOUR_KEY, '1');
+    emitDirty();
   } catch {
     /* ignore */
   }
@@ -23,7 +87,8 @@ export function isDeskTourDone(deskId) {
   const id = String(deskId || '').trim();
   if (!id || id === 'home') return true;
   try {
-    return localStorage.getItem(`${DESK_TOUR_PREFIX}${id}`) === '1';
+    if (localStorage.getItem(`${DESK_TOUR_PREFIX}${id}`) === '1') return true;
+    return Boolean(readDeskMap()[id]);
   } catch {
     return true;
   }
@@ -34,6 +99,10 @@ export function markDeskTourDone(deskId) {
   if (!id) return;
   try {
     localStorage.setItem(`${DESK_TOUR_PREFIX}${id}`, '1');
+    const desks = readDeskMap();
+    desks[id] = true;
+    writeDeskMap(desks);
+    emitDirty();
   } catch {
     /* ignore */
   }

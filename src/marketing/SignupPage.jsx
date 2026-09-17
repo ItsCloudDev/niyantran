@@ -9,6 +9,7 @@ import {
 import { trackProductEvent } from '../lib/productAnalytics.js';
 import { normalizePlanId, startTrialFields, TRIAL_DAYS } from '../lib/planEntitlements.js';
 import { loadPricing } from '../lib/pricingStore.js';
+import { hydrateUserPrefs } from '../lib/userPrefsSync.js';
 
 function planFromRoute() {
   const raw = String(location.hash || '')
@@ -103,6 +104,7 @@ export default function SignupPage({ onSuccess, onLogin }) {
     sessionStorage.setItem('niyantranLand', userTypeOf(type).startTab);
     trackProductEvent('persona_selected', { personaId: type, source: 'signup', plan: planFields.plan });
     trackProductEvent('plan_selected', { plan: planFields.plan, status: planFields.planStatus });
+    await hydrateUserPrefs(res.user.email);
     onSuccess();
   }
 

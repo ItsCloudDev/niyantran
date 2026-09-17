@@ -267,14 +267,28 @@ export async function filesFromDrop(e) {
   for (const file of list) {
     const kind =
       fileKind(file.name) ||
-      (file.type.includes('pdf') ? 'pdf' : file.type.startsWith('image/') ? 'image' : file.type.includes('csv') ? 'csv' : 'text');
+      (file.type.includes('pdf')
+        ? 'pdf'
+        : file.type.startsWith('image/')
+          ? 'image'
+          : file.type.includes('csv')
+            ? 'csv'
+            : /sheet|excel|spreadsheet/i.test(file.type)
+              ? 'sheet'
+              : 'text');
     const rec = { kind: 'file', title: file.name, urls: [], files: [] };
     try {
-      if (kind === 'pdf' || kind === 'image') {
+      if (kind === 'pdf' || kind === 'image' || kind === 'sheet') {
         rec.files.push({
           name: file.name,
           kind,
-          mime: file.type || (kind === 'pdf' ? 'application/pdf' : 'image/png'),
+          mime:
+            file.type ||
+            (kind === 'pdf'
+              ? 'application/pdf'
+              : kind === 'sheet'
+                ? 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+                : 'image/png'),
           base64: await fileToBase64(file),
         });
       } else {

@@ -32,6 +32,7 @@ import { setPageTitle } from '../lib/siteHead.js';
 import AiDock from '../ai/AiDock.jsx';
 import OnboardingTour from './OnboardingTour.jsx';
 import { clearPersonaPrefs } from '../lib/personas.js';
+import { hydrateUserPrefs, startUserPrefsSync } from '../lib/userPrefsSync.js';
 import './upgrade.css';
 
 export default function TerminalShell({ onLogout }) {
@@ -66,6 +67,11 @@ export default function TerminalShell({ onLogout }) {
 
   const openUpgrade = useCallback((reason = 'desk', deskLabel = '') => {
     setUpgrade({ reason, deskLabel });
+  }, []);
+
+  useEffect(() => {
+    startUserPrefsSync();
+    hydrateUserPrefs().catch(() => {});
   }, []);
 
   useEffect(() => {

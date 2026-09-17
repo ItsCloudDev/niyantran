@@ -1,7 +1,7 @@
 /**
- * Checkout / payment helpers — Razorpay Orders flow.
+ * Checkout / payment helpers — Razorpay Orders + GST tax invoices (CR-17).
  * Server holds RAZORPAY_KEY_SECRET; browser only gets key id + order id.
- * Without keys configured, falls back to a labelled demo upgrade (dev only).
+ * Without keys configured, falls back to a labelled demo upgrade + invoice.
  */
 import { loadPricing } from './pricingStore.js';
 import { paidFields, normalizePlanId, planOf } from './planEntitlements.js';
@@ -32,11 +32,29 @@ function loadRazorpay() {
 export async function fetchBillingConfig() {
   try {
     const res = await fetch('/api/billing/config');
-    if (!res.ok) return { enabled: false, demoFallback: true, provider: 'razorpay' };
+    if (!res.ok) return { enabled: false, demoFallback: true, provider: 'razorpay', gstRate: 0.18, states: [] };
     return await res.json();
   } catch {
-    return { enabled: false, demoFallback: true, provider: 'razorpay' };
+    return { enabled: false, demoFallback: true, provider: 'razorpay', gstRate: 0.18, states: [] };
   }
+}
+
+export async function fetchGstQuote({ planId, yearly = false, buyerGstin = '', buyerStateCode = '' } = {}) {
+  const q = new URLSearchParams({
+    planId: String(planId || ''),
+    yearly: yearly ? '1' : '0',
+    buyerGstin: buyerGstin || '',
+    buyerStateCode: buyerStateCode || '',
+  });
+  const res = await fetch(`/api/billing/quote?${q}`);
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok || !body.ok) return { ok: false, reason: body.reason || 'Could not quote.' };
+  return body;
+}
+
+export function invoiceUrl(invoiceId) {
+  if (!invoiceId) return '';
+  return `/api/billing/invoice/${encodeURIComponent(invoiceId)}`;
 }
 
 export function applyPaidPlan(user, planId, yearly = false, paymentMeta = {}) {
@@ -44,6 +62,7 @@ export function applyPaidPlan(user, planId, yearly = false, paymentMeta = {}) {
     ...paidFields(planId, yearly),
     lastPaymentId: paymentMeta.paymentId || null,
     lastOrderId: paymentMeta.orderId || null,
+    lastInvoiceId: paymentMeta.invoiceId || null,
   };
   if (user?.id) updateUser(user.id, patch);
   const next = { ...user, ...patch };
@@ -52,25 +71,43 @@ export function applyPaidPlan(user, planId, yearly = false, paymentMeta = {}) {
     planId: patch.plan,
     yearly: Boolean(yearly),
     provider: paymentMeta.provider || 'unknown',
+    invoiceId: paymentMeta.invoiceId || null,
   });
   return next;
 }
 
-async function openRazorpayCheckout({ keyId, orderId, amount, currency, plan, yearly, seat, meta }) {
+function buyerPayload(seat, billing = {}) {
+  return {
+    userId: seat.id || '',
+    email: seat.email || '',
+    name: billing.buyerName || seat.name || '',
+    buyerGstin: billing.buyerGstin || '',
+    buyerStateCode: billing.buyerStateCode || '',
+    buyerAddress: billing.buyerAddress || '',
+  };
+}
+
+async function openRazorpayCheckout({ keyId, orderId, amount, currency, plan, yearly, seat, meta, billing, quote }) {
   const Razorpay = await loadRazorpay();
+  const buyer = buyerPayload(seat, billing);
   return new Promise((resolve) => {
     const rzp = new Razorpay({
       key: keyId,
       amount,
       currency: currency || 'INR',
       name: 'Niyantran Terminal',
-      description: `${meta?.name || plan} · ${yearly ? 'yearly' : 'monthly'}`,
+      description: `${meta?.name || plan} · ${yearly ? 'yearly' : 'monthly'} · incl. GST`,
       order_id: orderId,
       prefill: {
-        name: seat.name || '',
-        email: String(seat.email || '').includes('@') ? seat.email : '',
+        name: buyer.name || '',
+        email: String(buyer.email || '').includes('@') ? buyer.email : '',
       },
-      notes: { plan, yearly: String(yearly), userId: seat.id || '' },
+      notes: {
+        plan,
+        yearly: String(yearly),
+        userId: seat.id || '',
+        gst: quote ? String(quote.gstAmount) : '',
+      },
       theme: { color: '#012ea1' },
       handler: async (response) => {
         try {
@@ -83,7 +120,7 @@ async function openRazorpayCheckout({ keyId, orderId, amount, currency, plan, ye
               signature: response.razorpay_signature,
               planId: plan,
               yearly,
-              userId: seat.id || '',
+              ...buyer,
             }),
           });
           const body = await verify.json().catch(() => ({}));
@@ -95,8 +132,16 @@ async function openRazorpayCheckout({ keyId, orderId, amount, currency, plan, ye
             provider: 'razorpay',
             paymentId: response.razorpay_payment_id,
             orderId: response.razorpay_order_id,
+            invoiceId: body.invoice?.id || null,
           });
-          resolve({ ok: true, user: next, mode: 'razorpay', paymentId: response.razorpay_payment_id });
+          resolve({
+            ok: true,
+            user: next,
+            mode: 'razorpay',
+            paymentId: response.razorpay_payment_id,
+            invoice: body.invoice || null,
+            quote: body.quote || quote || null,
+          });
         } catch (err) {
           resolve({ ok: false, reason: err.message || 'Verification failed.', mode: 'razorpay' });
         }
@@ -117,8 +162,9 @@ async function openRazorpayCheckout({ keyId, orderId, amount, currency, plan, ye
 
 /**
  * Complete a purchase for the signed-in user.
+ * @param {{ planId: string, yearly?: boolean, user?: object, billing?: { buyerGstin?, buyerStateCode?, buyerAddress?, buyerName? } }} opts
  */
-export async function completeCheckout({ planId, yearly = false, user } = {}) {
+export async function completeCheckout({ planId, yearly = false, user, billing = {} } = {}) {
   const plan = normalizePlanId(planId);
   if (plan === 'explorer') {
     const patch = { plan: 'explorer', planStatus: 'free', trialEndsAt: null, billingYearly: false };
@@ -135,6 +181,7 @@ export async function completeCheckout({ planId, yearly = false, user } = {}) {
 
   const meta = planOf(plan);
   const config = await fetchBillingConfig();
+  const buyer = buyerPayload(seat, billing);
 
   if (config.enabled) {
     try {
@@ -144,9 +191,7 @@ export async function completeCheckout({ planId, yearly = false, user } = {}) {
         body: JSON.stringify({
           planId: plan,
           yearly,
-          userId: seat.id || '',
-          email: seat.email || '',
-          name: seat.name || '',
+          ...buyer,
         }),
       });
       const order = await orderRes.json().catch(() => ({}));
@@ -166,6 +211,8 @@ export async function completeCheckout({ planId, yearly = false, user } = {}) {
           yearly,
           seat,
           meta,
+          billing,
+          quote: order.quote,
         });
       }
     } catch (err) {
@@ -173,13 +220,40 @@ export async function completeCheckout({ planId, yearly = false, user } = {}) {
     }
   }
 
-  // Demo gateway when keys are missing (local/dev).
-  const next = applyPaidPlan(seat, plan, yearly, { provider: 'demo' });
+  // Demo gateway when keys are missing (local/dev) — still issue a GST invoice.
+  let invoice = null;
+  let quote = null;
+  try {
+    const invRes = await fetch('/api/billing/invoice', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        planId: plan,
+        yearly,
+        provider: 'demo',
+        ...buyer,
+      }),
+    });
+    const invBody = await invRes.json().catch(() => ({}));
+    if (invRes.ok && invBody.ok) {
+      invoice = invBody.invoice;
+      quote = invBody.quote;
+    }
+  } catch {
+    /* non-fatal */
+  }
+
+  const next = applyPaidPlan(seat, plan, yearly, {
+    provider: 'demo',
+    invoiceId: invoice?.id || null,
+  });
   return {
     ok: true,
     user: next,
     mode: 'demo',
-    reason: 'Demo upgrade — add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to .env for live checkout.',
+    invoice,
+    quote,
+    reason: 'Demo upgrade — GST invoice recorded locally. Add RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET to .env for live checkout.',
   };
 }
 
@@ -193,4 +267,8 @@ export function refreshSessionFromStore() {
   const hit = loadUsers().find((u) => String(u.email).toLowerCase() === String(cur.email).toLowerCase());
   if (hit) return setSessionUser(hit);
   return cur;
+}
+
+export function formatInr(n) {
+  return `₹${Number(n || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }

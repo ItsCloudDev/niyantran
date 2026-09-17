@@ -24,6 +24,22 @@ function write(state) {
   const next = { chats, activeId };
   localStorage.setItem(KEY, JSON.stringify(next));
   window.dispatchEvent(new Event(EVENT));
+  try {
+    window.dispatchEvent(new CustomEvent('niy-prefs-dirty', { detail: { kind: 'aiChats' } }));
+  } catch {
+    /* ignore */
+  }
+  return next;
+}
+
+/** Server hydrate — no dirty push. */
+export function applyAiStateFromServer(state) {
+  if (!state || !Array.isArray(state.chats)) return read();
+  const chats = state.chats.slice(0, MAX_CHATS);
+  const activeId = chats.some((c) => c.id === state.activeId) ? state.activeId : chats[0]?.id || '';
+  const next = { chats, activeId };
+  localStorage.setItem(KEY, JSON.stringify(next));
+  window.dispatchEvent(new Event(EVENT));
   return next;
 }
 

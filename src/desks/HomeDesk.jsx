@@ -17,6 +17,7 @@ import { applyRecordChecklistToFeed } from '../lib/recordChecklist.js';
 import { prepareHomeMarketQuotes } from '../lib/homeMarkets.js';
 import { loadHomeTickerItems } from '../lib/homeTicker.js';
 import { trackProductEvent } from '../lib/productAnalytics.js';
+import { loadWatchlist, subscribeWatchlist } from '../lib/watchlistStore.js';
 
 async function getJson(path, signal) {
   const route = String(path).split('?')[0];
@@ -96,7 +97,10 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
   const [ad, setAd] = useState(0);
   const [loading, setLoading] = useState(!homeCacheHasRows(boot));
   const [topics, setTopics] = useState([]);
+  const [watchlist, setWatchlist] = useState(() => loadWatchlist());
   const prevReload = useRef(reload);
+
+  useEffect(() => subscribeWatchlist(setWatchlist), []);
 
   const featured = zine[0];
   const latestShown = dedupeNewsRows(
@@ -378,12 +382,8 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
             <section className="nh-box">
               <div className="bh">MY WATCHLIST</div>
               <ul className="nh-watchlist">
-                {[
-                  { tab: 'global', feature: 'Open Fronts', label: 'Open Fronts' },
-                  { tab: 'national', feature: 'Bill Passage Probability Index', label: 'Bill Passage' },
-                  { tab: 'economics', feature: 'NSE/BSE Delayed Market Feed', label: 'Markets' },
-                ].map((w) => (
-                  <li key={w.feature}>
+                {watchlist.map((w) => (
+                  <li key={`${w.tab}:${w.feature}`}>
                     <button type="button" onClick={() => onOpen({ tab: w.tab, feature: w.feature })}>
                       {w.label}
                     </button>

@@ -12,7 +12,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = process.env.VERCEL
   ? path.join('/tmp', 'desk-briefs')
   : path.join(__dirname, '..', 'tmp', 'desk-briefs');
-const CACHE_VER = 'v6-entry';
+const CACHE_VER = 'v7-entry';
 const MODEL =
   process.env.GEMINI_DESK_MODEL ||
   'gemini-3.5-flash-lite';
@@ -77,7 +77,7 @@ function cachePath(tier, feature, hash, scope = 'entry') {
   const t = String(tier || 'x')
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-');
-  const sc = scope === 'feed' ? 'feed' : 'entry';
+  const sc = scope === 'feed' ? 'feed' : scope === 'substance' ? 'substance' : 'entry';
   return path.join(CACHE_DIR, `${CACHE_VER}__${sc}__${t}__${slug}__${hash}.json`);
 }
 
@@ -830,7 +830,7 @@ async function callGemini({ key, model, prompt }) {
 
 /**
  * Organise one selected row. Pass `row` (preferred) or a single-element `rows`.
- * @param {{ feature: string, tier?: string, row?: object, rows?: object[], hash?: string, force?: boolean, sourceNote?: string }} input
+ * @param {{ feature: string, tier?: string, row?: object, rows?: object[], hash?: string, force?: boolean, sourceNote?: string, sourceExtract?: string, scope?: 'entry'|'substance' }} input
  */
 export async function runDeskBrief(input = {}) {
   loadEnv();
@@ -844,8 +844,9 @@ export async function runDeskBrief(input = {}) {
       : (Array.isArray(input.rows) ? input.rows : []).find((r) => r && r.status !== 'source_status');
   if (!row || row.status === 'source_status') throw new Error('Select a row to organise');
 
+  const scope = String(input.scope || 'entry') === 'substance' ? 'substance' : 'entry';
   const hash = String(input.hash || entryFingerprint(row, feature, tier));
-  const file = cachePath(tier, feature, hash, 'entry');
+  const file = cachePath(tier, feature, hash, scope);
   if (!input.force) {
     const hit = readCache(file);
     if (hit?.brief) {
@@ -863,7 +864,7 @@ export async function runDeskBrief(input = {}) {
   }
 
   const entry = slimEntry(row);
-  const localCharts = buildEntryCharts(row, feature);
+  const localCharts = scope === 'substance' ? [] : buildEntryCharts(row, feature);
   const chartSketch = localCharts.map((c) => ({
     type: c.type,
     title: c.title,
@@ -872,17 +873,74 @@ export async function runDeskBrief(input = {}) {
     topLabels: (c.items || []).slice(0, 5).map((i) => i.label),
   }));
   const title =
-    entry.title || entry.record_title || entry.name || entry.case_title || entry.conflict_name || 'Untitled entry';
+    entry.bill_name ||
+    entry.policy_name ||
+    entry.title ||
+    entry.record_title ||
+    entry.name ||
+    entry.subject ||
+    entry.case_title ||
+    entry.conflict_name ||
+    'Untitled entry';
 
-  const prompt = `Desk tab: ${tier || '—'} / ${feature}
+  const sourceBody = String(input.sourceExtract || '').replace(/\s+/g, ' ').trim().slice(0, 12_000);
+  const nounHint = /bill|act|amendment/i.test(feature) || entry.bill_name
+    ? 'bill / Act'
+    : /question/i.test(feature)
+      ? 'parliamentary question'
+      : /regulator|circular|notice/i.test(feature)
+        ? 'regulatory notice'
+        : /policy/i.test(feature)
+          ? 'policy'
+          : 'record';
+
+  const prompt =
+    scope === 'substance'
+      ? `You write the "What this ${nounHint} does" panel for Niyantran Terminal.
+Title: ${title}
+Desk: ${tier || '—'} / ${feature}
+
+Row fields (context only — do NOT turn these into the summary):
+${JSON.stringify(entry)}
+
+${
+  sourceBody
+    ? `Source document text (PRIMARY evidence — base the summary on this):\n${sourceBody}`
+    : 'No source document text was extracted. Infer only what the title and fields clearly state; say if substance is thin.'
+}
+
+Return ONLY valid JSON:
+{
+  "headline": "one plain sentence: what this ${nounHint} is about",
+  "summary": [
+    "Purpose: …",
+    "What it changes / provides: …",
+    "Who / what it covers: …",
+    "optional Mechanism: …",
+    "optional Why it exists: …"
+  ],
+  "findings": [],
+  "kpis": [],
+  "chartTitles": [],
+  "caveats": ["optional limits of the source text"]
+}
+
+Hard rules:
+- Summary must explain SUBSTANCE (what the law/notice/policy is about), not registry metadata.
+- FORBIDDEN labels in summary: Facility, Status, Source, Source and Verification, Bill Category, House, Sector, Ministry, Stage, Date, Verification, Adapter.
+- Prefer Purpose / What it changes / Scope / Mechanism / Context.
+- 3–5 short bullets. Plain English. No buy/sell/hold language. Never say "correlation".
+- Do not paste raw PDF preamble, Act number lines, or "WHEREAS" blocks.
+- Evidence first from the source text; if the extract is thin, say so in caveats — do not invent clauses.`
+      : `Desk tab: ${tier || '—'} / ${feature}
 Selected entry only (do NOT summarise other feed rows):
 Title: ${title}
-Source note: ${String(input.sourceNote || '').slice(0, 240)}
+Source note: ${String(input.sourceNote || '').slice(0, 400)}
 Entry fingerprint: ${hash}
 
 Full field map for THIS entry:
 ${JSON.stringify(entry)}
-
+${sourceBody ? `\nReadable text extracted from the source document / page for THIS entry (prefer this over thin row fields when they conflict):\n${sourceBody}\n` : ''}
 Charts already computed from THIS entry's fields (do not invent other series):
 ${JSON.stringify(chartSketch)}
 
@@ -898,6 +956,7 @@ Produce JSON with this exact shape:
 
 Rules for this response:
 - Organise the selected entry only. Never quote feed totals or other headlines.
+- When source document text is present, write a short substance brief of what the document / notice does — not a field dump.
 - Every summary bullet MUST start with a short Label then a colon (e.g. "Facility:", "Status:", "Source and Verification:").
 - KPIs must come from fields on this row (source, date, verification, category, capacity, etc.).
 - Do NOT include a "charts" array with invented numbers.
@@ -918,15 +977,16 @@ Rules for this response:
     },
     localCharts,
   );
-  brief.scope = 'entry';
+  brief.scope = scope;
   brief.entryTitle = String(title).slice(0, 160);
 
   writeCache(file, { hash, generatedAt: brief.generatedAt, model: got.model, brief });
   return brief;
 }
 
-export function getCachedDeskBrief(feature, tier, hash) {
+export function getCachedDeskBrief(feature, tier, hash, scope = 'entry') {
   if (!feature || !hash) return null;
-  const hit = readCache(cachePath(tier, feature, hash, 'entry'));
+  const sc = scope === 'substance' ? 'substance' : 'entry';
+  const hit = readCache(cachePath(tier, feature, hash, sc));
   return hit?.brief ? { ...hit.brief, cached: true, hash } : null;
 }
