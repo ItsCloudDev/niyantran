@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ensureDeskBrief } from '../lib/deskBrief.js';
+import { resolveSourceBrief } from '../lib/sourceDoc.js';
 
 const BAND_CLS = {
   strong: 'ok',
@@ -58,13 +59,32 @@ export default function DeskIntel({ feed, selected, loading }) {
     let alive = true;
     setBusy(true);
     setErr('');
-    ensureDeskBrief({
-      feature,
-      tier,
-      row: selected,
-      sourceNote: feed?.source?.note || '',
-      signal: ac.signal,
-    })
+    (async () => {
+      let sourceExtract = '';
+      try {
+        const src = await resolveSourceBrief(selected, {
+          title:
+            selected.bill_name ||
+            selected.policy_name ||
+            selected.title ||
+            selected.subject ||
+            selected.name ||
+            '',
+          signal: ac.signal,
+        });
+        sourceExtract = src.extract || '';
+      } catch (e) {
+        if (e?.name === 'AbortError') throw e;
+      }
+      return ensureDeskBrief({
+        feature,
+        tier,
+        row: selected,
+        sourceNote: feed?.source?.note || '',
+        sourceExtract,
+        signal: ac.signal,
+      });
+    })()
       .then((b) => {
         if (!alive) return;
         setBrief(b);

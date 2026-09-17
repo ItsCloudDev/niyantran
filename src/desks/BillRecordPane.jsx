@@ -12,6 +12,7 @@ import {
   whatItDoes,
   whereItLands,
 } from '../lib/impactRecord.js';
+import { resolveOrganisedBrief } from '../lib/sourceDoc.js';
 
 const GCOL = { Strong: '#34D399', Moderate: '#E0A81F', Weak: '#F87171', Speculative: '#8A94A6' };
 
@@ -287,9 +288,20 @@ function FactMore({ fact, onClose }) {
   );
 }
 
-export default function BillRecordPane({ row, onClear, onAskAi, liveCount, desk }) {
-  const cfg = DESKS[desk] || deskForFeature(desk) || DESKS.bill;
+export default function BillRecordPane({ row, onClear, onAskAi, liveCount, desk, feature }) {
+  const cfg = DESKS[desk] || deskForFeature(desk) || deskForFeature(feature) || DESKS.bill;
   const noun = cfg.noun;
+  const featureName =
+    feature ||
+    (cfg.key === 'bill'
+      ? 'Bill Passage Probability Index'
+      : cfg.key === 'pipeline'
+        ? 'Policy Pipeline Tracker'
+        : cfg.key === 'question'
+          ? 'Parliamentary Question Database'
+          : cfg.key === 'regulatory'
+            ? 'Regulatory Body Watch'
+            : '');
   const [pack, setPack] = useState({ map: null, ont: null, ready: false });
   const [kind, setKind] = useState('all');
   const [factK, setFactK] = useState(null);
@@ -297,6 +309,9 @@ export default function BillRecordPane({ row, onClear, onAskAi, liveCount, desk 
   const [detail, setDetail] = useState(false);
   const [rebuild, setRebuild] = useState(0);
   const [showAll, setShowAll] = useState(false);
+  const [liveBrief, setLiveBrief] = useState('');
+  const [briefBullets, setBriefBullets] = useState([]);
+  const [briefBusy, setBriefBusy] = useState(false);
 
   useEffect(() => {
     let live = true;
@@ -314,10 +329,69 @@ export default function BillRecordPane({ row, onClear, onAskAi, liveCount, desk 
     setImpact(null);
     setDetail(false);
     setShowAll(false);
+    setLiveBrief('');
+    setBriefBullets([]);
   }, [row]);
 
   const a = analysisFor(row, pack.map);
   const model = useMemo(() => buildRecordModel(row, a, pack.ont, cfg), [row, a, pack.ont, cfg]);
+
+  useEffect(() => {
+    if (!pack.ready || !row) return undefined;
+    if (model.brief && model.brief.length > 30) {
+      setLiveBrief('');
+      setBriefBullets([]);
+      setBriefBusy(false);
+      return undefined;
+    }
+    const ac = new AbortController();
+    let alive = true;
+    setBriefBusy(true);
+    resolveOrganisedBrief(row, {
+      pdf: model.pdf,
+      source: model.source,
+      title: model.name,
+      noun,
+      feature: featureName,
+      signal: ac.signal,
+    })
+      .then((got) => {
+        if (!alive) return;
+        setLiveBrief(got.text || '');
+        setBriefBullets(Array.isArray(got.bullets) ? got.bullets : []);
+      })
+      .catch((err) => {
+        if (!alive || err?.name === 'AbortError') return;
+        setLiveBrief('');
+        setBriefBullets([]);
+      })
+      .finally(() => {
+        if (alive) setBriefBusy(false);
+      });
+    return () => {
+      alive = false;
+      ac.abort();
+    };
+  }, [pack.ready, row, model.brief, model.pdf, model.source, model.name, noun, featureName]);
+
+  const briefText = whatItDoes(model, liveBrief);
+  const showBriefLoading = briefBusy && !liveBrief && !(model.brief && model.brief.length > 30) && !briefBullets.length;
+
+  function BriefBody() {
+    if (showBriefLoading) {
+      return <p className="brec-p muted">Organising a short summary from the source…</p>;
+    }
+    if (!(model.brief && model.brief.length > 30) && briefBullets.length) {
+      return (
+        <ul className="brec-brief-list">
+          {briefBullets.map((b) => (
+            <li key={b}>{b}</li>
+          ))}
+        </ul>
+      );
+    }
+    return <p className="brec-p">{briefText}</p>;
+  }
   const facts = useMemo(() => {
     const all = recordFacts(row, a, cfg);
     return all.filter((f) => f.value != null && String(f.value).trim() !== '' && f.value !== '—' && f.value !== '-');
@@ -396,7 +470,7 @@ export default function BillRecordPane({ row, onClear, onAskAi, liveCount, desk 
           ))}
           <section>
             <h5>What this {noun} does</h5>
-            <p>{whatItDoes(model)}</p>
+            <BriefBody />
           </section>
           {model.changes.length ? (
             <section>
@@ -490,7 +564,7 @@ export default function BillRecordPane({ row, onClear, onAskAi, liveCount, desk 
 
           {model.timesRaised ? <p className="brec-p">Times raised: {model.timesRaised}</p> : null}
           <h4>What this {noun} does</h4>
-          <p className="brec-p">{whatItDoes(model)}</p>
+          <BriefBody />
           {model.changes.length ? (
             <>
               <h4>{cfg.changesTitle}</h4>

@@ -4,6 +4,7 @@
  *   POST /api/ai/desk-brief  { feature, tier, row, hash, force }  — organise one selected entry
  *   GET  /api/ai/desk-brief?feature=&tier=&hash=  cached entry brief only
  *   GET  /api/ai/fetch?url=  text or base64 for pdf/image (CORS bypass)
+ *   GET  /api/ai/source-extract?url=  fetch + extract readable text (PDF/HTML/CSV/XLSX)
  *
  * Keys come from server env (DEEPSEEK_API_KEY / GEMINI_API_KEY / OPENROUTER_API_KEY / NIYANTRAN_AI_KEY).
  * Request-body `key` is ignored — never accept client-supplied credentials (D6).
@@ -11,13 +12,11 @@
 import { loadEnv } from './loadEnv.mjs';
 import { entryFingerprint, getCachedDeskBrief, runDeskBrief } from './deskBrief.mjs';
 import { shippedPersonaPrompt } from './personas.mjs';
+import { briefFromExtract, extractBuffer, extractSource } from './sourceExtract.mjs';
 
 loadEnv();
-const UA = 'Mozilla/5.0 (compatible; NiyantranTerminal/1.0; AI-research)';
-const FETCH_MS = 25_000;
 const CHAT_MS = 90_000;
 const MAX_TEXT = 180_000;
-const MAX_BIN = 8 * 1024 * 1024;
 
 const SYSTEM = `You are the Niyantran Terminal research assistant.
 You help the analyst understand the substance of attached desk rows, PDFs, and CSVs within the retrieval scope provided for this turn.
@@ -86,56 +85,47 @@ function json(res, body, status = 200) {
   res.end(JSON.stringify(body));
 }
 
-async function fetchBuf(url, ms = FETCH_MS) {
-  const ac = new AbortController();
-  const t = setTimeout(() => ac.abort(), ms);
-  try {
-    const r = await fetch(url, { signal: ac.signal, redirect: 'follow', headers: { 'User-Agent': UA, Accept: '*/*' } });
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const buf = Buffer.from(await r.arrayBuffer());
-    if (buf.length > MAX_BIN) throw new Error('file too large');
-    const ct = r.headers.get('content-type') || '';
-    return { buf, ct, url: r.url || url };
-  } finally {
-    clearTimeout(t);
-  }
-}
-
-function kindOf(url, ct) {
-  const u = String(url || '').split('?')[0].toLowerCase();
-  const c = String(ct || '').toLowerCase();
-  if (c.includes('pdf') || u.endsWith('.pdf')) return 'pdf';
-  if (c.includes('csv') || u.endsWith('.csv')) return 'csv';
-  if (c.includes('json') || u.endsWith('.json')) return 'json';
-  if (c.startsWith('image/') || /\.(png|jpe?g|gif|webp|svg)$/.test(u)) return 'image';
-  if (c.includes('html')) return 'html';
-  return 'text';
-}
-
-function textFromHtml(html) {
-  return String(html || '')
-    .replace(/<script[\s\S]*?<\/script>/gi, ' ')
-    .replace(/<style[\s\S]*?<\/style>/gi, ' ')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/g, ' ')
-    .replace(/&amp;/g, '&')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, MAX_TEXT);
-}
-
 async function loadFile(file) {
-  if (file?.text) return { ...file, text: String(file.text).slice(0, MAX_TEXT) };
-  if (file?.base64) return file;
-  const url = file?.url;
-  if (!url || !/^https?:\/\//i.test(url)) return file;
-  const got = await fetchBuf(url);
-  const kind = file.kind || kindOf(got.url, got.ct);
-  if (kind === 'pdf' || kind === 'image') {
-    return { ...file, kind, mime: got.ct, base64: got.buf.toString('base64') };
+  if (file?.text && !file?.base64) return { ...file, text: String(file.text).slice(0, MAX_TEXT) };
+  if (file?.base64 && !file?.url) {
+    try {
+      const buf = Buffer.from(String(file.base64), 'base64');
+      const got = await extractBuffer(buf, {
+        kind: file.kind || '',
+        mime: file.mime || '',
+        name: file.name || '',
+      });
+      return {
+        ...file,
+        kind: got.kind || file.kind,
+        mime: got.mime || file.mime,
+        text: got.text ? String(got.text).slice(0, MAX_TEXT) : file.text,
+        base64: got.base64 || file.base64,
+        error: got.error || undefined,
+      };
+    } catch (err) {
+      return { ...file, error: err.message || String(err) };
+    }
   }
-  const text = kind === 'html' ? textFromHtml(got.buf.toString('utf8')) : got.buf.toString('utf8').slice(0, MAX_TEXT);
-  return { ...file, kind, mime: got.ct, text };
+  const url = file?.url;
+  if (!url || !/^https?:\/\//i.test(url)) {
+    if (file?.text) return { ...file, text: String(file.text).slice(0, MAX_TEXT) };
+    return file;
+  }
+  try {
+    const got = await extractSource(url);
+    return {
+      ...file,
+      url: got.url || url,
+      kind: file.kind || got.kind,
+      mime: got.mime || file.mime,
+      text: got.text ? String(got.text).slice(0, MAX_TEXT) : file.text,
+      base64: got.base64 || file.base64,
+      error: got.error || undefined,
+    };
+  } catch (err) {
+    return { ...file, url, error: err.message || String(err) };
+  }
 }
 
 function contextBlock(attachments, files, { focus = 'attached', deskContext = null, selection = null } = {}) {
@@ -436,12 +426,37 @@ export async function handleAiApi(req, res, next) {
     }
   }
 
+  if (url.pathname === '/api/ai/source-extract') {
+    if (req.method !== 'GET') return json(res, { ok: false, error: 'GET only' }, 405);
+    try {
+      const target = url.searchParams.get('url') || '';
+      const got = await extractSource(target);
+      const title = url.searchParams.get('title') || '';
+      const brief = briefFromExtract(got.text || '', { title, max: 1100 });
+      return json(res, {
+        ok: true,
+        url: got.url,
+        kind: got.kind,
+        mime: got.mime,
+        bytes: got.bytes,
+        error: got.error || null,
+        text: got.text || '',
+        brief,
+        hasBinary: Boolean(got.base64),
+      });
+    } catch (err) {
+      const msg = err.message || String(err);
+      return json(res, { ok: false, error: msg }, /required/i.test(msg) ? 400 : 502);
+    }
+  }
+
   if (url.pathname === '/api/ai/desk-brief') {
     if (req.method === 'GET') {
       const feature = url.searchParams.get('feature') || '';
       const tier = url.searchParams.get('tier') || '';
       const hash = url.searchParams.get('hash') || '';
-      const hit = getCachedDeskBrief(feature, tier, hash);
+      const scope = url.searchParams.get('scope') || 'entry';
+      const hit = getCachedDeskBrief(feature, tier, hash, scope);
       if (!hit) return json(res, { ok: false, cached: false, error: 'No cached brief for this fingerprint.' }, 404);
       return json(res, { ok: true, ...hit });
     }
@@ -480,6 +495,8 @@ export async function handleAiApi(req, res, next) {
         hash,
         force: Boolean(payload.force),
         sourceNote: payload.sourceNote || '',
+        sourceExtract: payload.sourceExtract || '',
+        scope: payload.scope === 'substance' ? 'substance' : 'entry',
       });
       return json(res, { ok: true, ...out });
     } catch (err) {

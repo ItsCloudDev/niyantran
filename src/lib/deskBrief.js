@@ -3,7 +3,7 @@
  * Regenerates only when that entry's fields change.
  */
 
-const STORE_KEY = 'niy-entry-brief-v6';
+const STORE_KEY = 'niy-entry-brief-v7';
 
 function cell(v) {
   if (v == null) return '';
@@ -18,7 +18,7 @@ export function entryFingerprintFnv(row, feature, tier) {
     .sort()
     .map((k) => `${k}=${cell(r[k])}`);
   const id = r.record_id || r.id || r.source_url || r.title || '';
-  const raw = `v6-entry::entry::${tier || ''}::${feature || ''}::${id}::${parts.join('|')}`;
+  const raw = `v7-entry::entry::${tier || ''}::${feature || ''}::${id}::${parts.join('|')}`;
   let h = 2166136261;
   for (let i = 0; i < raw.length; i += 1) {
     h ^= raw.charCodeAt(i);
@@ -34,7 +34,7 @@ export async function entryFingerprintSha(row, feature, tier) {
     .sort()
     .map((k) => `${k}=${cell(r[k])}`);
   const id = r.record_id || r.id || r.source_url || r.title || '';
-  const raw = `v6-entry::entry::${tier || ''}::${feature || ''}::${id}::${parts.join('|')}`;
+  const raw = `v7-entry::entry::${tier || ''}::${feature || ''}::${id}::${parts.join('|')}`;
   if (globalThis.crypto?.subtle) {
     const buf = new TextEncoder().encode(raw);
     const dig = await crypto.subtle.digest('SHA-256', buf);
@@ -98,22 +98,41 @@ function slimEntry(row) {
  * Resolve an entry brief for the selected row.
  * local cache → server disk cache → Gemini generate.
  */
-export async function ensureDeskBrief({ feature, tier, row, sourceNote, force = false, signal } = {}) {
+export async function ensureDeskBrief({
+  feature,
+  tier,
+  row,
+  sourceNote,
+  sourceExtract,
+  force = false,
+  signal,
+  scope = 'entry',
+} = {}) {
   if (!row || row.status === 'source_status') {
     throw new Error('Select a row to organise');
   }
   const hash = await entryFingerprintSha(row, feature, tier);
+  const briefScope = scope === 'substance' ? 'substance' : 'entry';
+  const storeKey = briefScope === 'substance' ? `${feature}::substance::${hash}` : `${feature}::${hash}`;
+
   if (!force) {
-    const local = readLocalBrief(feature, hash);
+    const store = loadStore();
+    const local = store[storeKey]?.brief || (briefScope === 'entry' ? readLocalBrief(feature, hash) : null);
     if (local) return { ...local, cached: true, hash };
 
     try {
-      const q = new URLSearchParams({ feature, tier: tier || '', hash, scope: 'entry' });
+      const q = new URLSearchParams({ feature, tier: tier || '', hash, scope: briefScope });
       const res = await fetch(`/api/ai/desk-brief?${q}`, { signal });
       if (res.ok) {
         const body = await res.json();
         if (body?.ok && body.headline) {
-          writeLocalBrief(feature, hash, body);
+          if (briefScope === 'substance') {
+            const s = loadStore();
+            s[storeKey] = { at: Date.now(), brief: body };
+            saveStore(s);
+          } else {
+            writeLocalBrief(feature, hash, body);
+          }
           return { ...body, cached: true, hash };
         }
       }
@@ -130,9 +149,10 @@ export async function ensureDeskBrief({ feature, tier, row, sourceNote, force = 
       feature,
       tier,
       hash,
-      scope: 'entry',
+      scope: briefScope,
       force: Boolean(force),
       sourceNote: sourceNote || '',
+      sourceExtract: String(sourceExtract || '').slice(0, 12_000),
       row: slimEntry(row),
     }),
   });
@@ -145,6 +165,12 @@ export async function ensureDeskBrief({ feature, tier, row, sourceNote, force = 
     }
     throw new Error(body?.error || `desk-brief HTTP ${res.status}`);
   }
-  writeLocalBrief(feature, hash, body);
+  if (briefScope === 'substance') {
+    const s = loadStore();
+    s[storeKey] = { at: Date.now(), brief: body };
+    saveStore(s);
+  } else {
+    writeLocalBrief(feature, hash, body);
+  }
   return { ...body, hash };
 }

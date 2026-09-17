@@ -757,6 +757,7 @@ html.mkt-doc:has(.mkt-auth) #root {
   position: relative;
   height: min(560px, 62vw);
   max-height: 560px;
+  width: 100%;
   z-index: 1;
   overflow: visible;
 }
@@ -769,8 +770,8 @@ html.mkt-doc:has(.mkt-auth) #root {
 }
 .mkt-hero-orbits {
   position: absolute;
-  left: 56%;
-  top: 46%;
+  left: 50%;
+  top: 48%;
   width: min(560px, 48vw);
   height: min(560px, 48vw);
   transform: translate(-50%, -50%);
@@ -783,8 +784,8 @@ html.mkt-doc:has(.mkt-auth) #root {
 }
 .mkt-orb-fx {
   position: absolute;
-  left: 56%;
-  top: 46%;
+  left: 50%;
+  top: 48%;
   width: min(420px, 38vw);
   height: min(420px, 38vw);
   transform: translate(-50%, -50%);
@@ -846,8 +847,8 @@ html.mkt-doc:has(.mkt-auth) #root {
 .mkt-spark.s5 { color: #00d4ff; left: 48%; top: 8%; animation-delay: 0.9s; }
 .mkt-globe {
   position: absolute;
-  left: 56%;
-  top: 46%;
+  left: 50%;
+  top: 48%;
   width: min(560px, 48vw);
   max-width: min(560px, 90%);
   transform: translate(-50%, -50%) rotate(0deg);
@@ -884,12 +885,13 @@ html.mkt-doc:has(.mkt-auth) #root {
 /* CR-02 — persona cards around the globe (hover/tap reveals what they get) */
 .mkt-pchip {
   position: absolute;
-  display: flex;
-  flex-wrap: wrap;
+  display: inline-flex;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 8px;
-  padding: 8px 12px 8px 8px;
-  max-width: min(200px, 44%);
+  width: max-content;
+  max-width: min(190px, 46%);
+  padding: 7px 11px 7px 7px;
   background: var(--mkt-surface);
   border: 1px solid #e4ddd4;
   border-radius: 12px;
@@ -899,10 +901,12 @@ html.mkt-doc:has(.mkt-auth) #root {
   font-weight: 650;
   color: var(--mkt-black);
   text-align: left;
+  line-height: 1.25;
   z-index: 2;
   cursor: pointer;
-  translate: calc(var(--px) * -0.1) calc(var(--py) * -0.06);
-  transition: opacity 0.25s ease, scale 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  /* Centre the chip on its orbit point (globe at 50% / 48%) */
+  transform: translate(-50%, -50%);
+  transition: opacity 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 .mkt-pchip i {
   width: 28px;
@@ -914,7 +918,12 @@ html.mkt-doc:has(.mkt-auth) #root {
   color: var(--mkt-blue);
   flex-shrink: 0;
 }
-.mkt-pchip .lab { flex: 1; min-width: 0; line-height: 1.25; }
+.mkt-pchip .lab {
+  flex: 0 1 auto;
+  min-width: 0;
+  line-height: 1.25;
+  white-space: nowrap;
+}
 .mkt-pchip .gets {
   display: none;
   width: 100%;
@@ -923,6 +932,7 @@ html.mkt-doc:has(.mkt-auth) #root {
   list-style: none;
   flex-direction: column;
   gap: 4px;
+  flex-basis: 100%;
 }
 .mkt-pchip .gets em {
   display: block;
@@ -931,13 +941,16 @@ html.mkt-doc:has(.mkt-auth) #root {
   font-weight: 500;
   line-height: 1.35;
   color: var(--mkt-muted);
+  white-space: normal;
 }
 .mkt-pchip:hover,
 .mkt-pchip:focus-visible,
 .mkt-pchip.on {
   z-index: 6;
-  scale: 1.04;
-  max-width: min(240px, 52%);
+  flex-wrap: wrap;
+  width: min(220px, 52%);
+  max-width: min(220px, 52%);
+  transform: translate(-50%, -50%) scale(1.04);
   border-color: #9bb4e8;
   box-shadow: 0 14px 32px rgba(19, 19, 19, 0.18);
   outline: none;
@@ -951,12 +964,13 @@ html.mkt-doc:has(.mkt-auth) #root {
 .mkt-orb-wrap:has(.mkt-pchip.on) .mkt-pchip:not(.on) {
   opacity: 0.45;
 }
-.mkt-pchip.c1 { top: 4%; left: 2%; }
-.mkt-pchip.c2 { top: 10%; right: 0%; }
-.mkt-pchip.c3 { top: 40%; left: -2%; }
-.mkt-pchip.c4 { top: 44%; right: -2%; }
-.mkt-pchip.c5 { bottom: 16%; left: 4%; }
-.mkt-pchip.c6 { bottom: 4%; right: 4%; }
+/* Even hex orbit around globe centre (50%, 48%) */
+.mkt-pchip.c1 { left: 22%; top: 16%; } /* Policy Analyst — NW */
+.mkt-pchip.c2 { left: 78%; top: 16%; } /* Journalist — NE */
+.mkt-pchip.c3 { left: 8%;  top: 48%; } /* UPSC — W */
+.mkt-pchip.c4 { left: 92%; top: 48%; } /* Corporate Affairs — E */
+.mkt-pchip.c5 { left: 22%; top: 80%; } /* Legal Researcher — SW */
+.mkt-pchip.c6 { left: 78%; top: 80%; } /* Academic — SE */
 .mkt-pchip.tone-red i { background: #f8e8ea; color: var(--mkt-red); }
 .mkt-pchip.tone-sand i { background: #f3e6d0; color: #8a5a12; }
 .mkt-pchip.tone-navy i { background: #e4ecfb; color: var(--mkt-blue); }
@@ -4068,12 +4082,19 @@ html.mkt-doc:has(.mkt-auth) #root {
     object-position: center top;
   }
   .mkt-orb-wrap {
-    height: 380px;
+    height: 420px;
+    max-width: min(520px, 100%);
+    margin-inline: auto;
   }
   .mkt-hero .mkt-pr-sh,
-  .mkt-hero-orbits,
   .mkt-preview-scan {
     display: none;
+  }
+  .mkt-globe,
+  .mkt-hero-orbits,
+  .mkt-orb-fx {
+    left: 50%;
+    top: 48%;
   }
   .mkt-globe {
     width: min(420px, 80vw);
@@ -4093,10 +4114,14 @@ html.mkt-doc:has(.mkt-auth) #root {
     grid-template-columns: 1fr;
     gap: 20px;
   }
+  .mkt-pchip.c1 { left: 20%; top: 14%; }
+  .mkt-pchip.c2 { left: 80%; top: 14%; }
   .mkt-pchip.c3,
   .mkt-pchip.c4 {
     display: none;
   }
+  .mkt-pchip.c5 { left: 20%; top: 82%; }
+  .mkt-pchip.c6 { left: 80%; top: 82%; }
   .mkt-prev-nav {
     display: none;
   }
@@ -4263,6 +4288,9 @@ html.mkt-doc:has(.mkt-auth) #root {
     font-size: 13px;
   }
   .mkt-chip {
+    display: none;
+  }
+  .mkt-pchip {
     display: none;
   }
   .mkt-ribbon-inner {

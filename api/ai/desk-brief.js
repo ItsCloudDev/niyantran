@@ -9,7 +9,8 @@ export default async function handler(req, res) {
     const feature = String(req.query?.feature || '');
     const tier = String(req.query?.tier || '');
     const hash = String(req.query?.hash || '');
-    const hit = getCachedDeskBrief(feature, tier, hash);
+    const scope = String(req.query?.scope || 'entry');
+    const hit = getCachedDeskBrief(feature, tier, hash, scope);
     if (!hit) {
       res.status(404).json({ ok: false, cached: false, error: 'No cached brief for this fingerprint.' });
       return;
@@ -44,6 +45,8 @@ export default async function handler(req, res) {
       hash: String(payload.hash || ''),
       force: Boolean(payload.force),
       sourceNote: payload.sourceNote || '',
+      sourceExtract: payload.sourceExtract || '',
+      scope: payload.scope === 'substance' ? 'substance' : 'entry',
     });
     res.status(200).json({ ok: true, ...out });
   } catch (err) {

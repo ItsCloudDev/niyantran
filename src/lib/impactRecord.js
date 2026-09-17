@@ -648,20 +648,22 @@ function W(t, noun) {
     .replace(/\bbill\b/g, noun);
 }
 
-export function whatItDoes(model) {
+export function whatItDoes(model, liveBrief = '') {
   const noun = model.cfg?.noun || 'bill';
   if (model.brief && model.brief.length > 30) return model.brief;
+  const live = String(liveBrief || '').trim();
+  if (live.length > 40) return live;
   if (model.cfg?.key === 'question') {
     const r = model.row || {};
     const who = r.mp_name || 'A member';
     const type = String(r.question_type || 'question').toLowerCase();
     const house = r.house ? ` in the ${r.house}` : '';
     const when = model.introduced ? ` on ${model.introduced}` : '';
-    return `${who} asked a ${type} question${house} on “${model.name}”${when}. No authored brief is on file for this row — analysis exists for 0.4% of the register.`;
+    return `${who} asked a ${type} question${house} on “${model.name}”${when}. No authored brief is on file for this row — opening the source when a readable document is linked.`;
   }
   if (model.changes.length) return model.changes.slice(0, 2).join(' ');
   if (model.sectors.length) return `This ${noun} is tagged to ${model.sectors.map((s) => s.name).join(', ')}.`;
-  return `No brief has been extracted for this ${noun} yet.`;
+  return `Opening the source for this ${noun}…`;
 }
 
 export function whereItLands(model) {

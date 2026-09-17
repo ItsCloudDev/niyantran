@@ -246,6 +246,71 @@
   color: #c81322;
   font-size: 13px;
 }
+.plan-up-gst {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 0 0 14px;
+}
+.plan-up-gst label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #5c564e;
+}
+.plan-up-gst label.wide {
+  grid-column: 1 / -1;
+}
+.plan-up-gst input,
+.plan-up-gst select {
+  height: 36px;
+  border: 1px solid #e4ddd4;
+  border-radius: 8px;
+  padding: 0 10px;
+  font: 13px inherit;
+  color: #131313;
+  background: #fff;
+}
+.plan-up-tax {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 14px;
+  padding: 12px;
+  border: 1px solid #e4ddd4;
+  border-radius: 12px;
+  background: #faf7f2;
+  font-size: 12px;
+}
+.plan-up-tax > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: #5c564e;
+}
+.plan-up-tax > div.tot {
+  margin-top: 4px;
+  padding-top: 8px;
+  border-top: 1px solid #e4ddd4;
+  color: #131313;
+  font-size: 13px;
+}
+.plan-up-tax-note {
+  margin: 6px 0 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: #8a847a;
+}
+.plan-up-inv {
+  margin: 8px 0 0;
+  font-size: 12px;
+  color: #176b55;
+}
+.plan-up-inv a {
+  color: #012ea1;
+  font-weight: 650;
+}
 .plan-up-note {
   margin: 14px 0 0;
   font-size: 11px;
@@ -257,6 +322,9 @@
 }
 
 @media (max-width: 560px) {
+  .plan-up-gst {
+    grid-template-columns: 1fr;
+  }
   .plan-up-plans {
     grid-template-columns: 1fr;
   }
