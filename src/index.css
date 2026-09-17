@@ -489,33 +489,54 @@ button, input, textarea { font-family: inherit; }
   display: flex;
   align-items: stretch;
   gap: 0;
-  border-bottom: 1px solid var(--line);
-  background: #0d1117;
-  color: #e8edf2;
-  min-height: 34px;
+  margin: 0 0 10px;
+  border: 1px solid color-mix(in srgb, #000 25%, var(--accent));
+  border-radius: 10px;
+  background: linear-gradient(180deg, #0236b8 0%, var(--accent) 55%, #011f72 100%);
+  color: #eef3ff;
+  min-height: 42px;
   overflow: hidden;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 .nh-topics-label {
   flex: none;
-  display: grid;
-  place-items: center;
-  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
   font-size: 10px;
   font-weight: 700;
-  letter-spacing: 0.08em;
-  border-right: 1px solid rgba(255, 255, 255, 0.14);
-  color: #b9c2cc;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-right: 1px solid rgba(255, 255, 255, 0.18);
+  color: #fff;
+  background: rgba(0, 0, 0, 0.18);
+}
+.nh-topics-pulse {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #c81322;
+  box-shadow: 0 0 0 0 rgba(200, 19, 34, 0.45);
+  animation: nh-topics-pulse 2.4s ease-out infinite;
+}
+@keyframes nh-topics-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(200, 19, 34, 0.45); }
+  70% { box-shadow: 0 0 0 8px rgba(200, 19, 34, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(200, 19, 34, 0); }
 }
 .nh-topics-viewport {
   flex: 1;
   overflow: hidden;
-  mask-image: linear-gradient(90deg, transparent, #000 12px, #000 calc(100% - 12px), transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 28px, #000 calc(100% - 28px), transparent);
 }
 .nh-topics-track {
   display: flex;
   width: max-content;
-  gap: 0;
-  animation: nh-topics-scroll 150s linear infinite;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  animation: nh-topics-scroll 320s linear infinite;
 }
 .nh-topics-track:hover { animation-play-state: paused; }
 @keyframes nh-topics-scroll {
@@ -523,34 +544,58 @@ button, input, textarea { font-family: inherit; }
   to { transform: translateX(-50%); }
 }
 @media (prefers-reduced-motion: reduce) {
-  .nh-topics-track { animation: none; }
+  .nh-topics-track,
+  .nh-topics-pulse { animation: none; }
 }
 .nh-topic {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 0 18px;
-  border: none;
-  background: transparent;
+  padding: 5px 12px 5px 8px;
+  border: 1px solid #d7dee6;
+  border-radius: 999px;
+  background: #fff;
   color: inherit;
   font: inherit;
   cursor: pointer;
   white-space: nowrap;
   font-size: 12px;
+  line-height: 1.2;
+  box-shadow: 0 1px 0 rgba(15, 23, 42, 0.04);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
 }
-.nh-topic:hover { color: #fff; }
+.nh-topic:hover {
+  border-color: #9eb0c2;
+  background: #fcfdff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.06);
+}
+.nh-topic:focus-visible {
+  outline: 2px solid #012ea1;
+  outline-offset: 2px;
+}
 .nh-topic-cat {
-  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.06em;
-  color: #93c5fd;
+  text-transform: uppercase;
+  color: #1e3a5f;
+  background: #e8f0fe;
 }
-.nh-topic-cat.cat-geopolitics { color: #fca5a5; }
-.nh-topic-cat.cat-national { color: #86efac; }
-.nh-topic-cat.cat-finance { color: #fcd34d; }
-.nh-topic-cat.cat-judiciary { color: #c4b5fd; }
-.nh-topic-cat.cat-blocs { color: #7dd3fc; }
-.nh-topic-text { opacity: 0.92; }
+.nh-topic-cat.cat-geopolitics { color: #7f1d1d; background: #fee2e2; }
+.nh-topic-cat.cat-national { color: #14532d; background: #dcfce7; }
+.nh-topic-cat.cat-finance { color: #713f12; background: #fef3c7; }
+.nh-topic-cat.cat-judiciary { color: #4c1d95; background: #ede9fe; }
+.nh-topic-cat.cat-blocs { color: #0c4a6e; background: #e0f2fe; }
+.nh-topic-text {
+  color: #243041;
+  max-width: 42ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 .avatar {
   width: 32px;
@@ -3502,7 +3547,8 @@ button.live-feed:hover { color: var(--fg); }
   border-radius: 12px;
   overflow: hidden;
   aspect-ratio: 16 / 7;
-  max-height: 200px;
+  /* A-08: keep sponsors to roughly ≤⅓ of the first viewport, not a full-bleed hero */
+  max-height: min(33vh, 180px);
   width: 100%;
   background: #4b2d7a;
   margin-bottom: 0;

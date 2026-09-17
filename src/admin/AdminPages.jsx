@@ -369,6 +369,7 @@ export function UsersPage({ users, onChange }) {
       password: fd.get('password'),
       plan: fd.get('plan'),
       type: fd.get('type'),
+      personaId: fd.get('type'),
     });
     if (!res.ok) {
       setErr(res.reason);

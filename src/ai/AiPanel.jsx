@@ -17,6 +17,7 @@ import { sessionUser } from '../lib/userStore.js';
 import { filesFromDrop, materializeAiDrop, openAiResearch, readAiDrag } from '../lib/aiDrop.js';
 import { AiBrandIcon } from './AiBrandIcon.jsx';
 import AiMarkdown from './AiMarkdown.jsx';
+import { trackProductEvent } from '../lib/productAnalytics.js';
 
 const FOCUS_OPTS = [
   { id: 'attached', en: 'Attached only', hi: 'केवल संलग्न', hint: 'Pins and files in this chat' },
@@ -387,6 +388,12 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
 
   function onExport() {
     if (!chat) return;
+    try {
+      const gate = window.__niyExportGate;
+      if (typeof gate === 'function' && gate({ kind: 'ai' }) === false) return;
+    } catch {
+      /* continue */
+    }
     const md = exportChatMarkdown(chat, picked);
     const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
     const url = URL.createObjectURL(blob);
@@ -397,6 +404,11 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
       .slice(0, 48)}.md`;
     a.click();
     URL.revokeObjectURL(url);
+    trackProductEvent('ai_export', {
+      chatId: chat.id,
+      title: chat.title || '',
+      messages: (chat.messages || []).length,
+    });
   }
 
   async function send(e) {

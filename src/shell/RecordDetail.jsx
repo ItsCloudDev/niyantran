@@ -7,6 +7,7 @@ import { sensitiveNoteFor } from '../lib/sensitiveData.js';
 
 const SKIP = new Set([
   'source_url',
+  'pdf_url',
   'status',
   'adapter',
   'fail_reason',
@@ -25,6 +26,8 @@ const SKIP = new Set([
   '_blocRaw',
   '_otherRaw',
   'related_links',
+  'seat_list',
+  'pdf_note',
 ]);
 const ENTITY_KEYS = /party|ministry|sector|region|state|constituency|vendor|origin|category|department|court|status|stage|company|sponsor|financier|country|cadre|scheme|type|trend|intensity/i;
 
@@ -158,6 +161,13 @@ function sourcePairs(row) {
   }
   if (row?.source_url && isUrl(row.source_url) && !seen.has(row.source_url)) {
     out.push({ label: 'Source', url: row.source_url });
+  }
+  if (row?.pdf_url && isUrl(row.pdf_url) && !seen.has(row.pdf_url)) {
+    const sci = /sci\.gov\.in/i.test(row.pdf_url);
+    out.push({
+      label: sci ? 'Order PDF (SCI — session may be required)' : 'PDF',
+      url: row.pdf_url,
+    });
   }
   return out;
 }
@@ -339,6 +349,7 @@ export default function RecordDetail({ row, feed, onClear }) {
               </a>
             ))}
           </div>
+          {row.pdf_note ? <p className="rd-method muted" style={{ marginTop: 8 }}>{row.pdf_note}</p> : null}
         </div>
       )}
 

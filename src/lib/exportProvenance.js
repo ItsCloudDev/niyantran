@@ -17,10 +17,20 @@ export function withExportProvenance(rows, { feature = '', filterNote = '', expo
 }
 
 export function downloadJson(filename, payload) {
+  try {
+    const gate = typeof window !== 'undefined' ? window.__niyExportGate : null;
+    if (typeof gate === 'function') {
+      const allowed = gate({ kind: 'json', filename });
+      if (allowed === false) return false;
+    }
+  } catch {
+    /* continue */
+  }
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = filename.endsWith('.json') ? filename : `${filename}.json`;
   a.click();
   URL.revokeObjectURL(a.href);
+  return true;
 }

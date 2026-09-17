@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import ads from '../data/home-ads.json';
+import bundledAds from '../data/home-ads.json';
 import zine from '../data/home-zine.json';
 import {
   homeCacheHasRows,
@@ -16,6 +16,7 @@ import { dedupeNewsRows } from '../lib/newsDedup.js';
 import { applyRecordChecklistToFeed } from '../lib/recordChecklist.js';
 import { prepareHomeMarketQuotes } from '../lib/homeMarkets.js';
 import { loadHomeTickerItems } from '../lib/homeTicker.js';
+import { trackProductEvent } from '../lib/productAnalytics.js';
 
 async function getJson(path, signal) {
   const route = String(path).split('?')[0];
@@ -70,10 +71,15 @@ function Spark({ values, up }) {
   );
 }
 
-function SnapshotBadge({ ageH }) {
-  if (ageH == null || !Number.isFinite(Number(ageH))) return null;
+function SnapshotBadge({ ageH, archive }) {
+  if (archive) {
+    return <span className="nh-agent" title="Stored snapshot — not live ticks">snapshot · not live</span>;
+  }
+  if (ageH == null || !Number.isFinite(Number(ageH))) {
+    return <span className="nh-agent" title="Delayed / snapshot quotes">snapshot</span>;
+  }
   const label = ageH < 1 ? '<1h' : `${Math.round(ageH)}h`;
-  return <span className="nh-agent">snapshot · {label} ago</span>;
+  return <span className="nh-agent" title="Quote age from last successful pull">snapshot · {label} ago</span>;
 }
 
 export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }) {
@@ -86,6 +92,7 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
     latest: boot?.latest || null,
     pulse: boot?.pulse || null,
   });
+  const [ads, setAds] = useState(() => (Array.isArray(bundledAds) ? bundledAds : []));
   const [ad, setAd] = useState(0);
   const [loading, setLoading] = useState(!homeCacheHasRows(boot));
   const [topics, setTopics] = useState([]);
@@ -130,10 +137,22 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
   }));
 
   useEffect(() => {
+    const ac = new AbortController();
+    // A-08: editable without rebuild — public/data/home-ads.json overrides the bundled file.
+    fetch('/data/home-ads.json', { signal: ac.signal })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((body) => {
+        if (Array.isArray(body) && body.length) setAds(body);
+      })
+      .catch(() => {});
+    return () => ac.abort();
+  }, [reload]);
+
+  useEffect(() => {
     if (!ads.length) return undefined;
     const t = setInterval(() => setAd((i) => (i + 1) % ads.length), 5000);
     return () => clearInterval(t);
-  }, []);
+  }, [ads.length]);
 
   useEffect(() => {
     let alive = true;
@@ -144,6 +163,10 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
       alive = false;
     };
   }, [reload]);
+
+  useEffect(() => {
+    trackProductEvent('home_open', {});
+  }, []);
 
   useEffect(() => {
     const ac = new AbortController();
@@ -261,7 +284,10 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
     <div className="nh">
       {topics.length ? (
         <div className="nh-topics" aria-label="Hot topics">
-          <span className="nh-topics-label">HOT TOPICS</span>
+          <div className="nh-topics-label">
+            <i className="nh-topics-pulse" aria-hidden="true" />
+            <span>Hot topics</span>
+          </div>
           <div className="nh-topics-viewport">
             <div className="nh-topics-track">
               {[0, 1].map((copy) =>
@@ -390,21 +416,35 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
             <div className="bh">
               <span>
                 MARKETS
-                <SnapshotBadge ageH={meta.markets?.ageH} />
+                <SnapshotBadge ageH={meta.markets?.ageH} archive={Boolean(meta.markets?.archive)} />
               </span>
               <button type="button" className="nh-link" onClick={() => onOpen({ tab: 'economics', feature: 'NSE/BSE Delayed Market Feed' })} {...aiDragProps({ kind: 'feature', tab: 'economics', feature: 'NSE/BSE Delayed Market Feed', title: 'NSE/BSE Delayed Market Feed' })}>
                 Economics desk →
               </button>
             </div>
-            {(meta.markets?.as_of || meta.markets?.updated || quotes.find((q) => q.asOf || q.as_of)) && (
-              <p className="nh-asof muted" style={{ margin: '0 0 0.5rem', fontSize: '0.75rem' }}>
-                As of{' '}
-                {String(meta.markets?.as_of || meta.markets?.updated || quotes.find((q) => q.asOf || q.as_of)?.asOf || quotes.find((q) => q.as_of)?.as_of || '')
-                  .replace('T', ' ')
-                  .replace(/\.\d+Z$/, ' UTC')
-                  .replace(/Z$/, ' UTC')}
-              </p>
-            )}
+            <p className="nh-asof muted" style={{ margin: '0 0 0.5rem', fontSize: '0.75rem' }}>
+              {meta.markets?.archive
+                ? 'Delayed snapshot — not live ticks. '
+                : 'Delayed quotes (not streaming). '}
+              {(meta.markets?.as_of || meta.markets?.updated || quotes.find((q) => q.asOf || q.as_of)) && (
+                <>
+                  As of{' '}
+                  {String(
+                    meta.markets?.as_of ||
+                      meta.markets?.updated ||
+                      quotes.find((q) => q.asOf || q.as_of)?.asOf ||
+                      quotes.find((q) => q.as_of)?.as_of ||
+                      '',
+                  )
+                    .replace('T', ' ')
+                    .replace(/\.\d+Z$/, ' UTC')
+                    .replace(/Z$/, ' UTC')}
+                </>
+              )}
+              {!meta.markets?.as_of && !meta.markets?.updated && !quotes.find((q) => q.asOf || q.as_of) && (
+                <span>As-of stamp missing on this pull — treat as archive.</span>
+              )}
+            </p>
             <table className="nh-moves">
               <tbody>
                 {quotes.map((q) => (
@@ -427,7 +467,7 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
             <div className="bh">
               <span>
                 LATEST FROM NTER.NEWS
-                <SnapshotBadge ageH={meta.latest?.ageH} />
+                <SnapshotBadge ageH={meta.latest?.ageH} archive={Boolean(meta.latest?.archive)} />
               </span>
             </div>
             <ul className="nh-latest">
@@ -457,7 +497,7 @@ export default function HomeDesk({ onOpen, onFeed, onSelect, onLoading, reload }
             <div className="bh">
               CONFLICT PULSE{' '}
               <small>{meta.pulse?.gdelt ? 'GDELT · LIVE' : meta.pulse?.rows?.length ? 'OPEN FRONTS' : ''}</small>
-              <SnapshotBadge ageH={meta.pulse?.ageH} />
+              <SnapshotBadge ageH={meta.pulse?.ageH} archive={Boolean(meta.pulse?.archive)} />
             </div>
             <ul className="nh-pulse">
               {loading && !pulse.length && <li className="muted">Loading…</li>}

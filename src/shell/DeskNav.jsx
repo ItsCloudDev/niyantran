@@ -35,13 +35,14 @@ function Menu({ items, active, onPick, anchor, onKeep, onLeave }) {
   );
 }
 
-export default function DeskNav({ tab, featureName, lang, onDesk, onFeature, tabs }) {
+export default function DeskNav({ tab, featureName, lang, onDesk, onFeature, tabs, lockedIds }) {
   const [open, setOpen] = useState(null);
   const [sideOpen, setSideOpen] = useState(false);
   const btnRefs = useRef({});
   const closeTimer = useRef(null);
   const hi = lang === 'hi';
   const homeTabs = tabs || TABS;
+  const locked = lockedIds instanceof Set ? lockedIds : new Set(lockedIds || []);
   const active = homeTabs.find((t) => t.id === tab) || TABS.find((t) => t.id === tab) || TABS[0];
   const buckets = tab === 'home' ? [] : bucketsFor(modulesForTier(active.tier), active.tier);
   const currentBucket = bucketContaining(buckets, featureName);
@@ -95,9 +96,15 @@ export default function DeskNav({ tab, featureName, lang, onDesk, onFeature, tab
 
       {tab === 'home' &&
         homeTabs.filter((t) => t.id !== 'home').map((t) => (
-          <button key={t.id} type="button" onClick={() => onDesk(t.id)}>
+          <button
+            key={t.id}
+            type="button"
+            className={locked.has(t.id) ? 'desk-locked' : ''}
+            onClick={() => onDesk(t.id)}
+          >
             <Icon name={TAB_ICON[t.id] || 'globe'} size={15} />
             {labelOf(t)}
+            {locked.has(t.id) ? <span className="desk-up-tag">Upgrade</span> : null}
           </button>
         ))}
 
@@ -170,7 +177,16 @@ export default function DeskNav({ tab, featureName, lang, onDesk, onFeature, tab
         );
       })}
 
-      {sideOpen && <DeskSidebar tab={tab} lang={lang} onDesk={onDesk} onClose={() => setSideOpen(false)} tabs={homeTabs} />}
+      {sideOpen && (
+        <DeskSidebar
+          tab={tab}
+          lang={lang}
+          onDesk={onDesk}
+          onClose={() => setSideOpen(false)}
+          tabs={homeTabs}
+          lockedIds={locked}
+        />
+      )}
     </nav>
   );
 }

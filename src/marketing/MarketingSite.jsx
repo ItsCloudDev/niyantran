@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import HomePage from './HomePage.jsx';
 import LoginPage from './LoginPage.jsx';
+import SignupPage from './SignupPage.jsx';
 import PricingPage from './PricingPage.jsx';
 import PrivacyPage from './PrivacyPage.jsx';
 import TermsPage from './TermsPage.jsx';
@@ -19,6 +20,7 @@ function pageFromRoute() {
     .replace(/^\/+/, '')
     .toLowerCase();
   if (raw.startsWith('pricing')) return 'pricing';
+  if (raw.startsWith('signup') || raw.startsWith('register')) return 'signup';
   if (raw.startsWith('login')) return 'login';
   if (raw.startsWith('privacy')) return 'privacy';
   if (raw.startsWith('terms')) return 'terms';
@@ -55,6 +57,7 @@ export default function MarketingSite({ onAuthed }) {
     else if (page === 'terms') setPageTitle('Terms & Conditions');
     else if (page === 'pricing') setPageTitle('Pricing');
     else if (page === 'login') setPageTitle('Sign in');
+    else if (page === 'signup') setPageTitle('Create account');
     else setPageTitle('');
   }, [page, site.siteName, site.metaTitle]);
 
@@ -97,9 +100,10 @@ export default function MarketingSite({ onAuthed }) {
 
   const year = new Date().getFullYear();
   const short = site.shortName || 'TERMINAL';
+  const auth = page === 'login' || page === 'signup';
 
   return (
-    <div className="mkt">
+    <div className={`mkt${auth ? ' mkt-auth' : ''}`}>
       <header className="mkt-header">
         <div className="mkt-header-inner">
           <button type="button" className="mkt-brand" onClick={() => go('home')}>
@@ -113,7 +117,10 @@ export default function MarketingSite({ onAuthed }) {
             <button type="button" className={`mkt-nav-link${page === 'pricing' ? ' on' : ''}`} onClick={() => go('pricing')}>
               Pricing
             </button>
-            <button type="button" className={`mkt-cta${page === 'login' ? ' on' : ''}`} onClick={() => go('login')}>
+            <button type="button" className={`mkt-nav-link${page === 'login' ? ' on' : ''}`} onClick={() => go('login')}>
+              Sign in
+            </button>
+            <button type="button" className={`mkt-cta${page === 'signup' ? ' on' : ''}`} onClick={() => go('signup')}>
               Get Started
             </button>
           </nav>
@@ -125,13 +132,23 @@ export default function MarketingSite({ onAuthed }) {
         </div>
       </header>
 
-      {page === 'home' && <HomePage onLogin={() => go('login')} onCoverage={onCoverage} />}
-      {page === 'pricing' && <PricingPage onLogin={() => go('login')} />}
+      {page === 'home' && (
+        <HomePage onLogin={() => go('login')} onCoverage={onCoverage} onPricing={() => go('pricing')} />
+      )}
+      {page === 'pricing' && (
+        <PricingPage
+          onLogin={(planId) => {
+            if (!planId || planId === 'signup' || planId === 'gov') go('signup');
+            else go(`signup?plan=${planId}`);
+          }}
+        />
+      )}
       {page === 'privacy' && <PrivacyPage />}
       {page === 'terms' && <TermsPage />}
-      {page === 'login' && <LoginPage onSuccess={onAuthed} />}
+      {page === 'login' && <LoginPage onSuccess={onAuthed} onSignup={() => go('signup')} />}
+      {page === 'signup' && <SignupPage onSuccess={onAuthed} onLogin={() => go('login')} />}
 
-      <footer className="mkt-footer">
+      {!auth && <footer className="mkt-footer">
         <span className="mkt-red-shard" aria-hidden="true" />
         <div className="mkt-wrap mkt-footer-grid">
           <div>
@@ -204,7 +221,7 @@ export default function MarketingSite({ onAuthed }) {
           </div>
           <div className="mkt-box">
             <p>Ready to power your decisions with real-time intelligence?</p>
-            <button type="button" className="mkt-cta" onClick={() => go('login')}>
+            <button type="button" className="mkt-cta" onClick={() => go('signup')}>
               Request Access →
             </button>
           </div>
@@ -224,7 +241,7 @@ export default function MarketingSite({ onAuthed }) {
             </div>
           </div>
         </div>
-      </footer>
+      </footer>}
     </div>
   );
 }

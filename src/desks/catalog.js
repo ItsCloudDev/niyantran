@@ -71,6 +71,7 @@ const DESK_FEATURES = {
     'Municipal Watch',
     'Panchayat Watch',
     'Municipal & Panchayat Tender Aggregator',
+    'Local Governance Brief',
   ],
   judiciary: [
     'Supreme Court Order & Judgment Feed',
@@ -204,6 +205,7 @@ const BUCKET_REMAP = {
     Municipality: 'Local watch',
     Panchayats: 'Local watch',
     Representatives: 'Local watch',
+    'Local Governance': 'Local watch',
   },
   judiciary: { 'Legal Research': 'Judicial Analytics' },
   finance: {
@@ -270,7 +272,12 @@ const FEATURE_ORDER = {
       'State Tender Aggregator (State e-Procurement)',
     ],
     Booths: ['Booth-level Results Database', 'Booth Political History'],
-    'Local watch': ['Municipal Watch', 'Panchayat Watch', 'Municipal & Panchayat Tender Aggregator'],
+    'Local watch': [
+      'Municipal Watch',
+      'Panchayat Watch',
+      'Municipal & Panchayat Tender Aggregator',
+      'Local Governance Brief',
+    ],
   },
   judiciary: {
     'Judicial Intelligence': [

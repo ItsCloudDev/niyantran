@@ -364,33 +364,63 @@ export function geoRows(pack, feature, dataset) {
   }
 
   if (key === 'geo_local_brief') {
-    const results = byCols(P.results, P.resultCols, [
-      ['ac', 'AC'],
-      ['w2017', '2017 Assembly winner'],
-      ['w2019', '2019 Lok Sabha winner'],
-      ['w2022', '2022 Assembly winner'],
-      ['pct2022', '2022 Assembly %'],
-      ['margin2022', '2022 Assembly margin'],
-      ['w2024', '2024 Lok Sabha winner'],
-    ]);
-    const resOf = {};
-    results.forEach((r) => {
-      resOf[String(r.ac)] = r;
-    });
-    return seats.map((s) => {
-      const r = resOf[String(s.ac)] || {};
-      return {
-        ...take(s, ['ac', 'name', 'district', 'taluka', 'electors', 'booths', 'status']),
-        w2017: r.w2017,
-        w2019: r.w2019,
-        w2022: r.w2022,
-        pct2022: r.pct2022,
-        margin2022: r.margin2022,
-        w2024: r.w2024,
-        title: s.name,
-        ...seatBrief(s),
-      };
-    });
+    // A-11: district×taluka units — not a second Constituency Register (seat-level).
+    const byUnit = new Map();
+    for (const s of seats) {
+      const district = String(s.district || '').trim() || '—';
+      const taluka = String(s.taluka || '').trim() || '—';
+      const unitKey = `${district}\0${taluka}`;
+      let g = byUnit.get(unitKey);
+      if (!g) {
+        g = {
+          district,
+          taluka,
+          seats: 0,
+          electors: 0,
+          booths: 0,
+          names: [],
+          statuses: {},
+          blocs: {},
+        };
+        byUnit.set(unitKey, g);
+      }
+      g.seats += 1;
+      g.electors += num(s.electors) || 0;
+      g.booths += num(s.booths) || 0;
+      if (s.name) g.names.push(String(s.name));
+      if (s.status) g.statuses[s.status] = (g.statuses[s.status] || 0) + 1;
+      if (s.bloc) g.blocs[s.bloc] = (g.blocs[s.bloc] || 0) + 1;
+    }
+    return [...byUnit.values()]
+      .sort((a, b) => a.district.localeCompare(b.district) || a.taluka.localeCompare(b.taluka))
+      .map((g) => {
+        const topStatus = Object.entries(g.statuses).sort((x, y) => y[1] - x[1])[0];
+        const topBloc = Object.entries(g.blocs).sort((x, y) => y[1] - x[1])[0];
+        const seatList = g.names.join(', ');
+        const brief = `${g.taluka} taluka in ${g.district} covers ${g.seats} assembly seat${g.seats === 1 ? '' : 's'} (${fmt(g.electors)} electors, ${fmt(g.booths)} booths). Seat roll-up: ${seatList}.`;
+        const why = topBloc
+          ? `Across these seats the most common estimated leading bloc on the modelled roll is ${topBloc[0]} (${topBloc[1]} of ${g.seats} seats). That is an estimate from surname tags, not a census.`
+          : 'Community shares are modelled at seat level; see Constituency Register for seat detail.';
+        const watch = topStatus
+          ? `Most common 2022 status label in this taluka: "${topStatus[0]}" (${topStatus[1]} seats). Use Municipal / Panchayat Watch for live local-body coverage — this brief is a geography roll-up, not a news feed.`
+          : 'Open Constituency Register for seat-level electors and status.';
+        return {
+          district: g.district,
+          taluka: g.taluka,
+          name: `${g.taluka}, ${g.district}`,
+          title: `${g.taluka}, ${g.district}`,
+          seats: g.seats,
+          electors: g.electors,
+          booths: g.booths,
+          seat_list: seatList,
+          status_mix: topStatus ? `${topStatus[0]} (${topStatus[1]}/${g.seats})` : '',
+          leading_bloc_mix: topBloc ? `${topBloc[0]} (${topBloc[1]}/${g.seats})` : '',
+          brief,
+          why_it_matters: why,
+          watch_for: watch,
+          tags: [g.district, g.taluka, topBloc?.[0], topStatus?.[0]].filter(Boolean),
+        };
+      });
   }
 
   if (BOOTH_COLS[key]) {
@@ -404,8 +434,16 @@ export function geoRows(pack, feature, dataset) {
   return [];
 }
 
-export function geoNote(pack) {
+export function geoNote(pack, feature) {
   const P = livePack(pack);
   const vintage = P?.vintage || pack?.vintage || '';
-  return `Ingested geography pack${vintage ? ` — ${vintage}` : ''}. The workbook GitHub URL is the extract source, not the live table.`;
+  const base = `Ingested Goa geography pack${vintage ? ` — ${vintage}` : ''} only. The workbook GitHub URL is the extract source, not the live table.`;
+  const f = String(feature || '');
+  if (/local governance brief/i.test(f)) {
+    return `${base} Local Governance Brief rolls seats up by district×taluka — it is not a second Constituency Register.`;
+  }
+  if (/constituency register/i.test(f)) {
+    return `${base} Constituency Register is seat-level (AC).`;
+  }
+  return base;
 }

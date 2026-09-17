@@ -73,6 +73,14 @@ export default function PricingPage({ onLogin }) {
 
   useEffect(() => subscribePricing(setPlans), []);
 
+  function goPlan(planId) {
+    if (planId === 'gov') {
+      onLogin?.('signup');
+      return;
+    }
+    onLogin?.(planId);
+  }
+
   return (
     <div className="mkt-pr">
       <div className="mkt-pr-art" aria-hidden="true">
@@ -175,7 +183,7 @@ export default function PricingPage({ onLogin }) {
                 </div>
                 <div className="unit">{p.unit}</div>
                 <p className="tag">{p.tag}</p>
-                <button type="button" className={`mkt-pr-btn ${p.ctaKind}`} onClick={onLogin}>
+                <button type="button" className={`mkt-pr-btn ${p.ctaKind}`} onClick={() => goPlan(p.id)}>
                   {p.cta}
                 </button>
                 {p.plus ? (
@@ -255,7 +263,7 @@ export default function PricingPage({ onLogin }) {
             <h3>Not sure which plan fits your needs?</h3>
             <p>Our team can help you find the right solution.</p>
           </div>
-          <button type="button" className="mkt-pr-btn ghost-dark" onClick={onLogin}>
+          <button type="button" className="mkt-pr-btn ghost-dark" onClick={() => goPlan('gov')}>
             Talk to an Expert
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M5 12h14M13 6l6 6-6 6" />

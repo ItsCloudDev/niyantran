@@ -63,9 +63,10 @@ export function AffidavitRecord({ row, onClear, onAskAi }) {
             source — see the affidavit for full particulars. Pending cases and convictions are not separate columns here — Form 26
             separates them; this register does not.
           </p>
-          <span className="brec-ghost off" title="Embed is host wiring — not in this build">
-            ⊕ Embed
-          </span>
+          <p className="muted" style={{ marginTop: 10, fontSize: '0.85rem' }}>
+            <strong>⊕ Embed</strong> — not in this build. In-page affidavit embed needs host wiring (iframe / document viewer) that is
+            not shipped here. Use <em>Source document</em> or <em>View PDF</em> below to open the affidavit in a new tab.
+          </p>
         </section>
       </div>
       <div className="nat-tiles">

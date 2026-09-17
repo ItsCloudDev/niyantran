@@ -542,15 +542,13 @@ const PRESETS = [
   {
     test: /^local governance brief$/i,
     cols: [
-      { key: 'name', label: 'CONSTITUENCY', fallback: 'title', dot: true },
-      { key: 'ac', label: 'AC' },
+      { key: 'taluka', label: 'TALUKA', fallback: 'name', dot: true },
+      { key: 'district', label: 'DISTRICT' },
+      { key: 'seats', label: 'SEATS', num: true },
       { key: 'electors', label: 'ELECTORS', num: true },
       { key: 'booths', label: 'BOOTHS', num: true },
-      { key: 'w2022', label: '2022' },
-      { key: 'margin2022', label: 'WON BY %', num: true },
-      { key: 'status', label: 'STATUS', pill: true },
-      { key: 'w2017', label: '2017' },
-      { key: 'w2024', label: '2024' },
+      { key: 'status_mix', label: 'STATUS MIX', pill: true },
+      { key: 'leading_bloc_mix', label: 'LEADING BLOC (EST.)' },
     ],
   },
   {
@@ -602,6 +600,7 @@ const PRESETS = [
       { key: 'last', label: 'LAST', num: true },
       { key: 'change', label: 'CHANGE', num: true },
       { key: 'pct_change', label: 'CHG %', num: true },
+      { key: 'as_of', label: 'AS OF', fallback: 'asOf', date: true, keep: true },
       { key: 'open', label: 'OPEN', num: true },
       { key: 'high', label: 'HIGH', num: true },
       { key: 'low', label: 'LOW', num: true },

@@ -3,8 +3,9 @@ import { TABS } from '../desks/catalog.js';
 export const DEFAULT_USER_TYPE = 'analyst';
 
 /**
- * Desk-access types. Labels align with provisional CR personas
- * (Policy Analyst, Journalist, UPSC Aspirant, Corporate Affairs, Legal Researcher, Academic).
+ * Desk-access types. Labels align with the initial signup personas:
+ * Policy Analyst, Journalist, UPSC Aspirant, Corporate Affairs,
+ * Legal Researcher, Academic.
  * Legacy id `analyst` = Corporate Affairs (full terminal).
  */
 export const USER_TYPES = [

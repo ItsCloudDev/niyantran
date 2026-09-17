@@ -152,7 +152,13 @@
 }
 .niy-tour-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+.niy-tour-nav {
+  display: inline-flex;
+  align-items: center;
   gap: 8px;
 }
 .niy-tour-actions button {
@@ -172,4 +178,8 @@
 }
 .niy-tour-actions .ghost {
   color: var(--muted, #64748b);
+}
+.niy-tour-actions button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }

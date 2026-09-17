@@ -75,13 +75,22 @@ export async function homeMarketsFromStatic(signal) {
     return null;
   }).filter(Boolean);
 
+  const stamp = feedAsOf || rows[0]?.asOf || rows[0]?.as_of || '';
+  let ageH = null;
+  if (stamp) {
+    const t = new Date(stamp).getTime();
+    if (Number.isFinite(t)) ageH = (Date.now() - t) / 3600000;
+  }
+
   return {
     ok: true,
     rows: prepareHomeMarketQuotes(rows),
-    source: 'NSE market-feed snapshot (OHLC spark).',
+    source: 'NSE market-feed snapshot (OHLC spark). Delayed — not live ticks.',
     archive: true,
-    as_of: feedAsOf || rows[0]?.asOf || '',
-    updated: feedAsOf || rows[0]?.asOf || '',
+    as_of: stamp,
+    updated: stamp,
+    ageH,
+    note: 'Snapshot quotes from the shipped market feed. Not a live tick stream.',
   };
 }
 

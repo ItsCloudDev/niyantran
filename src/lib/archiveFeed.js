@@ -352,7 +352,7 @@ export async function fetchArchiveFeature({ tier, feature, signal } = {}) {
         rows,
         kind: 'geo-pack',
         meta: { vintage: niyGeo.packs?.GA?.vintage || niyGeo.vintage, state: 'Goa' },
-        note: geoNote(niyGeo),
+        note: geoNote(niyGeo, name),
       });
     }
   }

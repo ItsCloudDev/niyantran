@@ -12,6 +12,8 @@ export const SEED_USER = {
   email: 'analyst@niyantran',
   password: '12345678#',
   plan: 'enterprise',
+  planStatus: 'active',
+  personaId: 'analyst',
   type: 'analyst',
   active: true,
   createdAt: '2026-01-15T00:00:00.000Z',
@@ -22,7 +24,9 @@ export const SEED_STUDENT = {
   name: 'Student Desk',
   email: 'student@niyantran',
   password: '12345678#',
-  plan: 'pro',
+  plan: 'explorer',
+  planStatus: 'free',
+  personaId: 'student',
   type: 'student',
   active: true,
   createdAt: '2026-01-15T00:00:00.000Z',
@@ -43,12 +47,20 @@ function readRaw() {
 
 function normalize(user) {
   if (!user || typeof user !== 'object') return null;
+  const type = userTypeOf(user.type || user.personaId).id;
+  const personaId = user.personaId || user.persona_id || type;
+  const plan = String(user.plan || 'explorer').toLowerCase();
   return {
     ...user,
     email: String(user.email || '')
       .trim()
       .toLowerCase(),
-    type: userTypeOf(user.type).id,
+    type,
+    personaId,
+    plan: plan === 'professional' ? 'pro' : plan,
+    planStatus: user.planStatus || user.plan_status || (plan === 'explorer' ? 'free' : 'active'),
+    trialEndsAt: user.trialEndsAt || user.trial_ends_at || null,
+    billingYearly: Boolean(user.billingYearly ?? user.billing_yearly),
     active: user.active !== false,
   };
 }
@@ -196,7 +208,7 @@ export function authenticateUser(loginId, password) {
   return { ok: true, user: hit };
 }
 
-export function createUser({ name, email, password, plan, type }) {
+export function createUser({ name, email, password, plan, type, personaId, planStatus, trialEndsAt, billingYearly }) {
   const users = loadUsers();
   const cleanEmail = String(email || '')
     .trim()
@@ -204,16 +216,23 @@ export function createUser({ name, email, password, plan, type }) {
     .replace(/\s+/g, '');
   if (!cleanEmail || !password) return { ok: false, reason: 'User ID and password are required.' };
   if (cleanEmail.length < 2) return { ok: false, reason: 'User ID is too short.' };
+  if (String(password).length < 6) return { ok: false, reason: 'Password must be at least 6 characters.' };
   if (users.some((u) => String(u.email).toLowerCase() === cleanEmail)) {
     return { ok: false, reason: 'That user ID already exists.' };
   }
+  const role = userTypeOf(personaId || type).id;
+  const planId = String(plan || 'explorer').toLowerCase();
   const next = normalize({
     id: `u-${Date.now()}`,
     name: String(name || '').trim() || cleanEmail.split('@')[0],
     email: cleanEmail,
     password: String(password),
-    plan: plan || 'explorer',
-    type: type || DEFAULT_USER_TYPE,
+    plan: planId,
+    planStatus: planStatus || (planId === 'explorer' ? 'free' : 'active'),
+    trialEndsAt: trialEndsAt || null,
+    billingYearly: Boolean(billingYearly),
+    type: role,
+    personaId: role,
     active: true,
     createdAt: new Date().toISOString(),
   });
@@ -225,7 +244,11 @@ export function updateUser(id, patch) {
   const users = loadUsers().map((u) => {
     if (u.id !== id) return u;
     const next = { ...u, ...patch, id: u.id, email: u.email };
-    if (patch.type != null) next.type = userTypeOf(patch.type).id;
+    if (patch.type != null || patch.personaId != null) {
+      const role = userTypeOf(patch.personaId || patch.type || u.type).id;
+      next.type = role;
+      next.personaId = role;
+    }
     return next;
   });
   saveUsers(users);
