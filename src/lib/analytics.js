@@ -387,12 +387,17 @@ function lawOverview(feature, rows, base) {
   const f = String(feature || '');
   if (/^supreme court order|^order archive by topic/i.test(f)) {
     const topics = new Set(rows.map((r) => val(r, 'topic')).filter(Boolean)).size;
+    const withPdf = rows.filter((r) => /^https?:\/\//i.test(String(r.pdf_url || ''))).length;
+    const unclassified = rows.filter((r) => /other|unclassified/i.test(val(r, 'topic'))).length;
+    const thin = rows.length < 30 || unclassified / Math.max(1, rows.length) > 0.5;
     base.title = 'ORDERS';
-    base.note = 'Extracted Supreme Court order table. Topic is a classifier from the pack, not a legal opinion.';
+    base.note = thin
+      ? `Extracted Supreme Court order table (${rows.length} rows). This is a thin slice of SCI output — not a live docket. SCI “view-pdf” links often need a browser session and may fail (403 / blank) outside it; treat a dead PDF as a source limit, not a missing order.`
+      : 'Extracted Supreme Court order table. Topic is a classifier from the pack, not a legal opinion. SCI PDF links may require a live court session.';
     base.kpis = [
-      { label: 'ORDERS', value: inr(rows.length), sub: 'in this view' },
+      { label: 'ORDERS', value: inr(rows.length), sub: thin ? 'thin extracted slice' : 'in this view' },
       { label: 'TOPICS', value: topics, sub: 'subject buckets' },
-      { label: 'COURT', value: 'SCI', sub: 'Supreme Court of India' },
+      { label: 'PDF LINKS', value: inr(withPdf), sub: 'may need SCI session' },
       { label: 'SOURCE', value: 'INGESTED', sub: 'order table, not news' },
     ];
     base.charts = [

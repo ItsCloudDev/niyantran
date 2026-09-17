@@ -50,6 +50,8 @@ export function scOrderRows(raw) {
     .map((r) => {
       const title = String(r.case_title || r.title || '').trim();
       if (!title) return null;
+      const pdf = r.pdf_url || r.source_url || '';
+      const sciPdf = /sci\.gov\.in/i.test(String(pdf));
       return {
         case_title: title,
         title,
@@ -58,8 +60,11 @@ export function scOrderRows(raw) {
         order_date: r.order_date || r.date || '',
         topic: r.topic || 'Other / Unclassified',
         court: r.court || 'Supreme Court',
-        source_url: r.pdf_url || r.source_url || '',
-        pdf_url: r.pdf_url || r.source_url || '',
+        source_url: pdf,
+        pdf_url: pdf,
+        pdf_note: sciPdf
+          ? 'SCI view-pdf links often need a live court session and may fail (403 / blank) offline — a dead PDF is a source limit, not a missing order.'
+          : '',
       };
     })
     .filter(Boolean);

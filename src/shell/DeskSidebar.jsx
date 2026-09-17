@@ -3,9 +3,10 @@ import { createPortal } from 'react-dom';
 import { TABS } from '../desks/catalog.js';
 import { Icon, TAB_ICON } from './Icons.jsx';
 
-export default function DeskSidebar({ tab, lang, onDesk, onClose, tabs }) {
+export default function DeskSidebar({ tab, lang, onDesk, onClose, tabs, lockedIds }) {
   const hi = lang === 'hi';
   const list = tabs || TABS;
+  const locked = lockedIds instanceof Set ? lockedIds : new Set(lockedIds || []);
 
   useEffect(() => {
     function onKey(e) {
@@ -51,11 +52,12 @@ export default function DeskSidebar({ tab, lang, onDesk, onClose, tabs }) {
             <button
               key={t.id}
               type="button"
-              className={t.id === tab ? 'on' : ''}
+              className={`${t.id === tab ? 'on' : ''}${locked.has(t.id) ? ' desk-locked' : ''}`}
               onClick={() => pick(t.id)}
             >
               <Icon name={TAB_ICON[t.id] || 'globe'} size={16} />
               <span>{labelOf(t)}</span>
+              {locked.has(t.id) ? <em className="desk-up-tag">Upgrade</em> : null}
             </button>
           ))}
         </nav>

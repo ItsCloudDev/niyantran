@@ -5,6 +5,7 @@ import DeskView from '../desks/DeskView.jsx';
 import DeskGuide from '../desks/DeskGuide.jsx';
 import DeskNav from './DeskNav.jsx';
 import RightRail from './RightRail.jsx';
+import UpgradeModal from './UpgradeModal.jsx';
 import { Icon } from './Icons.jsx';
 import { isConflictsFeature } from '../lib/conflictsMonitor.js';
 import { isTransitFeature } from '../lib/transit.js';
@@ -15,11 +16,23 @@ import { isNationalFullscreen, isImpactRecordFeature } from '../lib/national.js'
 import { isGithubCsvRow } from '../lib/githubCsv.js';
 import { parseDeskHash, resolveDeskRoute, writeDeskHash } from '../lib/deskRoute.js';
 import { kickHomeRefreshIfDue } from '../lib/homeCache.js';
-import { canOpenDesk, clearSessionUser, sessionUser, tabsForType, userTypeOf } from '../lib/userStore.js';
+import { clearSessionUser, sessionUser, userTypeOf } from '../lib/userStore.js';
+import {
+  applyRowCap,
+  canAccessDesk,
+  canCopy,
+  canExport,
+  deskLocked,
+  entitlementOf,
+  isTrial,
+  navTabsForUser,
+  trialDaysLeft,
+} from '../lib/planEntitlements.js';
 import { setPageTitle } from '../lib/siteHead.js';
 import AiDock from '../ai/AiDock.jsx';
 import OnboardingTour from './OnboardingTour.jsx';
 import { clearPersonaPrefs } from '../lib/personas.js';
+import './upgrade.css';
 
 export default function TerminalShell({ onLogout }) {
   const start = parseDeskHash();
@@ -35,38 +48,61 @@ export default function TerminalShell({ onLogout }) {
   const [vizFilter, setVizFilter] = useState(null);
   const [aiOpen, setAiOpen] = useState(false);
   const [liveTvOpen, setLiveTvOpen] = useState(false);
+  const [userTick, setUserTick] = useState(0);
+  const [upgrade, setUpgrade] = useState(null);
   const user = sessionUser();
   const typeId = userTypeOf(user?.type).id;
   const typeMeta = userTypeOf(typeId);
-  const deskTabs = tabsForType(typeId);
+  const ent = entitlementOf(user);
+  const deskTabs = navTabsForUser(user);
+  const lockedIds = useMemo(
+    () => new Set(deskTabs.filter((t) => deskLocked(user, t.id)).map((t) => t.id)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [user?.plan, user?.planStatus, user?.personaId, user?.type, userTick],
+  );
 
   const active = deskTabs.find((t) => t.id === tab) || TABS.find((t) => t.id === tab) || TABS[0];
   const hi = lang === 'hi';
 
-  useEffect(() => {
-    const desk = active?.label || tab || 'Terminal';
-    const feat = String(featureName || '').trim();
-    setPageTitle(feat ? `${feat} · ${desk}` : desk === 'Home' ? 'Terminal' : desk);
-  }, [tab, featureName, active?.label]);
+  const openUpgrade = useCallback((reason = 'desk', deskLabel = '') => {
+    setUpgrade({ reason, deskLabel });
+  }, []);
 
   useEffect(() => {
-    if (!liveTvOpen) return undefined;
-    function onDoc(e) {
-      if (e.target?.closest?.('.tv-wrap')) return;
-      setLiveTvOpen(false);
-    }
-    function onKey(e) {
-      if (e.key === 'Escape') setLiveTvOpen(false);
-    }
-    document.addEventListener('mousedown', onDoc);
-    document.addEventListener('keydown', onKey);
-    return () => {
-      document.removeEventListener('mousedown', onDoc);
-      document.removeEventListener('keydown', onKey);
+    window.__niyExportGate = () => {
+      if (canExport(sessionUser())) return true;
+      openUpgrade('export');
+      return false;
     };
-  }, [liveTvOpen]);
+    return () => {
+      delete window.__niyExportGate;
+    };
+  }, [openUpgrade, userTick]);
 
-  const onFeed = useCallback((body) => setFeed(body), []);
+  useEffect(() => {
+    if (canCopy(user)) {
+      document.body.classList.remove('plan-no-copy');
+      return undefined;
+    }
+    document.body.classList.add('plan-no-copy');
+    function onCopy(e) {
+      if (canCopy(sessionUser())) return;
+      e.preventDefault();
+      openUpgrade('copy');
+    };
+    document.addEventListener('copy', onCopy, true);
+    return () => {
+      document.body.classList.remove('plan-no-copy');
+      document.removeEventListener('copy', onCopy, true);
+    };
+  }, [user, openUpgrade, userTick]);
+
+  const onFeed = useCallback(
+    (body) => {
+      setFeed(applyRowCap(body, sessionUser()));
+    },
+    [userTick],
+  );
   const onSelect = useCallback((row) => setSelected(row), []);
   const onLoading = useCallback((v) => setLoading(Boolean(v)), []);
   const onClearViz = useCallback(() => setVizFilter(null), []);
@@ -130,30 +166,57 @@ export default function TerminalShell({ onLogout }) {
   }, []);
 
   useEffect(() => {
+    const desk = active?.label || tab || 'Terminal';
+    const feat = String(featureName || '').trim();
+    setPageTitle(feat ? `${feat} · ${desk}` : desk === 'Home' ? 'Terminal' : desk);
+  }, [tab, featureName, active?.label]);
+
+  useEffect(() => {
+    if (!liveTvOpen) return undefined;
+    function onDoc(e) {
+      if (e.target?.closest?.('.tv-wrap')) return;
+      setLiveTvOpen(false);
+    }
+    function onKey(e) {
+      if (e.key === 'Escape') setLiveTvOpen(false);
+    }
+    document.addEventListener('mousedown', onDoc);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDoc);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [liveTvOpen]);
+
+  useEffect(() => {
     const land = sessionStorage.getItem('niyantranLand');
     if (land) sessionStorage.removeItem('niyantranLand');
     const hash = typeof location !== 'undefined' ? location.hash : '';
     const emptyHash = !hash || hash === '#' || hash === '#/';
     let r = parseDeskHash();
-    if (land && canOpenDesk(typeId, land) && emptyHash) {
+    if (land && canAccessDesk(user, land) && emptyHash) {
       r = resolveDeskRoute(land, '');
-    } else if (!canOpenDesk(typeId, r.tab)) {
+    } else if (!canAccessDesk(user, r.tab)) {
       const fallback = userTypeOf(typeId).startTab || 'home';
-      r = resolveDeskRoute(fallback, '');
+      r = resolveDeskRoute(canAccessDesk(user, fallback) ? fallback : 'home', '');
     }
     setTab(r.tab);
     setFeatureName(r.feature);
     if (r.tab === 'home' && emptyHash && r.tab === parseDeskHash().tab) return;
     writeDeskHash(r.tab, r.feature, { replace: true });
-  }, [typeId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [typeId, userTick]);
 
   useEffect(() => {
     function onPop() {
       let r = parseDeskHash();
-      if (!canOpenDesk(typeId, r.tab)) {
+      if (!canAccessDesk(sessionUser(), r.tab)) {
+        openUpgrade('desk', TABS.find((t) => t.id === r.tab)?.label || r.tab);
         const fallback = userTypeOf(typeId).startTab || 'home';
-        r = resolveDeskRoute(fallback, '');
+        r = resolveDeskRoute(canAccessDesk(sessionUser(), fallback) ? fallback : 'home', '');
         writeDeskHash(r.tab, r.feature, { replace: true });
+      } else if (isTrial(sessionUser()) && r.tab !== 'home') {
+        openUpgrade('trial');
       }
       setTab(r.tab);
       setFeatureName(r.feature);
@@ -166,14 +229,13 @@ export default function TerminalShell({ onLogout }) {
       window.removeEventListener('popstate', onPop);
       window.removeEventListener('hashchange', onPop);
     };
-  }, [typeId]);
+  }, [typeId, openUpgrade]);
 
   const allowedTiers = useMemo(() => {
-    const s = new Set(deskTabs.map((t) => t.tier));
-    // Booth / municipal modules live under State in the nav but remain local-tier in the map.
+    const s = new Set(deskTabs.filter((t) => canAccessDesk(user, t.id)).map((t) => t.tier));
     if (s.has('state')) s.add('local');
     return s;
-  }, [deskTabs]);
+  }, [deskTabs, user, userTick]);
 
   const hits = useMemo(() => {
     const n = q.trim().toLowerCase();
@@ -185,7 +247,11 @@ export default function TerminalShell({ onLogout }) {
   }, [q, allowedTiers]);
 
   function onDesk(id) {
-    if (!canOpenDesk(typeId, id)) return;
+    if (!canAccessDesk(sessionUser(), id)) {
+      openUpgrade('desk', TABS.find((t) => t.id === id)?.label || id);
+      return;
+    }
+    if (isTrial(sessionUser()) && id !== 'home') openUpgrade('trial');
     const r = resolveDeskRoute(id, '');
     setTab(r.tab);
     setFeatureName(r.feature);
@@ -195,6 +261,7 @@ export default function TerminalShell({ onLogout }) {
   }
 
   function onFeature(name) {
+    if (isTrial(sessionUser())) openUpgrade('trial');
     const r = resolveDeskRoute(tab, name);
     setTab(r.tab);
     setFeatureName(r.feature);
@@ -203,7 +270,11 @@ export default function TerminalShell({ onLogout }) {
   }
 
   function onOpen({ tab: nextTab, feature }) {
-    if (!canOpenDesk(typeId, nextTab)) return;
+    if (!canAccessDesk(sessionUser(), nextTab)) {
+      openUpgrade('desk', TABS.find((t) => t.id === nextTab)?.label || nextTab);
+      return;
+    }
+    if (isTrial(sessionUser()) && nextTab !== 'home') openUpgrade('trial');
     const r = resolveDeskRoute(nextTab, feature);
     setTab(r.tab);
     setFeatureName(r.feature);
@@ -229,6 +300,7 @@ export default function TerminalShell({ onLogout }) {
     !isEnergyFeature(featureName) &&
     !isGeoResourceDossier(featureName) &&
     !isNationalFullscreen(featureName);
+  const trialLeft = trialDaysLeft(user);
 
   return (
     <div className={`terminal theme-${theme}`}>
@@ -312,9 +384,20 @@ export default function TerminalShell({ onLogout }) {
           >
             <Icon name="info" />
           </button>
-          <span className="user-chip" title={`${user?.email || ''} · ${typeMeta.label}`}>
+          <span className="user-chip" title={`${user?.email || ''} · ${typeMeta.label} · ${ent.plan}`}>
             <span className="avatar">{(user?.name || 'A').charAt(0).toUpperCase()}</span>
             <span className="user-type">{typeMeta.short}</span>
+            {ent.status === 'trial' ? (
+              <button type="button" className="plan-chip trial" onClick={() => openUpgrade('trial')}>
+                Trial{trialLeft ? ` · ${trialLeft}d` : ''}
+              </button>
+            ) : ent.status === 'free' || ent.plan === 'explorer' ? (
+              <button type="button" className="plan-chip free" onClick={() => openUpgrade('desk')}>
+                Free
+              </button>
+            ) : (
+              <span className="plan-chip paid">{ent.plan}</span>
+            )}
           </span>
           <button
             type="button"
@@ -330,7 +413,15 @@ export default function TerminalShell({ onLogout }) {
           </button>
         </div>
       </header>
-      <DeskNav tab={tab} featureName={featureName} lang={lang} onDesk={onDesk} onFeature={onFeature} tabs={deskTabs} />
+      <DeskNav
+        tab={tab}
+        featureName={featureName}
+        lang={lang}
+        onDesk={onDesk}
+        onFeature={onFeature}
+        tabs={deskTabs}
+        lockedIds={lockedIds}
+      />
       <div className={`workspace${tab === 'home' ? ' home' : ''}${guideMode ? ' desk-guide-mode' : ''}${isConflictsFeature(featureName) ? ' conflicts-holistic' : ''}${isChokepointsFeature(featureName) || isEnergyFeature(featureName) || isNationalFullscreen(featureName) ? ' choke-holistic' : ''}${isGeoResourceDossier(featureName) ? ' geo-holistic' : ''}${isTransitFeature(featureName) ? ' transit-map' : ''}${isNationalFullscreen(featureName) ? ' pig-holistic' : ''}${billRecordOpen ? ' bill-record' : ''}${aiOpen ? ' ai-open' : ''}`}>
         <main className="main-col">
           {tab === 'home' ? (
@@ -363,6 +454,16 @@ export default function TerminalShell({ onLogout }) {
         <AiDock feed={feed} selected={selected} tab={tab} featureName={featureName} lang={lang} onOpenChange={setAiOpen} />
       </div>
       {tab === 'home' ? <OnboardingTour kind="home" /> : <OnboardingTour kind="desk" deskId={tab} />}
+      <UpgradeModal
+        open={Boolean(upgrade)}
+        reason={upgrade?.reason || 'desk'}
+        deskLabel={upgrade?.deskLabel || ''}
+        onClose={() => setUpgrade(null)}
+        onUpgraded={() => {
+          setUserTick((n) => n + 1);
+          setUpgrade(null);
+        }}
+      />
     </div>
   );
 }

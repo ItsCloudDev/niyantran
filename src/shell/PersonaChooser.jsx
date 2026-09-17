@@ -6,6 +6,7 @@ import {
   writePersonaId,
 } from '../lib/personas.js';
 import { setSessionUser, sessionUser, userTypeOf } from '../lib/userStore.js';
+import { trackProductEvent } from '../lib/productAnalytics.js';
 
 /** Map marketing persona ids onto USER_TYPES desk allowlists. */
 function userTypeForPersona(id) {
@@ -29,6 +30,7 @@ export default function PersonaChooser({ onDone }) {
         answers.start === 'home' ? 'home' : userTypeOf(type).startTab || 'home';
       sessionStorage.setItem('niyantranLand', land);
     }
+    trackProductEvent('persona_selected', { personaId: picked.id, answers });
     onDone?.(picked);
   }
 

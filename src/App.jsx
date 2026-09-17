@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import MarketingSite from './marketing/MarketingSite.jsx';
 import TerminalShell from './shell/TerminalShell.jsx';
-import PersonaChooser from './shell/PersonaChooser.jsx';
 import AdminApp from './admin/AdminApp.jsx';
 import { startSiteHead } from './lib/siteHead.js';
-import { readPersonaId } from './lib/personas.js';
+import { applyPersonaForUser, readPersonaId } from './lib/personas.js';
+import { sessionUser, userTypeOf } from './lib/userStore.js';
 import './shell/onboarding.css';
 
 function pathKey() {
@@ -25,7 +25,17 @@ function isMarketingOverlayPath() {
     .replace(/^#/, '')
     .replace(/^\/+/, '')
     .toLowerCase();
-  return raw.startsWith('pricing') || raw.startsWith('login');
+  return raw.startsWith('pricing') || raw.startsWith('login') || raw.startsWith('signup');
+}
+
+function ensurePersonaFromSession() {
+  if (readPersonaId()) return true;
+  const user = sessionUser();
+  if (!user) return false;
+  const type = userTypeOf(user.personaId || user.type).id;
+  applyPersonaForUser({ ...user, type, personaId: type });
+  sessionStorage.setItem('niyantranLand', userTypeOf(type).startTab);
+  return Boolean(readPersonaId());
 }
 
 export default function App() {
@@ -33,7 +43,10 @@ export default function App() {
   const [legal, setLegal] = useState(isLegalPath);
   const [authed, setAuthed] = useState(() => sessionStorage.getItem('niyantranAuthed') === '1');
   const [mktOverlay, setMktOverlay] = useState(isMarketingOverlayPath);
-  const [personaReady, setPersonaReady] = useState(() => Boolean(readPersonaId()));
+  const [personaReady, setPersonaReady] = useState(() => {
+    if (sessionStorage.getItem('niyantranAuthed') !== '1') return Boolean(readPersonaId());
+    return ensurePersonaFromSession();
+  });
 
   useEffect(() => startSiteHead(), []);
 
@@ -53,15 +66,16 @@ export default function App() {
 
   if (admin) return <AdminApp />;
 
-  // A-10: pricing / login hash must still resolve when already signed in.
+  // A-10: pricing / login / signup hash must still resolve when already signed in.
   if (legal || !authed || mktOverlay) {
     return (
       <MarketingSite
         onAuthed={() => {
           setAuthed(true);
           setMktOverlay(false);
-          setPersonaReady(Boolean(readPersonaId()));
-          if (location.hash.toLowerCase().includes('login') || location.hash.toLowerCase().includes('pricing')) {
+          setPersonaReady(ensurePersonaFromSession());
+          const h = location.hash.toLowerCase();
+          if (h.includes('login') || h.includes('signup') || h.includes('pricing')) {
             location.hash = '#/';
           }
         }}
@@ -69,15 +83,14 @@ export default function App() {
     );
   }
 
-  if (!personaReady) {
-    return <PersonaChooser onDone={() => setPersonaReady(true)} />;
-  }
+  // Persona is set at signup / restored on login — never prompt after sign-in.
+  if (!personaReady) ensurePersonaFromSession();
 
   return (
     <TerminalShell
       onLogout={() => {
         setAuthed(false);
-        setPersonaReady(Boolean(readPersonaId()));
+        setPersonaReady(false);
       }}
     />
   );

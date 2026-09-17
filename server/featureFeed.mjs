@@ -1385,7 +1385,7 @@ export async function serveFeatureFeed(searchParams) {
         coverage: { from: pack?.vintage || pack?.packs?.GA?.vintage || '', through: '', exhaustive: false },
         fallback: false,
         kind: 'geo-pack',
-        note: geoNote(pack),
+        note: geoNote(pack, feat.htmlFeature),
         meta: { vintage: pack?.packs?.GA?.vintage || pack?.vintage, state: 'Goa', heading: feat.htmlFeature },
       });
     }

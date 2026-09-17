@@ -1,6 +1,6 @@
 /**
  * Shared issued-user store for Admin + marketing login.
- * File-backed so localhost and 127.0.0.1 (separate localStorage) still see the same seats.
+ * SQLite (tmp/niyantran.sqlite) with JSON file migrate-on-read.
  *
  *   GET  /api/users
  *   PUT  /api/users   { users: [...] }
@@ -8,6 +8,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { getDb, queryAll, run } from './db.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const APP_ROOT = path.resolve(__dirname, '..');
@@ -21,6 +22,7 @@ const SEEDS = [
     password: '12345678#',
     plan: 'enterprise',
     type: 'analyst',
+    personaId: 'analyst',
     active: true,
     createdAt: '2026-01-15T00:00:00.000Z',
   },
@@ -31,6 +33,7 @@ const SEEDS = [
     password: '12345678#',
     plan: 'pro',
     type: 'student',
+    personaId: 'student',
     active: true,
     createdAt: '2026-01-15T00:00:00.000Z',
   },
@@ -43,25 +46,26 @@ function json(res, body, status = 200) {
   res.end(JSON.stringify(body));
 }
 
-function ensureDir() {
-  fs.mkdirSync(path.dirname(USERS_FILE), { recursive: true });
-}
-
 function normalize(u) {
   if (!u || typeof u !== 'object') return null;
   const email = String(u.email || '')
     .trim()
     .toLowerCase();
   if (!email) return null;
+  const plan = String(u.plan || 'explorer');
   return {
     id: String(u.id || `u-${email}`),
     name: String(u.name || email.split('@')[0]),
     email,
     password: String(u.password || ''),
-    plan: String(u.plan || 'explorer'),
+    plan,
     type: String(u.type || 'analyst'),
     active: u.active !== false,
-    createdAt: u.createdAt || new Date().toISOString(),
+    personaId: u.personaId || u.persona_id || null,
+    planStatus: u.planStatus || u.plan_status || (plan === 'explorer' ? 'free' : 'active'),
+    trialEndsAt: u.trialEndsAt || u.trial_ends_at || null,
+    billingYearly: Boolean(u.billingYearly ?? u.billing_yearly),
+    createdAt: u.createdAt || u.created_at || new Date().toISOString(),
   };
 }
 
@@ -89,7 +93,24 @@ function mergeWithSeeds(list) {
   return [...byEmail.values()];
 }
 
-function readUsers() {
+function rowToUser(r) {
+  return {
+    id: r.id,
+    name: r.name,
+    email: r.email,
+    password: r.password,
+    plan: r.plan,
+    type: r.type,
+    active: Number(r.active) !== 0,
+    personaId: r.persona_id || null,
+    planStatus: r.plan_status || (r.plan === 'explorer' ? 'free' : 'active'),
+    trialEndsAt: r.trial_ends_at || null,
+    billingYearly: Number(r.billing_yearly) === 1,
+    createdAt: r.created_at,
+  };
+}
+
+function readJsonFallback() {
   try {
     if (fs.existsSync(USERS_FILE)) {
       const parsed = JSON.parse(fs.readFileSync(USERS_FILE, 'utf8'));
@@ -102,10 +123,51 @@ function readUsers() {
   return mergeWithSeeds([]);
 }
 
-function writeUsers(users) {
-  ensureDir();
+async function readUsers() {
+  const database = await getDb();
+  const rows = queryAll(database, `SELECT * FROM users ORDER BY created_at ASC`);
+  if (!rows.length) {
+    const fromJson = readJsonFallback();
+    await writeUsers(fromJson);
+    return fromJson;
+  }
+  return mergeWithSeeds(rows.map(rowToUser));
+}
+
+async function writeUsers(users) {
+  const database = await getDb();
   const list = mergeWithSeeds(users);
-  fs.writeFileSync(USERS_FILE, JSON.stringify({ users: list, updatedAt: new Date().toISOString() }, null, 2));
+  const now = new Date().toISOString();
+  run(database, `DELETE FROM users`);
+  for (const u of list) {
+    run(
+      database,
+      `INSERT INTO users (id, name, email, password, plan, type, active, persona_id, plan_status, trial_ends_at, billing_yearly, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        u.id,
+        u.name,
+        u.email,
+        u.password,
+        u.plan,
+        u.type,
+        u.active === false ? 0 : 1,
+        u.personaId || null,
+        u.planStatus || (u.plan === 'explorer' ? 'free' : 'active'),
+        u.trialEndsAt || null,
+        u.billingYearly ? 1 : 0,
+        u.createdAt || now,
+        now,
+      ],
+    );
+  }
+  // Keep JSON mirror for older tooling / recovery.
+  try {
+    fs.mkdirSync(path.dirname(USERS_FILE), { recursive: true });
+    fs.writeFileSync(USERS_FILE, JSON.stringify({ users: list, updatedAt: now, engine: 'sqlite' }, null, 2));
+  } catch {
+    /* non-fatal */
+  }
   return list;
 }
 
@@ -127,7 +189,8 @@ export async function handleUsersApi(req, res, next) {
   }
 
   if (url.pathname === '/api/users' && req.method === 'GET') {
-    return json(res, { ok: true, users: readUsers() });
+    const users = await readUsers();
+    return json(res, { ok: true, users, engine: 'sqlite' });
   }
 
   if (url.pathname === '/api/users' && req.method === 'PUT') {
@@ -135,8 +198,8 @@ export async function handleUsersApi(req, res, next) {
       const raw = await readBody(req);
       const payload = JSON.parse(raw || '{}');
       const list = Array.isArray(payload.users) ? payload.users : [];
-      const users = writeUsers(list);
-      return json(res, { ok: true, users });
+      const users = await writeUsers(list);
+      return json(res, { ok: true, users, engine: 'sqlite' });
     } catch (err) {
       return json(res, { ok: false, error: err.message || String(err) }, 400);
     }

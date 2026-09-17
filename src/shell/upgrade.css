@@ -1,0 +1,263 @@
+/* Plan upgrade modal + desk lock badges */
+
+.desk-up-tag {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #f3e6d0;
+  color: #8a5a12;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.desktabs button.desk-locked,
+.desk-side-nav button.desk-locked {
+  opacity: 0.85;
+}
+.desk-side-nav button {
+  justify-content: flex-start;
+  gap: 10px;
+}
+.desk-side-nav .desk-up-tag {
+  margin-left: auto;
+}
+
+.plan-chip {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 0;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.plan-chip.free {
+  background: #e4ecfb;
+  color: #012ea1;
+}
+.plan-chip.trial {
+  background: #eee4f6;
+  color: #4f1d90;
+}
+.plan-chip.paid {
+  background: #e4f3ef;
+  color: #176b55;
+  cursor: default;
+}
+
+.plan-no-copy .main-col,
+.plan-no-copy .right-rail,
+.plan-no-copy table {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.plan-up-root {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+.plan-up-scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(12, 18, 32, 0.48);
+  cursor: pointer;
+}
+.plan-up-card {
+  position: relative;
+  z-index: 1;
+  width: min(560px, 100%);
+  max-height: min(90vh, 720px);
+  overflow: auto;
+  background: #fff;
+  border-radius: 18px;
+  border: 1px solid #e4ddd4;
+  box-shadow: 0 28px 64px rgba(12, 18, 32, 0.28);
+  padding: 22px 22px 18px;
+}
+.plan-up-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.plan-up-kicker {
+  margin: 0 0 4px;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 0.14em;
+  color: #012ea1;
+}
+.plan-up-head h2 {
+  margin: 0;
+  font-size: 22px;
+  letter-spacing: -0.02em;
+}
+.plan-up-x {
+  border: 0;
+  background: #f3f0ea;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  color: #444;
+}
+.plan-up-lead {
+  margin: 12px 0 16px;
+  color: #5c564c;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.plan-up-bill {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  background: #f3f0ea;
+  border-radius: 999px;
+  margin-bottom: 14px;
+}
+.plan-up-bill button {
+  border: 0;
+  background: transparent;
+  padding: 7px 12px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  color: #5c564c;
+  cursor: pointer;
+}
+.plan-up-bill button.on {
+  background: #fff;
+  color: #131313;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+.plan-up-plans {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.plan-up-plan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  text-align: left;
+  padding: 14px 14px 12px;
+  border: 1px solid #e4ddd4;
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+.plan-up-plan.on {
+  border-color: #012ea1;
+  box-shadow: 0 0 0 2px rgba(1, 46, 161, 0.12);
+  background: #f4f7fd;
+}
+.plan-up-plan em {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  font-style: normal;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4f1d90;
+  background: #eee4f6;
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+.plan-up-plan strong {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+}
+.plan-up-plan .amt {
+  font-size: 22px;
+  font-weight: 750;
+  letter-spacing: -0.03em;
+}
+.plan-up-plan .amt small {
+  font-size: 11px;
+  font-weight: 500;
+  color: #7a7268;
+  margin-left: 2px;
+}
+.plan-up-plan .who {
+  font-size: 12px;
+  color: #7a7268;
+  line-height: 1.35;
+}
+.plan-up-actions {
+  display: grid;
+  gap: 8px;
+  margin-top: 16px;
+}
+.plan-up-pay {
+  height: 46px;
+  border: 0;
+  border-radius: 10px;
+  background: #012ea1;
+  color: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.plan-up-pay:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+.plan-up-later {
+  height: 40px;
+  border: 1px solid #e4ddd4;
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #5c564c;
+}
+.plan-up-ok {
+  margin: 10px 0 0;
+  color: #176b55;
+  font-size: 13px;
+}
+.plan-up-err {
+  margin: 10px 0 0;
+  color: #c81322;
+  font-size: 13px;
+}
+.plan-up-note {
+  margin: 14px 0 0;
+  font-size: 11px;
+  line-height: 1.45;
+  color: #9a9388;
+}
+.plan-up-note code {
+  font-size: 10px;
+}
+
+@media (max-width: 560px) {
+  .plan-up-plans {
+    grid-template-columns: 1fr;
+  }
+}

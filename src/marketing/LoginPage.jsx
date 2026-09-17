@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { applyPersonaForUser } from '../lib/personas.js';
 import {
   authenticateUser,
   hydrateUsersFromServer,
@@ -6,7 +7,7 @@ import {
   userTypeOf,
 } from '../lib/userStore.js';
 
-export default function LoginPage({ onSuccess }) {
+export default function LoginPage({ onSuccess, onSignup }) {
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
   const [userId, setUserId] = useState('');
@@ -53,8 +54,9 @@ export default function LoginPage({ onSuccess }) {
     }
     const res = authenticateUser(user, pass);
     if (res.ok) {
-      const type = userTypeOf(res.user.type).id;
-      setSessionUser({ ...res.user, type });
+      const type = userTypeOf(res.user.personaId || res.user.type).id;
+      applyPersonaForUser({ ...res.user, type, personaId: type });
+      setSessionUser({ ...res.user, type, personaId: type });
       sessionStorage.setItem('niyantranLand', userTypeOf(type).startTab);
       onSuccess();
       return;
@@ -120,6 +122,12 @@ export default function LoginPage({ onSuccess }) {
         {demoMode ? (
           <div className="mkt-login-hint">Demo mode (?demo=1): analyst@niyantran / 12345678#</div>
         ) : null}
+        <p className="mkt-auth-switch">
+          New here?{' '}
+          <button type="button" onClick={onSignup}>
+            Create an account
+          </button>
+        </p>
       </main>
     </div>
   );

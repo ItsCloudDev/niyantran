@@ -185,8 +185,9 @@ function quoteFromMarketFeed(name, symbol) {
 }
 
 function snapshotAgeH(d) {
-  if (!d?.updated) return Infinity;
-  const t = new Date(d.updated).getTime();
+  const stamp = d?.as_of || d?.updated;
+  if (!stamp) return Infinity;
+  const t = new Date(stamp).getTime();
   if (!Number.isFinite(t)) return Infinity;
   return (Date.now() - t) / 3600000;
 }
@@ -194,7 +195,7 @@ function snapshotAgeH(d) {
 function readDiskSnapshot(feed) {
   const file = path.join(PUBLIC_DATA, `${feed}.json`);
   const d = readJsonFile(file);
-  if (!d || !d.updated) return null;
+  if (!d || !(d.as_of || d.updated)) return null;
   d.__ageH = snapshotAgeH(d);
   return d;
 }
@@ -204,8 +205,18 @@ function writeDiskSnapshot(feed, body) {
   if (!rows.length) return;
   try {
     fs.mkdirSync(PUBLIC_DATA, { recursive: true });
+    const quoteStamp =
+      body.as_of ||
+      body.updated ||
+      rows.find((r) => r?.as_of || r?.asOf)?.as_of ||
+      rows.find((r) => r?.asOf)?.asOf ||
+      '';
+    const now = new Date().toISOString();
+    // Prefer quote as-of for age; keep fetched_at as wall-clock of this write.
     const out = {
-      updated: new Date().toISOString(),
+      updated: quoteStamp || now,
+      as_of: quoteStamp || '',
+      fetched_at: now,
       rows,
       note: body.note || '',
       source: body.source || 'snapshot',
@@ -229,6 +240,7 @@ function snapshotPayload(snap, extra = {}) {
     archive: Boolean(snap.archive) || snap.__ageH > SNAPSHOT_MAX_AGE_H,
     ageH: snap.__ageH,
     updated: snap.updated,
+    as_of: snap.as_of || snap.updated || '',
     cached: true,
     ...extra,
   };
@@ -351,7 +363,16 @@ export async function serveHomeMarkets(opts = {}) {
     const arch = snapshotMarketsFromArchive();
     if (arch.rows?.length) {
       const rows = prepareHomeMarketQuotes(arch.rows);
-      writeDiskSnapshot('markets', { ...arch, rows, archive: true, source: 'Original HTML OHLC / NSE market-feed snapshot.' });
+      const stamp = arch.as_of || arch.updated || '';
+      const ageH = stamp ? snapshotAgeH({ as_of: stamp, updated: stamp }) : Infinity;
+      writeDiskSnapshot('markets', {
+        ...arch,
+        rows,
+        archive: true,
+        as_of: stamp,
+        updated: stamp,
+        source: 'Original HTML OHLC / NSE market-feed snapshot.',
+      });
       scheduleHomeRefresh('markets', fetchLiveMarkets);
       return {
         ok: true,
@@ -359,7 +380,9 @@ export async function serveHomeMarkets(opts = {}) {
         source: 'Original HTML OHLC / NSE market-feed snapshot.',
         archive: true,
         cached: true,
-        ageH: 0,
+        as_of: stamp,
+        updated: stamp,
+        ageH,
       };
     }
   }

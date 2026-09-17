@@ -1,12 +1,13 @@
 /**
- * Marketing + first-run personas (provisional copy from client CR inputs).
- * Ids map onto USER_TYPES for desk access; preference is localStorage-only for now.
+ * Initial signup / marketing personas (locked set until CR revises).
+ * Policy Analyst · Journalist · UPSC Aspirant · Corporate Affairs ·
+ * Legal Researcher · Academic. Ids map onto USER_TYPES for desk access.
  */
 
 export const PERSONA_KEY = 'niyPersona';
 export const PERSONA_ANSWERS_KEY = 'niyPersonaAnswers';
 
-/** @typedef {{ id: string, label: string, blurb: string, gets: string[], useCase: string, startHint: string, tone: string, d: string }} Persona */
+/** @typedef {{ id: string, label: string, blurb: string, gets: string[], useCase: string, startHint: string, tone: string, d: string, img: string }} Persona */
 
 /** @type {Persona[]} */
 export const PERSONAS = [
@@ -19,6 +20,7 @@ export const PERSONAS = [
     startHint: 'National · Legislative',
     tone: 'blue',
     d: 'M4 21h16M4 10h16M12 3l8 7H4z',
+    img: 'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&w=640&q=70',
   },
   {
     id: 'journalist',
@@ -29,6 +31,7 @@ export const PERSONAS = [
     startHint: 'Home brief',
     tone: 'red',
     d: 'M21 15a4 4 0 01-4 4H7l-4 3V7a4 4 0 014-4h10a4 4 0 014 4z',
+    img: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=640&q=70',
   },
   {
     id: 'student',
@@ -39,6 +42,7 @@ export const PERSONAS = [
     startHint: 'National desk',
     tone: 'sand',
     d: 'M4 19.5A2.5 2.5 0 016.5 17H20M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z',
+    img: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=640&q=70',
   },
   {
     id: 'analyst',
@@ -49,6 +53,7 @@ export const PERSONAS = [
     startHint: 'Home · Economics',
     tone: 'navy',
     d: 'M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6',
+    img: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=640&q=70',
   },
   {
     id: 'lawyer',
@@ -59,6 +64,7 @@ export const PERSONAS = [
     startHint: 'Law desk',
     tone: 'purple',
     d: 'M12 3l8 18H4zM12 8v5M12 16h.01',
+    img: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=640&q=70',
   },
   {
     id: 'academic',
@@ -69,6 +75,7 @@ export const PERSONAS = [
     startHint: 'National desk',
     tone: 'teal',
     d: 'M12 3a9 9 0 100 18 9 9 0 000-18zM3 12h18',
+    img: 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=640&q=70',
   },
 ];
 
@@ -146,4 +153,12 @@ export function clearPersonaPrefs() {
   } catch {
     /* ignore */
   }
+}
+
+/** Apply the account's saved working-as role (personaId or type). Used on login/signup. */
+export function applyPersonaForUser(user, answers) {
+  const id = user?.personaId || user?.type;
+  const written = writePersonaId(id);
+  if (answers && typeof answers === 'object') writePersonaAnswers(answers);
+  return written || writePersonaId('analyst');
 }

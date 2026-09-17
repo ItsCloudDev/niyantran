@@ -9,12 +9,14 @@ import { assetsApiPlugin } from './server/assetsApi.mjs'
 import { resourcesApiPlugin } from './server/resourcesApi.mjs'
 import { aiApiPlugin } from './server/aiApi.mjs'
 import { usersApiPlugin } from './server/usersApi.mjs'
+import { analyticsApiPlugin } from './server/analyticsApi.mjs'
 import { marketingMediaApiPlugin } from './server/marketingMediaApi.mjs'
+import { billingApiPlugin } from './server/billingApi.mjs'
 
 loadEnv()
 
 export default defineConfig({
-  plugins: [react(), featureFeedPlugin(), homeApiPlugin(), transitApiPlugin(), diplomacyApiPlugin(), assetsApiPlugin(), resourcesApiPlugin(), aiApiPlugin(), usersApiPlugin(), marketingMediaApiPlugin()],
+  plugins: [react(), featureFeedPlugin(), homeApiPlugin(), transitApiPlugin(), diplomacyApiPlugin(), assetsApiPlugin(), resourcesApiPlugin(), aiApiPlugin(), usersApiPlugin(), analyticsApiPlugin(), marketingMediaApiPlugin(), billingApiPlugin()],
   server: {
     port: 5173,
     strictPort: true,

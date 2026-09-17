@@ -50,7 +50,7 @@ function rankQuote(q) {
   if (q.chg != null) score += 4;
   if (!q.archive) score += 3;
   if (Array.isArray(q.spark) && q.spark.length > 1) score += 2;
-  if (q.asOf || q.updated) score += 1;
+  if (q.asOf || q.as_of || q.updated) score += 1;
   return score;
 }
 
@@ -65,6 +65,7 @@ export function normalizeMarketQuote(row) {
   const d1 = num(row.d1 ?? row.pct_change ?? row.chg ?? row.changePct);
   const dM = num(row.dM ?? row.periodChg);
   const chg = d1 != null ? d1 : dM;
+  const asOf = row.asOf || row.as_of || row.updated || row.date || '';
   return {
     ...row,
     name,
@@ -77,7 +78,8 @@ export function normalizeMarketQuote(row) {
     changeWindow: d1 != null ? '1D' : dM != null ? 'period' : null,
     spark: Array.isArray(row.spark) ? row.spark : [],
     source: row.source || row.sourceName || '',
-    asOf: row.asOf || row.updated || row.date || '',
+    asOf,
+    as_of: asOf,
   };
 }
 
