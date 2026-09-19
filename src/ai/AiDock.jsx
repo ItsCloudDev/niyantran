@@ -12,11 +12,21 @@ export default function AiDock({ feed, selected, tab, featureName, lang, onOpenC
   useEffect(() => {
     function onOpen(e) {
       setOpen(true);
-      if (e.detail && Object.keys(e.detail).length) setSeed(e.detail);
+      const detail = e.detail && typeof e.detail === 'object' ? e.detail : {};
+      if (Object.keys(detail).length) {
+        setSeed({
+          ...detail,
+          // Always carry the desk selection when present so every module grounds the same way.
+          row: detail.row || selected || undefined,
+          attachFeed: detail.attachFeed || Boolean(detail.row || selected),
+        });
+      } else if (selected) {
+        setSeed({ row: selected, attachFeed: true });
+      }
     }
     window.addEventListener('niy-ai-open', onOpen);
     return () => window.removeEventListener('niy-ai-open', onOpen);
-  }, []);
+  }, [selected]);
 
   useEffect(() => {
     if (!open) return undefined;

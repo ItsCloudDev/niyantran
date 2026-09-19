@@ -15,6 +15,7 @@ import {
 import { AI_PROVIDERS, activeAiProvider, shortModelLabel } from '../lib/aiModelsStore.js';
 import { sessionUser } from '../lib/userStore.js';
 import { filesFromDrop, materializeAiDrop, openAiResearch, readAiDrag } from '../lib/aiDrop.js';
+import { rowPinKey } from '../lib/sourceUrls.js';
 import { AiBrandIcon } from './AiBrandIcon.jsx';
 import AiMarkdown from './AiMarkdown.jsx';
 import { trackProductEvent } from '../lib/productAnalytics.js';
@@ -342,22 +343,64 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
       const st = ensureAiChat();
       const id = st.activeId;
       if (seed.drop) {
-        const bits = await materializeAiDrop(seed.drop, { feed, feature: featureName, tier: tab });
+        const bits = await materializeAiDrop(seed.drop, {
+          feed,
+          feature: featureName,
+          tier: tab,
+          selected,
+        });
         if (!cancelled) addChatAttachments(id, bits);
       }
       if (seed.droppedFiles?.length && !cancelled) addChatAttachments(id, seed.droppedFiles);
       if (seed.row) {
         const bits = await materializeAiDrop(
-          { kind: 'row', row: seed.row, feature: featureName, tab, title: seed.row.title || seed.row.name || seed.row.bill_name },
-          { feed, feature: featureName },
+          {
+            kind: 'row',
+            row: seed.row,
+            feature: featureName,
+            tab,
+            title:
+              seed.row.bill_name ||
+              seed.row.title ||
+              seed.row.name ||
+              seed.row.subject ||
+              seed.row.conflict_name ||
+              seed.row.commodity,
+          },
+          { feed, feature: featureName, selected: seed.row },
         );
         if (!cancelled) {
           addChatAttachments(id, bits);
           setFocus('selection');
         }
       } else if (seed.attachFeed && feed) {
-        const bits = await materializeAiDrop({ kind: 'feed', feature: feed.feature, tab }, { feed });
-        if (!cancelled) addChatAttachments(id, bits);
+        const bits = await materializeAiDrop(
+          { kind: 'feed', feature: feed.feature, tab },
+          { feed, feature: featureName, selected },
+        );
+        if (!cancelled) {
+          addChatAttachments(id, bits);
+          if (selected) setFocus('selection');
+        }
+      } else if (selected && !cancelled) {
+        // Any desk: opening AI with a highlighted row still grounds that row.
+        const bits = await materializeAiDrop(
+          {
+            kind: 'row',
+            row: selected,
+            feature: featureName,
+            tab,
+            title:
+              selected.bill_name ||
+              selected.title ||
+              selected.name ||
+              selected.subject ||
+              selected.conflict_name,
+          },
+          { feed, feature: featureName, selected },
+        );
+        addChatAttachments(id, bits);
+        setFocus('selection');
       }
       if (seed.prompt && !cancelled) setDraft(seed.prompt);
       if (!cancelled) onSeedConsumed?.();
@@ -365,11 +408,11 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
     return () => {
       cancelled = true;
     };
-  }, [seed, feed, featureName, tab, onSeedConsumed]);
+  }, [seed, feed, featureName, tab, selected, onSeedConsumed]);
 
   async function attachDrop(payload) {
     const st = ensureAiChat();
-    const bits = await materializeAiDrop(payload, { feed, feature: featureName, tier: tab });
+    const bits = await materializeAiDrop(payload, { feed, feature: featureName, tier: tab, selected });
     addChatAttachments(st.activeId, bits);
     openAiResearch();
   }
@@ -444,19 +487,50 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
     const st = ensureAiChat();
     const id = st.activeId;
     const current = activeAiChat();
-    const pins = current?.attachments || [];
+    let pins = [...(current?.attachments || [])];
     appendAiMessage(id, { role: 'user', content: text });
     setDraft('');
     setErr('');
     setBusy(true);
     try {
+      // Every desk: if a table row is selected, ground this turn on its columns + real docs.
+      if (selected && selected.status !== 'source_status') {
+        const key = rowPinKey(selected);
+        const already = pins.some((a) => {
+          if (a.kind !== 'row') return false;
+          const prev = a.preview || {};
+          return rowPinKey(prev) === key || a.title === (selected.bill_name || selected.title || selected.name);
+        });
+        if (!already) {
+          const bits = await materializeAiDrop(
+            {
+              kind: 'row',
+              row: selected,
+              feature: featureName,
+              tab,
+              title:
+                selected.bill_name ||
+                selected.title ||
+                selected.name ||
+                selected.subject ||
+                selected.conflict_name ||
+                selected.commodity ||
+                'Selected record',
+            },
+            { feed, feature: featureName, selected },
+          );
+          addChatAttachments(id, bits);
+          pins = [...pins, ...bits];
+        }
+      }
+
       const history = [...(current?.messages || []), { role: 'user', content: text }].map((m) => ({
         role: m.role,
         content: m.content,
       }));
       const model = AI_PROVIDERS.find((p) => p.id === providerId && p.enabled) || activeAiProvider();
-      const hasRowPin = (pins || []).some((a) => a.kind === 'row');
-      const useSelection = focus === 'selection' || focus === 'broad' || hasRowPin || Boolean(selected);
+      const hasRowPin = pins.some((a) => a.kind === 'row' || a.kind === 'feed');
+      const useSelection = true;
       const out = await sendAiChat({
         roleId: current?.roleId || 'AUTO',
         messages: history.filter((m) => m.role === 'user' || m.role === 'assistant'),
@@ -466,8 +540,11 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
         provider: model.provider,
         focus: hasRowPin && focus === 'attached' ? 'selection' : focus,
         workMode,
-        selection: useSelection ? slimRow(selected) || (pins.find((a) => a.kind === 'row')?.preview ?? null) : null,
-        deskContext: focus === 'desk' || focus === 'broad' ? buildDeskContext(feed, tab, featureName) : null,
+        selection: useSelection
+          ? slimRow(selected) || pins.find((a) => a.kind === 'row')?.preview || null
+          : null,
+        deskContext:
+          focus === 'desk' || focus === 'broad' ? buildDeskContext(feed, tab, featureName) : null,
       });
       appendAiMessage(id, {
         role: 'assistant',

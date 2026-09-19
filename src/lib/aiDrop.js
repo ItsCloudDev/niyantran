@@ -1,7 +1,7 @@
 import { TABS, catalogModules, modulesForTier } from '../desks/catalog.js';
 import { fetchFeature } from './featureFeed.js';
 import { githubCsvUrl } from './githubCsv.js';
-import { collectRowUrls, isHubListingUrl, rowRecordText, sourceKindHint } from './sourceUrls.js';
+import { collectRowUrls, isHubListingUrl, rowPinKey, rowRecordText, sourceKindHint } from './sourceUrls.js';
 
 export const AI_DND = 'application/x-niyantran-ai';
 
@@ -231,15 +231,50 @@ export async function materializeAiDrop(payload, extras = {}) {
   }
 
   if (kind === 'feed' && extras.feed?.rows?.length) {
-    const urls = [...new Set((extras.feed.rows || []).flatMap(urlsFromRow))].slice(0, 4);
+    // Prefer the selected row on this desk so Ask AI is never "feed URLs only".
+    if (extras.selected) {
+      return materializeAiDrop(
+        {
+          kind: 'row',
+          row: extras.selected,
+          feature: extras.feed.feature || payload.feature,
+          tab: payload.tab || '',
+          title:
+            extras.selected.bill_name ||
+            extras.selected.title ||
+            extras.selected.name ||
+            extras.selected.subject ||
+            extras.selected.conflict_name ||
+            'Selected record',
+        },
+        extras,
+      );
+    }
+    const sample = slimRows(extras.feed.rows, 6);
+    const docs = [...new Set((extras.feed.rows || []).flatMap(urlsFromRow))].slice(0, 3);
+    const columnPack = sample
+      .map((r) => r.record_text || rowRecordText(r))
+      .filter(Boolean)
+      .join('\n\n---\n\n')
+      .slice(0, 24_000);
     attachments.push({
       kind: 'feed',
       title: extras.feed.feature || payload.feature || 'Current feed',
       tab: payload.tab || '',
       feature: extras.feed.feature || payload.feature,
-      preview: { rows: slimRows(extras.feed.rows), note: extras.feed.source?.note || '' },
-      urls,
-      files: urls.map((url) => ({ url, kind: fileKind(url) || 'link' })),
+      preview: {
+        rows: sample,
+        note: extras.feed.source?.note || '',
+        document_status: docs.length
+          ? 'Sample desk rows + extractable documents.'
+          : 'Sample desk rows (terminal columns). Hub URLs are provenance only.',
+        record_text: columnPack,
+      },
+      urls: docs,
+      files: [
+        { kind: 'record', name: `${extras.feed.feature || 'Desk'} sample columns`, text: columnPack },
+        ...(await hydrateDocumentFiles(docs, extras.feed.feature || 'Desk document')),
+      ],
     });
     return attachments;
   }
