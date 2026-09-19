@@ -19,8 +19,30 @@ const DESKS = [
     id: 'legislative',
     label: 'Legislative & Policy Intelligence',
     d: 'M4 21h16M4 10h16M12 3l8 7H4z',
-    title: 'ASK AI · BILL DROP',
-    demo: true,
+    title: 'BILL PASSAGE INDEX',
+    more: 'View All Bills →',
+    cols: ['BILL', 'HOUSE'],
+    rows: [
+      ['The Tribunals Reforms Bill, 2026', 'Lok Sabha'],
+      ['The Finance Bill, 2026', 'Lok Sabha'],
+      ['The Boilers Bill, 2024', 'Rajya Sabha'],
+      ['The Banking Laws (Amendment) Bill, 2024', 'Lok Sabha'],
+      ['The National Co-Operative Development Corporation (Amendment) Bill, 2026', 'Lok Sabha'],
+      ['The Kerala (Alteration Of Name) Bill, 2026', 'Lok Sabha'],
+    ],
+    kpis: [
+      ['9,819', 'blue', 'BILLS ON RECORD'],
+      ['2', 'ok', 'HOUSES'],
+      ['48', 'warn', 'MINISTRIES'],
+      ['1952', 'gold', 'SERIES START'],
+    ],
+    bars: [
+      ['Pending', 4120, '42%', 42, ''],
+      ['Passed', 2890, '29%', 29, 'sand'],
+      ['Assented', 2100, '21%', 21, ''],
+      ['Withdrawn', 709, '7%', 7, 'red'],
+    ],
+    note: 'Passage labels are as published on the register. Probability scores are stored columns, not a simulator.',
   },
   {
     id: 'electoral',
@@ -198,7 +220,7 @@ export default function HomePage({ onLogin, onCoverage, onPricing }) {
   const [videoPlaying, setVideoPlaying] = useState(false);
   const desk = DESKS.find((d) => d.id === deskId) || DESKS[0];
   const rows = useMemo(() => {
-    if (desk.demo || !desk.rows) return [];
+    if (!desk.rows) return [];
     const needle = q.trim().toLowerCase();
     if (!needle) return desk.rows;
     return desk.rows.filter(([name, house]) => `${name} ${house}`.toLowerCase().includes(needle));
@@ -338,6 +360,126 @@ export default function HomePage({ onLogin, onCoverage, onPricing }) {
                 </span>
               </button>
             ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="mkt-ai-demo" id="ask-ai-demo" aria-labelledby="mkt-ai-demo-title">
+        <div className="mkt-wrap mkt-ai-demo-inner">
+          <div className="mkt-ai-demo-copy">
+            <p className="mkt-showcase-kicker">— Ask with the record attached</p>
+            <h2 id="mkt-ai-demo-title">
+              Drag a bill into Ask AI — <em>provenance stays on the record.</em>
+            </h2>
+            <p>
+              Drop any desk row into research. The assistant answers from the attached columns and source links —
+              not from invented citations.
+            </p>
+            <button type="button" className="mkt-cta" onClick={onLogin}>
+              Try it in the terminal
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14M13 6l6 6-6 6" />
+              </svg>
+            </button>
+          </div>
+          <BillAiDropDemo />
+        </div>
+      </section>
+
+      <section className="mkt-preview" aria-labelledby="mkt-preview-title">
+        <div className="mkt-wrap">
+          <div className="mkt-preview-lead">
+            <p>Inside the terminal</p>
+            <h2 id="mkt-preview-title">Desks you can open after sign-in</h2>
+          </div>
+          <div className="mkt-preview-frame">
+            <span className="mkt-preview-scan" aria-hidden="true" />
+            <aside className="mkt-prev-nav">
+              <div className="mark">
+                <img src="/brand/logo.png?v=2" alt="" />
+                TERMINAL
+              </div>
+              {DESKS.map((item) => (
+                <button
+                  type="button"
+                  className={item.id === desk.id ? 'on' : ''}
+                  key={item.id}
+                  onClick={() => pickDesk(item.id)}
+                >
+                  <Ico d={item.d} size={15} />
+                  {item.label}
+                </button>
+              ))}
+              <button type="button" className="mkt-prev-all" onClick={onLogin}>
+                <Ico d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" size={15} />
+                All Desks
+              </button>
+            </aside>
+            <div className="mkt-prev-table">
+              <div className="mkt-prev-top">
+                <h3>
+                  {desk.title}
+                  <span className="mkt-prev-live">
+                    <i />
+                    LIVE FEED
+                  </span>
+                </h3>
+                <div className="mkt-prev-search">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="11" cy="11" r="7" />
+                    <path d="M20 20l-3-3" />
+                  </svg>
+                  <input
+                    value={q}
+                    placeholder="Filter this table"
+                    onChange={(e) => {
+                      setQ(e.target.value);
+                      setPicked(0);
+                    }}
+                  />
+                </div>
+              </div>
+              <div className="mkt-prev-cols">
+                <span>{desk.cols[0]}</span>
+                <span>{desk.cols[1]}</span>
+              </div>
+              {rows.length === 0 && <div className="mkt-prev-empty">No rows match this filter.</div>}
+              {rows.map(([name, house], i) => (
+                <button type="button" className={`mkt-prev-row${i === picked ? ' on' : ''}`} key={name} onClick={() => setPicked(i)}>
+                  <b>{name}</b>
+                  <span>{house}</span>
+                </button>
+              ))}
+              <button type="button" className="mkt-prev-more" onClick={onLogin}>
+                {desk.more}
+              </button>
+            </div>
+            <aside className="mkt-prev-rail">
+              <div className="mkt-prev-tabs">
+                <span className="mkt-prev-tab-static">Key indicators</span>
+              </div>
+              <div className="mkt-kpi-grid">
+                {desk.kpis.map(([n, tone, lab]) => (
+                  <div className="mkt-kpi" key={lab}>
+                    <strong className={tone}>{n}</strong>
+                    <small>{lab}</small>
+                  </div>
+                ))}
+              </div>
+              <div className="mkt-bar-lab">STATUS BY STAGE</div>
+              {desk.bars.map(([lab, count, pct, width, tone]) => (
+                <div className="mkt-bar" key={`${desk.id}-${lab}`}>
+                  <span>{lab}</span>
+                  <i>
+                    <b className={tone} style={{ width: `${width}%` }} />
+                  </i>
+                  <em>
+                    {count.toLocaleString()} ({pct})
+                  </em>
+                </div>
+              ))}
+              <p className="mkt-prev-note">{desk.note}</p>
+            </aside>
           </div>
         </div>
       </section>
@@ -605,126 +747,6 @@ export default function HomePage({ onLogin, onCoverage, onPricing }) {
                 </div>
               </article>
             ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mkt-preview" aria-labelledby="mkt-preview-title">
-        <div className="mkt-wrap">
-          <div className="mkt-preview-lead">
-            <p>Inside the terminal</p>
-            <h2 id="mkt-preview-title">Desks you can open after sign-in</h2>
-          </div>
-          <div className="mkt-preview-frame">
-            <span className="mkt-preview-scan" aria-hidden="true" />
-            <aside className="mkt-prev-nav">
-              <div className="mark">
-                <img src="/brand/logo.png?v=2" alt="" />
-                TERMINAL
-              </div>
-              {DESKS.map((item) => (
-                <button
-                  type="button"
-                  className={item.id === desk.id ? 'on' : ''}
-                  key={item.id}
-                  onClick={() => pickDesk(item.id)}
-                >
-                  <Ico d={item.d} size={15} />
-                  {item.label}
-                </button>
-              ))}
-              <button type="button" className="mkt-prev-all" onClick={onLogin}>
-                <Ico d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z" size={15} />
-                All Desks
-              </button>
-            </aside>
-            {desk.demo ? (
-              <div className="mkt-prev-table mkt-prev-demo">
-                <div className="mkt-prev-top">
-                  <h3>
-                    {desk.title}
-                    <span className="mkt-prev-live">
-                      <i />
-                      DEMO
-                    </span>
-                  </h3>
-                </div>
-                <BillAiDropDemo />
-                <button type="button" className="mkt-prev-more" onClick={onLogin}>
-                  Try it in the terminal →
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className="mkt-prev-table">
-                  <div className="mkt-prev-top">
-                    <h3>
-                      {desk.title}
-                      <span className="mkt-prev-live">
-                        <i />
-                        LIVE FEED
-                      </span>
-                    </h3>
-                    <div className="mkt-prev-search">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="11" cy="11" r="7" />
-                        <path d="M20 20l-3-3" />
-                      </svg>
-                      <input
-                        value={q}
-                        placeholder="Filter this table"
-                        onChange={(e) => {
-                          setQ(e.target.value);
-                          setPicked(0);
-                        }}
-                      />
-                    </div>
-                  </div>
-                  <div className="mkt-prev-cols">
-                    <span>{desk.cols[0]}</span>
-                    <span>{desk.cols[1]}</span>
-                  </div>
-                  {rows.length === 0 && <div className="mkt-prev-empty">No rows match this filter.</div>}
-                  {rows.map(([name, house], i) => (
-                    <button type="button" className={`mkt-prev-row${i === picked ? ' on' : ''}`} key={name} onClick={() => setPicked(i)}>
-                      <b>{name}</b>
-                      <span>{house}</span>
-                    </button>
-                  ))}
-                  <button type="button" className="mkt-prev-more" onClick={onLogin}>
-                    {desk.more}
-                  </button>
-                </div>
-                <aside className="mkt-prev-rail">
-                  <div className="mkt-prev-tabs">
-                    <span className="mkt-prev-tab-static">Key indicators</span>
-                  </div>
-                  <div className="mkt-kpi-grid">
-                    {desk.kpis.map(([n, tone, lab]) => (
-                      <div className="mkt-kpi" key={lab}>
-                        <strong className={tone}>{n}</strong>
-                        <small>{lab}</small>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mkt-bar-lab">STATUS BY STAGE</div>
-                  {desk.bars.map(([lab, count, pct, width, tone]) => (
-                    <div className="mkt-bar" key={`${desk.id}-${lab}`}>
-                      <span>{lab}</span>
-                      <i>
-                        <b className={tone} style={{ width: `${width}%` }} />
-                      </i>
-                      <em>
-                        {count.toLocaleString()} ({pct})
-                      </em>
-                    </div>
-                  ))}
-                  <p className="mkt-ai" style={{ marginTop: 12 }}>
-                    {desk.note}
-                  </p>
-                </aside>
-              </>
-            )}
           </div>
         </div>
       </section>
