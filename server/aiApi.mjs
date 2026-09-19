@@ -13,6 +13,7 @@ import { loadEnv } from './loadEnv.mjs';
 import { entryFingerprint, getCachedDeskBrief, runDeskBrief } from './deskBrief.mjs';
 import { shippedPersonaPrompt } from './personas.mjs';
 import { briefFromExtract, extractBuffer, extractSource } from './sourceExtract.mjs';
+import { isExtractableSourceUrl, isHubListingUrl, rowRecordText } from '../src/lib/sourceUrls.js';
 
 loadEnv();
 const CHAT_MS = 90_000;
@@ -23,14 +24,17 @@ You help the analyst understand the substance of attached desk rows, PDFs, and C
 
 Grounding and honesty (mandatory):
 - Use ONLY facts present in the attached terminal data for this turn. That block is the record.
-- If a figure, date, actor, citation, URL, or claim is not in the record, say exactly: **Not in record.** Do not invent it.
+- Terminal row columns / "record_text" / "### File … (terminal columns)" ARE the record when no PDF body is present. Answer from those fields (name, house, stage, ministry, dates, status, etc.).
+- A registry hub URL (e.g. sansad legislation index) is provenance only — it is NOT the document body. Never claim you "read the bill/PDF" if only a hub URL is attached.
+- Prefer extracted PDF/HTML document text when present under "### File …". If extract failed, say so under Gaps and still use the terminal columns.
+- If a figure, date, actor, citation, or claim is not in the record, say exactly: **Not in record.** Do not invent it.
 - Never invent citations, footnotes, case names, bill numbers, URLs, or "according to…" attributions that are not in the attached material.
 - Put evidence first: quote or paraphrase the record, then interpret. Never lead with speculation.
 - Never invent figures. If a field is missing, say so in one short line.
 
 How to answer:
 - Explain the data itself in clear prose (countries, figures, dates, status, what changed).
-- Example: if Germany trade is attached, talk about merchandise exports, trade-to-GDP, year, and what that means — not about JSON fields or APIs.
+- Example: if a bill row is attached, state the bill name, house, stage, sector, and introduction date from the columns — not that you only saw a URL.
 - Format with short markdown: bold labels, bullets, and short headings (e.g. **Evidence**, **Read**, **Gaps**).
 - Do NOT paste raw JSON, field dumps, adapter names, API endpoints, or "packet / terminal context" meta into the reply.
 - Name the organisation in words (e.g. World Bank, WTO) when the record supports it; give a URL only if it appears in the attachment or the user asks for sources.
@@ -112,6 +116,13 @@ async function loadFile(file) {
     if (file?.text) return { ...file, text: String(file.text).slice(0, MAX_TEXT) };
     return file;
   }
+  if (isHubListingUrl(url) || !isExtractableSourceUrl(url)) {
+    return {
+      ...file,
+      url,
+      error: 'Registry hub / non-document URL — not fetched. Use terminal row columns as the record.',
+    };
+  }
   try {
     const got = await extractSource(url);
     return {
@@ -131,9 +142,8 @@ async function loadFile(file) {
 function contextBlock(attachments, files, { focus = 'attached', deskContext = null, selection = null } = {}) {
   const f = String(focus || 'attached').toLowerCase();
   const parts = [`Retrieval scope for this turn: ${scopeLabel(f)}.`];
-
   const includeAttach = true;
-  const includeSelection = f === 'selection' || f === 'broad';
+  const includeSelection = f === 'selection' || f === 'broad' || Boolean(selection);
   const includeDesk = f === 'desk' || f === 'broad';
 
   if (includeAttach) {
@@ -141,11 +151,31 @@ function contextBlock(attachments, files, { focus = 'attached', deskContext = nu
       parts.push(`\n### ${a.kind || 'item'}: ${a.title || a.feature || 'untitled'}`);
       if (a.feature) parts.push(`Desk module: ${a.feature}`);
       if (a.tab) parts.push(`Tab: ${a.tab}`);
-      if (a.preview) parts.push(JSON.stringify(a.preview, null, 0).slice(0, 24_000));
-      if (a.urls?.length) parts.push(`URLs: ${a.urls.join('\n')}`);
+      if (a.preview?.document_status) parts.push(`Document status: ${a.preview.document_status}`);
+      if (a.preview?.record_text) {
+        parts.push(`\n### Terminal columns for ${a.title || 'record'}\n${String(a.preview.record_text).slice(0, 8_000)}`);
+      } else if (a.preview) {
+        const { related_records, timeline, attached_documents, provenance_hubs, document_status, record_text, ...cols } =
+          a.preview;
+        const colText = rowRecordText(cols, { title: a.title || '' });
+        if (colText) parts.push(`\n### Terminal columns for ${a.title || 'record'}\n${colText.slice(0, 8_000)}`);
+        if (related_records?.length) {
+          parts.push(`Related records: ${JSON.stringify(related_records).slice(0, 6_000)}`);
+        }
+        if (timeline?.length) parts.push(`Timeline: ${JSON.stringify(timeline).slice(0, 3_000)}`);
+      }
+      if (a.urls?.length) {
+        const hubs = a.urls.filter((u) => isHubListingUrl(u));
+        const docs = a.urls.filter((u) => !isHubListingUrl(u));
+        if (docs.length) parts.push(`Document URLs: ${docs.join('\n')}`);
+        if (hubs.length) parts.push(`Provenance hub (not document body): ${hubs.join('\n')}`);
+      }
     }
     for (const file of files || []) {
-      if (file?.error) parts.push(`\n### File ${file.name || file.url || file.kind} failed to open: ${file.error}`);
+      if (file?.error && !file?.text) {
+        parts.push(`\n### File ${file.name || file.url || file.kind} note: ${file.error}`);
+        continue;
+      }
       if (file?.text) {
         parts.push(`\n### File ${file.name || file.url || file.kind}\n${String(file.text).slice(0, 40_000)}`);
         continue;
@@ -159,8 +189,12 @@ function contextBlock(attachments, files, { focus = 'attached', deskContext = nu
   }
 
   if (includeSelection && selection && typeof selection === 'object') {
-    parts.push(`\n### selected_row: ${selection.title || selection.name || selection.bill_name || selection.conflict_name || 'row'}`);
-    parts.push(JSON.stringify(selection, null, 0).slice(0, 16_000));
+    parts.push(
+      `\n### selected_row: ${selection.title || selection.name || selection.bill_name || selection.conflict_name || 'row'}`,
+    );
+    const selText = selection.record_text || rowRecordText(selection);
+    if (selText) parts.push(selText.slice(0, 8_000));
+    else parts.push(JSON.stringify(selection, null, 0).slice(0, 16_000));
   }
 
   if (includeDesk && deskContext && typeof deskContext === 'object') {
@@ -361,7 +395,13 @@ export async function runAiChat(payload = {}) {
   const deskContext = payload.deskContext && typeof payload.deskContext === 'object' ? payload.deskContext : null;
 
   const files = [];
-  for (const f of rawFiles.slice(0, 8)) {
+  // Prefer files that already carry text; only fetch a few extractable URLs (Vercel time budget).
+  const ordered = [...rawFiles].sort((a, b) => {
+    const at = a?.text ? 0 : a?.base64 ? 1 : isExtractableSourceUrl(a?.url) ? 2 : 3;
+    const bt = b?.text ? 0 : b?.base64 ? 1 : isExtractableSourceUrl(b?.url) ? 2 : 3;
+    return at - bt;
+  });
+  for (const f of ordered.slice(0, 6)) {
     try {
       files.push(await loadFile(f));
     } catch (err) {
@@ -430,6 +470,17 @@ export async function handleAiApi(req, res, next) {
     if (req.method !== 'GET') return json(res, { ok: false, error: 'GET only' }, 405);
     try {
       const target = url.searchParams.get('url') || '';
+      if (isHubListingUrl(target) || !isExtractableSourceUrl(target)) {
+        return json(
+          res,
+          {
+            ok: false,
+            error: 'URL is a registry hub or non-document link — not extractable as source body',
+            url: target,
+          },
+          400,
+        );
+      }
       const got = await extractSource(target);
       const title = url.searchParams.get('title') || '';
       const brief = briefFromExtract(got.text || '', { title, max: 1100 });

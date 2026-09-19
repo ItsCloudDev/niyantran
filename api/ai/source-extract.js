@@ -1,4 +1,5 @@
 import { briefFromExtract, extractSource } from '../../server/sourceExtract.mjs';
+import { isExtractableSourceUrl, isHubListingUrl } from '../../src/lib/sourceUrls.js';
 
 export const config = { maxDuration: 45 };
 
@@ -11,6 +12,14 @@ export default async function handler(req, res) {
   try {
     const target = String(req.query?.url || '');
     const title = String(req.query?.title || '');
+    if (!target || isHubListingUrl(target) || !isExtractableSourceUrl(target)) {
+      res.status(400).json({
+        ok: false,
+        error: 'URL is a registry hub or non-document link — not extractable as source body',
+        url: target,
+      });
+      return;
+    }
     const got = await extractSource(target);
     const brief = briefFromExtract(got.text || '', { title, max: 1100 });
     res.status(200).json({

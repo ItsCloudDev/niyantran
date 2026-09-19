@@ -107,7 +107,13 @@ function slimRow(row) {
     if (typeof v === 'object') continue;
     out[k] = String(v).slice(0, 500);
   }
-  return Object.keys(out).length ? out : null;
+  if (!Object.keys(out).length) return null;
+  out.record_text = Object.entries(out)
+    .filter(([k]) => k !== 'record_text')
+    .map(([k, v]) => `${k}: ${v}`)
+    .join('\n')
+    .slice(0, 4_000);
+  return out;
 }
 
 function buildDeskContext(feed, tab, featureName) {
@@ -342,10 +348,13 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
       if (seed.droppedFiles?.length && !cancelled) addChatAttachments(id, seed.droppedFiles);
       if (seed.row) {
         const bits = await materializeAiDrop(
-          { kind: 'row', row: seed.row, feature: featureName, tab, title: seed.row.title || seed.row.name },
+          { kind: 'row', row: seed.row, feature: featureName, tab, title: seed.row.title || seed.row.name || seed.row.bill_name },
           { feed, feature: featureName },
         );
-        if (!cancelled) addChatAttachments(id, bits);
+        if (!cancelled) {
+          addChatAttachments(id, bits);
+          setFocus('selection');
+        }
       } else if (seed.attachFeed && feed) {
         const bits = await materializeAiDrop({ kind: 'feed', feature: feed.feature, tab }, { feed });
         if (!cancelled) addChatAttachments(id, bits);
@@ -446,6 +455,8 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
         content: m.content,
       }));
       const model = AI_PROVIDERS.find((p) => p.id === providerId && p.enabled) || activeAiProvider();
+      const hasRowPin = (pins || []).some((a) => a.kind === 'row');
+      const useSelection = focus === 'selection' || focus === 'broad' || hasRowPin || Boolean(selected);
       const out = await sendAiChat({
         roleId: current?.roleId || 'AUTO',
         messages: history.filter((m) => m.role === 'user' || m.role === 'assistant'),
@@ -453,9 +464,9 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
         userType: sessionUser()?.type,
         model: model.model,
         provider: model.provider,
-        focus,
+        focus: hasRowPin && focus === 'attached' ? 'selection' : focus,
         workMode,
-        selection: focus === 'selection' || focus === 'broad' ? slimRow(selected) : null,
+        selection: useSelection ? slimRow(selected) || (pins.find((a) => a.kind === 'row')?.preview ?? null) : null,
         deskContext: focus === 'desk' || focus === 'broad' ? buildDeskContext(feed, tab, featureName) : null,
       });
       appendAiMessage(id, {
