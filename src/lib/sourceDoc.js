@@ -11,7 +11,7 @@ import {
   rowRecordText,
 } from './sourceUrls.js';
 
-export { collectRowUrls, isExtractableSourceUrl, isHubListingUrl, rowRecordText } from './sourceUrls.js';
+export { collectRowUrls, isExtractableSourceUrl, isHubListingUrl, rowPinKey, rowRecordText } from './sourceUrls.js';
 
 function hostOf(u) {
   try {

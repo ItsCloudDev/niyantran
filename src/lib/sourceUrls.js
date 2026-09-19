@@ -1,6 +1,7 @@
 /**
  * Shared URL ranking for AI grounding / source extract.
  * Pure helpers — safe for browser and Node (Vite + Vercel).
+ * Applies to every desk row, not only Bill Passage.
  */
 
 const URL_KEYS = [
@@ -27,45 +28,75 @@ export function isGoogleNewsUrl(u) {
 
 /**
  * Registry / listing hubs that are provenance only — not the record body.
- * Fetching these on Vercel just returns chrome, so the model "reads a URL".
+ * Fetching these just returns chrome, so the model appears to "only read a URL".
  */
 export function isHubListingUrl(u) {
-  const s = String(u || '').trim().toLowerCase();
+  const s = String(u || '').trim();
   if (!s) return true;
   if (isGoogleNewsUrl(s)) return true;
-  // Sansad legislation index (every bill row currently points here)
-  if (/sansad\.(in|gov\.in)\/(?:rs|ls)?\/?legislation\/?$/i.test(s)) return true;
-  if (/sansad\.(in|gov\.in)\/(?:rs|ls)?\/?legislation\/?(?:\?|$)/i.test(s) && !/\.pdf(\?|$)/i.test(s) && !/getfile/i.test(s)) {
+  let url;
+  try {
+    url = new URL(s);
+  } catch {
     return true;
   }
-  // Generic open-data / search hubs without a document path
-  if (/^https?:\/\/(www\.)?(prsindia\.org|indiacode\.nic\.in)\/?$/i.test(s)) return true;
-  if (/egazette\.gov\.in\/?$/i.test(s)) return true;
+  const host = url.hostname.replace(/^www\./, '').toLowerCase();
+  const path = (url.pathname || '/').replace(/\/+$/, '') || '/';
+  const parts = path.split('/').filter(Boolean);
+  const q = url.search || '';
+
+  if (parts.length === 0) return true;
+
+  if (/sansad\.(in|gov\.in)$/i.test(host) && /\/(?:rs|ls)?\/?legislation$/i.test(path) && !/\.pdf$/i.test(path)) {
+    return true;
+  }
+  if (/sci\.gov\.in$/i.test(host) && /\/view-pdf$/i.test(path)) return true;
+  if (/rbi\.org\.in$/i.test(host) && /BS_PressReleaseDisplay\.aspx$/i.test(path) && !q) return true;
+  if (/pib\.gov\.in$/i.test(host) && /PressReleasePage\.aspx$/i.test(path) && !/[?&](PRID|prid|id)=/i.test(q)) return true;
+  if (
+    /^(nseindia\.com|prsindia\.org|indiacode\.nic\.in|egazette\.gov\.in|powermin\.gov\.in|commerce\.gov\.in|understandingwar\.org|acleddata\.com)$/i.test(
+      host,
+    ) &&
+    parts.length <= 1
+  ) {
+    return true;
+  }
+  if (/api\.fda\.gov$/i.test(host) && /enforcement\.json$/i.test(path)) return true;
+
   return false;
 }
 
 export function sourceKindHint(u) {
   const path = String(u || '').split('?')[0].toLowerCase();
-  if (/\.pdf$/i.test(path) || /getfile/i.test(path) && /pdf/i.test(path)) return 'pdf';
+  if (/\.pdf$/i.test(path) || (/getfile/i.test(path) && /pdf/i.test(String(u)))) return 'pdf';
   if (/\.xlsx?$/i.test(path)) return 'sheet';
   if (/\.csv$/i.test(path)) return 'csv';
   if (/\.docx?$/i.test(path)) return 'doc';
-  if (/\/annex\/|\/questions\/|gazette|circular|notification/i.test(path)) return 'page';
+  if (/\/annex\/|\/questions\/|gazette|circular|notification|importalert_/i.test(path)) return 'page';
   return 'page';
 }
 
-/** True when the URL is worth fetching for body text. */
+/** True when the URL is worth fetching for body text (any desk). */
 export function isExtractableSourceUrl(u) {
   if (!isHttpUrl(u) || isHubListingUrl(u)) return false;
   const kind = sourceKindHint(u);
   if (kind === 'pdf' || kind === 'sheet' || kind === 'csv' || kind === 'doc') return true;
-  // Specific document/detail paths (not bare hubs)
-  const path = String(u).split('?')[0];
-  if (/getfile|\.pdf|\/annex\/|\/billtext|\/bills\/|circular|master.?direction|notification/i.test(path)) return true;
-  // Allow HTML detail pages with a meaningful path depth
+  const raw = String(u);
+  const path = raw.split('?')[0];
+  if (
+    /getfile|\.pdf(\?|$)|\/annex\/|\/billtext|\/bills\/|\/uploads\/|\/rdocs\/|tranpdfs|importalert_|PressReleasePage\.aspx\?/i.test(
+      raw,
+    )
+  ) {
+    return true;
+  }
+  if (/circular|master.?direction|notification|consultation|methodology/i.test(path)) return true;
   try {
-    const { pathname } = new URL(u);
-    if ((pathname || '/').split('/').filter(Boolean).length >= 2) return true;
+    const url = new URL(u);
+    const parts = (url.pathname || '/').split('/').filter(Boolean);
+    if (/[?&](id|Id|ID|prid|PRID|releaseid|Relid)=/i.test(url.search || '')) return true;
+    if (parts.length >= 3) return true;
+    if (parts.length >= 2 && !/^(en|scripts|api|cms_ia|ls|rs)$/i.test(parts[0])) return true;
   } catch {
     return false;
   }
@@ -76,12 +107,14 @@ function scoreUrl(u) {
   const kind = sourceKindHint(u);
   if (kind === 'pdf') return 0;
   if (kind === 'sheet' || kind === 'csv' || kind === 'doc') return 1;
-  if (/sansad\.|prsindia|indiacode|egazette|rbi\.org|sebi\.gov/i.test(u) && isExtractableSourceUrl(u)) return 2;
+  if (/sansad\.|prsindia|indiacode|egazette|rbi\.org|rbidocs|sebi\.gov|ibbi\.gov|dgft|mha\.gov/i.test(u) && isExtractableSourceUrl(u)) {
+    return 2;
+  }
   if (isExtractableSourceUrl(u)) return 3;
   return 9;
 }
 
-/** Collect + rank URLs from a desk row. Hubs are excluded from extractable list. */
+/** Collect + rank URLs from any desk row. Hubs are excluded from extractable list. */
 export function collectRowUrls(row, { pdf, source } = {}) {
   const all = [];
   const push = (u) => {
@@ -106,6 +139,10 @@ export function collectRowUrls(row, { pdf, source } = {}) {
       }
     }
     for (let i = 1; i <= 8; i += 1) push(row[`source_${i}_url`]);
+    for (const [k, v] of Object.entries(row)) {
+      if (URL_KEYS.includes(k) || /^source_\d+_url$/.test(k)) continue;
+      if (typeof v === 'string' && isHttpUrl(v)) push(v);
+    }
   }
 
   const extractable = all.filter(isExtractableSourceUrl).sort((a, b) => scoreUrl(a) - scoreUrl(b));
@@ -114,12 +151,11 @@ export function collectRowUrls(row, { pdf, source } = {}) {
     all,
     extractable,
     hubs,
-    /** Top documents to fetch (keep small for Vercel time budget). */
     toFetch: extractable.slice(0, 3),
   };
 }
 
-/** Human-readable record from row columns when no PDF body exists. */
+/** Human-readable record from row columns — works for every desk schema. */
 export function rowRecordText(row, { title = '', max = 6_000 } = {}) {
   if (!row || typeof row !== 'object') return '';
   const skip = new Set([
@@ -130,16 +166,27 @@ export function rowRecordText(row, { title = '', max = 6_000 } = {}) {
     'agenda_json',
     'sources_json',
     'attached_sources',
+    'attached_documents',
+    'provenance_hubs',
+    'record_text',
+    'document_status',
+    'related_records',
+    'timeline',
   ]);
   const lines = [];
   const head =
     title ||
     row.bill_name ||
     row.policy_name ||
+    row.conflict_name ||
     row.title ||
     row.subject ||
     row.name ||
-    row.conflict_name ||
+    row.commodity ||
+    row.theatre ||
+    row.programme ||
+    row.leader ||
+    row.facility ||
     '';
   if (head) lines.push(`Record: ${head}`);
   for (const [k, v] of Object.entries(row)) {
@@ -156,4 +203,23 @@ export function rowRecordText(row, { title = '', max = 6_000 } = {}) {
     if (lines.join('\n').length > max) break;
   }
   return lines.join('\n').slice(0, max);
+}
+
+/** Stable id so we do not double-pin the same desk row. */
+export function rowPinKey(row) {
+  if (!row || typeof row !== 'object') return '';
+  return String(
+    row.id ||
+      row.record_id ||
+      row.bill_number ||
+      row.source_url ||
+      row.bill_name ||
+      row.title ||
+      row.name ||
+      row.subject ||
+      '',
+  )
+    .trim()
+    .toLowerCase()
+    .slice(0, 160);
 }
