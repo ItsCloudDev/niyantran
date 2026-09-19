@@ -1,6 +1,7 @@
 import { TABS, catalogModules, modulesForTier } from '../desks/catalog.js';
 import { fetchFeature } from './featureFeed.js';
 import { githubCsvUrl } from './githubCsv.js';
+import { collectRowUrls, isHubListingUrl, rowRecordText, sourceKindHint } from './sourceUrls.js';
 
 export const AI_DND = 'application/x-niyantran-ai';
 
@@ -53,40 +54,21 @@ export function readAiDrag(e) {
 }
 
 function fileKind(url) {
-  const u = String(url || '').split('?')[0].toLowerCase();
-  if (/\.pdf$/i.test(u)) return 'pdf';
-  if (/\.csv$/i.test(u)) return 'csv';
-  if (/\.(xlsx?|xls)$/i.test(u)) return 'sheet';
-  if (/\.(png|jpe?g|gif|webp|svg)$/i.test(u)) return 'image';
-  if (/\.json$/i.test(u)) return 'json';
-  return '';
+  const k = sourceKindHint(url);
+  return k === 'page' ? '' : k || '';
 }
 
 function urlsFromRow(row) {
   if (!row || typeof row !== 'object') return [];
-  const out = [];
-  const push = (v) => {
-    if (typeof v === 'string' && /^https?:\/\//i.test(v.trim())) out.push(v.trim());
-  };
-  if (typeof row.sources_json === 'string') {
-    try {
-      const arr = JSON.parse(row.sources_json);
-      for (const s of arr || []) {
-        if (Array.isArray(s)) push(s[1]);
-        else if (s && typeof s === 'object') push(s.url || s.href || s.link);
-        else push(s);
-      }
-    } catch {
-      /* ignore */
-    }
-  }
-  for (let i = 1; i <= 8; i += 1) push(row[`source_${i}_url`]);
-  for (const v of Object.values(row)) {
-    if (typeof v === 'string') push(v);
-  }
+  const packed = collectRowUrls(row);
   const gh = githubCsvUrl(row);
-  if (gh) out.push(gh);
-  return [...new Set(out)].slice(0, 16);
+  if (gh && !packed.toFetch.includes(gh) && !isHubListingUrl(gh)) packed.toFetch.unshift(gh);
+  return packed.toFetch.slice(0, 4);
+}
+
+function provenanceUrls(row) {
+  const packed = collectRowUrls(row);
+  return [...packed.hubs, ...packed.all.filter((u) => !packed.toFetch.includes(u))].slice(0, 4);
 }
 
 function rowPreview(row) {
@@ -102,15 +84,20 @@ function rowPreview(row) {
     n += 1;
     if (n >= 32) break;
   }
-  const sources = urlsFromRow(row);
-  if (sources.length) out.attached_sources = sources;
+  const docs = urlsFromRow(row);
+  const hubs = provenanceUrls(row);
+  if (docs.length) out.attached_documents = docs;
+  if (hubs.length) out.provenance_hubs = hubs;
+  out.record_text = rowRecordText(row).slice(0, 4_000);
   return out;
 }
 
 function relatedPacket(row, feed) {
   if (!row || !feed) return {};
   const id = row.id;
-  const name = String(row.conflict_name || row.name || row.title || row.bill_name || '').trim().toLowerCase();
+  const name = String(row.conflict_name || row.name || row.title || row.bill_name || '')
+    .trim()
+    .toLowerCase();
   const related = [];
   const extraUrls = [];
   for (const r of feed.rows || []) {
@@ -144,6 +131,37 @@ function slimRows(rows, cap = 28) {
   return (rows || []).filter((r) => r && r.status !== 'source_status').slice(0, cap).map(rowPreview);
 }
 
+async function hydrateDocumentFiles(urls, title) {
+  const files = [];
+  for (const url of (urls || []).slice(0, 2)) {
+    const kind = fileKind(url) || 'link';
+    try {
+      const q = new URLSearchParams({ url });
+      if (title) q.set('title', title);
+      const res = await fetch(`/api/ai/source-extract?${q}`);
+      const body = await res.json().catch(() => ({}));
+      if (res.ok && body?.ok && String(body.text || '').replace(/\s/g, '').length >= 40) {
+        files.push({
+          url: body.url || url,
+          kind: body.kind || kind,
+          name: title || url,
+          text: String(body.text).slice(0, 80_000),
+        });
+      } else {
+        files.push({
+          url,
+          kind,
+          name: title || url,
+          error: body?.error || 'Could not extract document text',
+        });
+      }
+    } catch (err) {
+      files.push({ url, kind, name: title || url, error: err.message || String(err) });
+    }
+  }
+  return files;
+}
+
 export async function materializeAiDrop(payload, extras = {}) {
   if (!payload) return [];
   const kind = payload.kind || 'feature';
@@ -151,19 +169,48 @@ export async function materializeAiDrop(payload, extras = {}) {
 
   if (kind === 'row' && payload.row) {
     const related = relatedPacket(payload.row, extras.feed);
-    const urls = [...new Set([...urlsFromRow(payload.row), ...(related.extraUrls || [])])].slice(0, 12);
+    const docs = [...new Set([...urlsFromRow(payload.row), ...(related.extraUrls || [])])].slice(0, 3);
+    const hubs = provenanceUrls(payload.row);
+    const title =
+      payload.title ||
+      payload.row.conflict_name ||
+      payload.row.title ||
+      payload.row.name ||
+      payload.row.bill_name ||
+      'Record';
+    const files = docs.length
+      ? await hydrateDocumentFiles(docs, title)
+      : [
+          {
+            kind: 'record',
+            name: title,
+            text: rowRecordText(payload.row, { title }),
+          },
+        ];
+    if (docs.length) {
+      files.unshift({
+        kind: 'record',
+        name: `${title} (terminal columns)`,
+        text: rowRecordText(payload.row, { title }),
+      });
+    }
     attachments.push({
       kind: 'row',
-      title: payload.title || payload.row.conflict_name || payload.row.title || payload.row.name || 'Record',
+      title,
       tab: payload.tab || '',
       feature: payload.feature || extras.feature || extras.feed?.feature || '',
       preview: {
         ...rowPreview(payload.row),
         related_records: related.related_records,
         timeline: related.timeline,
+        document_status: docs.length
+          ? 'Source document URL(s) attached — extracted when reachable.'
+          : hubs.length
+            ? 'No document body on file — registry hub URL is provenance only. Answer from terminal columns.'
+            : 'No source URL on file — answer from terminal columns.',
       },
-      urls,
-      files: urls.map((url) => ({ url, kind: fileKind(url) || 'link' })),
+      urls: docs.length ? docs : hubs.slice(0, 1),
+      files,
     });
     return attachments;
   }
@@ -184,7 +231,7 @@ export async function materializeAiDrop(payload, extras = {}) {
   }
 
   if (kind === 'feed' && extras.feed?.rows?.length) {
-    const urls = [...new Set((extras.feed.rows || []).flatMap(urlsFromRow))].slice(0, 8);
+    const urls = [...new Set((extras.feed.rows || []).flatMap(urlsFromRow))].slice(0, 4);
     attachments.push({
       kind: 'feed',
       title: extras.feed.feature || payload.feature || 'Current feed',
@@ -209,7 +256,9 @@ export async function materializeAiDrop(payload, extras = {}) {
     } catch (err) {
       note = err.message || 'Feed unavailable';
     }
-    const urls = [...new Set((payload.urls || []).concat(rows.flatMap((r) => r.source_url || r.url || []).filter(Boolean)))].slice(0, 8);
+    const urls = [
+      ...new Set((payload.urls || []).concat(rows.flatMap((r) => r.attached_documents || []).flat()).filter(Boolean)),
+    ].slice(0, 4);
     attachments.push({
       kind: 'feature',
       title: feature,

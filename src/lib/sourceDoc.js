@@ -3,27 +3,15 @@
  * Used by BillRecordPane / RecordDetail briefs and DeskIntel grounding.
  */
 
-const URL_KEYS = [
-  'pdf_url',
-  'document_url',
-  'doc_url',
-  'file_url',
-  'attachment_url',
-  'detail_url',
-  'html_url',
-  'source_url',
-  'url',
-  'link',
-  'href',
-];
+import {
+  collectRowUrls,
+  isExtractableSourceUrl,
+  isHttpUrl,
+  isHubListingUrl,
+  rowRecordText,
+} from './sourceUrls.js';
 
-function isHttp(u) {
-  return typeof u === 'string' && /^https?:\/\//i.test(u.trim());
-}
-
-function isGoogleNews(u) {
-  return /news\.google\.com/i.test(String(u || ''));
-}
+export { collectRowUrls, isExtractableSourceUrl, isHubListingUrl, rowRecordText } from './sourceUrls.js';
 
 function hostOf(u) {
   try {
@@ -33,52 +21,10 @@ function hostOf(u) {
   }
 }
 
-function kindHint(u) {
-  const path = String(u || '').split('?')[0].toLowerCase();
-  if (/\.pdf$/i.test(path)) return 'pdf';
-  if (/\.xlsx?$/i.test(path)) return 'sheet';
-  if (/\.csv$/i.test(path)) return 'csv';
-  if (/\.docx?$/i.test(path)) return 'doc';
-  return 'page';
-}
-
 /** Prefer PDFs / documents over listing pages. */
 export function sourceUrlsForRow(row, { pdf, source } = {}) {
-  const out = [];
-  const push = (u) => {
-    const s = String(u || '').trim();
-    if (!isHttp(s) || isGoogleNews(s)) return;
-    if (!out.includes(s)) out.push(s);
-  };
-  push(pdf);
-  push(source);
-  for (const k of URL_KEYS) push(row?.[k]);
-  if (typeof row?.sources_json === 'string') {
-    try {
-      const arr = JSON.parse(row.sources_json);
-      for (const s of arr || []) {
-        if (Array.isArray(s)) push(s[1]);
-        else if (s && typeof s === 'object') push(s.url || s.href || s.link);
-        else push(s);
-      }
-    } catch {
-      /* ignore */
-    }
-  }
-  for (let i = 1; i <= 6; i += 1) push(row?.[`source_${i}_url`]);
-
-  return out
-    .sort((a, b) => {
-      const score = (u) => {
-        const k = kindHint(u);
-        if (k === 'pdf') return 0;
-        if (k === 'sheet' || k === 'csv' || k === 'doc') return 1;
-        if (/sansad\.gov\.in|prsindia|indiacode|egazette|rbi\.org|sebi\.gov/i.test(u)) return 2;
-        return 3;
-      };
-      return score(a) - score(b);
-    })
-    .slice(0, 4);
+  const { toFetch, extractable, all } = collectRowUrls(row, { pdf, source });
+  return toFetch.length ? toFetch : extractable.length ? extractable.slice(0, 4) : all.filter((u) => !isHubListingUrl(u)).slice(0, 2);
 }
 
 export function structuralBrief(row, { noun = 'record', name = '' } = {}) {
@@ -100,9 +46,16 @@ export function structuralBrief(row, { noun = 'record', name = '' } = {}) {
   if (stage) bits.push(`Stage / type: ${stage}.`);
   if (subject) bits.push(`Subject: ${subject}.`);
   if (when) bits.push(`Date on record: ${String(when).slice(0, 16)}.`);
-  bits.push(
-    `No authored analysis brief is on file for this ${noun}. Open the source document when a readable PDF or page is linked.`,
-  );
+  const urls = collectRowUrls(row);
+  if (!urls.toFetch.length) {
+    bits.push(
+      `No downloadable source document is linked for this ${noun} — only terminal columns (and optionally a registry hub URL) are on file.`,
+    );
+  } else {
+    bits.push(
+      `No authored analysis brief is on file for this ${noun}. Open the source document when a readable PDF or page is linked.`,
+    );
+  }
   return bits.join(' ');
 }
 
@@ -110,7 +63,10 @@ export function structuralBrief(row, { noun = 'record', name = '' } = {}) {
  * @returns {Promise<{ ok: boolean, url?: string, kind?: string, text?: string, brief?: string, error?: string, host?: string }>}
  */
 export async function fetchSourceExtract(url, { title = '', signal } = {}) {
-  if (!isHttp(url)) return { ok: false, error: 'No URL' };
+  if (!isHttpUrl(url)) return { ok: false, error: 'No URL' };
+  if (isHubListingUrl(url)) {
+    return { ok: false, url, error: 'Registry hub URL — not a document body', host: hostOf(url) };
+  }
   const q = new URLSearchParams({ url: url.trim() });
   if (title) q.set('title', title);
   const res = await fetch(`/api/ai/source-extract?${q}`, { signal });
@@ -144,12 +100,13 @@ export async function resolveSourceBrief(row, { pdf, source, title, noun = 'reco
     '';
   const urls = sourceUrlsForRow(row, { pdf, source });
   if (!urls.length) {
+    const columns = rowRecordText(row, { title: name });
     return {
       text: structuralBrief(row, { noun, name }),
       origin: 'structural',
       host: '',
-      url: '',
-      extract: '',
+      url: collectRowUrls(row, { pdf, source }).hubs[0] || '',
+      extract: columns,
     };
   }
 
@@ -183,16 +140,17 @@ export async function resolveSourceBrief(row, { pdf, source, title, noun = 'reco
     }
   }
 
+  const columns = rowRecordText(row, { title: name });
   return {
     text: `${structuralBrief(row, { noun, name })}${
       lastErr
-        ? ` Could not read source text (${lastErr}). Use View PDF / Source when the document is available.`
+        ? ` Could not read a source document (${lastErr}). Answering from terminal columns when present.`
         : ''
     }`,
     origin: 'structural',
     host: '',
     url: urls[0] || '',
-    extract: '',
+    extract: columns,
     error: lastErr,
   };
 }
