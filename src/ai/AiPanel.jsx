@@ -219,6 +219,20 @@ function Ico({ name, size = 16 }) {
           <path d="M12 10v6M12 7h.01" />
         </svg>
       );
+    case 'history':
+      return (
+        <svg {...common}>
+          <path d="M3 12a9 9 0 109-9 9.75 9.75 0 00-6.74 2.74L3 8" />
+          <path d="M3 3v5h5" />
+          <path d="M12 7v5l3 2" />
+        </svg>
+      );
+    case 'plus':
+      return (
+        <svg {...common}>
+          <path d="M12 5v14M5 12h14" />
+        </svg>
+      );
     default:
       return null;
   }
@@ -245,6 +259,7 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
   const [modelOpen, setModelOpen] = useState(false);
   const [focusOpen, setFocusOpen] = useState(false);
   const [docsOpen, setDocsOpen] = useState(false);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const [focus, setFocus] = useState(() => {
     try {
       return localStorage.getItem(FOCUS_KEY) || 'attached';
@@ -264,6 +279,7 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
   const fileRef = useRef(null);
   const modelRef = useRef(null);
   const focusRef = useRef(null);
+  const historyRef = useRef(null);
 
   const chat = useMemo(
     () => state.chats.find((c) => c.id === state.activeId) || state.chats[0] || null,
@@ -286,14 +302,15 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
   }, [chat?.messages?.length, busy]);
 
   useEffect(() => {
-    if (!modelOpen && !focusOpen) return undefined;
+    if (!modelOpen && !focusOpen && !historyOpen) return undefined;
     function onDoc(e) {
       if (modelOpen && modelRef.current && !modelRef.current.contains(e.target)) setModelOpen(false);
       if (focusOpen && focusRef.current && !focusRef.current.contains(e.target)) setFocusOpen(false);
+      if (historyOpen && historyRef.current && !historyRef.current.contains(e.target)) setHistoryOpen(false);
     }
     document.addEventListener('mousedown', onDoc);
     return () => document.removeEventListener('mousedown', onDoc);
-  }, [modelOpen, focusOpen]);
+  }, [modelOpen, focusOpen, historyOpen]);
 
   useEffect(() => {
     try {
@@ -468,7 +485,7 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
 
   return (
     <div
-      className={`ai-shell ai-shell-v2${compact ? ' compact' : ''}${dragOver ? ' drop' : ''}${workMode ? ' work' : ''}`}
+      className={`ai-shell ai-shell-v2${compact ? ' compact' : ''}${dragOver ? ' drop' : ''}${workMode ? ' work' : ''}${historyOpen ? ' history-open' : ''}`}
       onDragOver={(e) => {
         e.preventDefault();
         setDragOver(true);
@@ -482,6 +499,108 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
           <b>{hi ? 'एआई अनुसंधान' : 'AI Research'}</b>
         </div>
         <div className="ai-v2-head-actions">
+          <button
+            type="button"
+            className="ai-v2-icon-btn"
+            aria-label={hi ? 'नया अनुसंधान' : 'New research'}
+            title={hi ? 'नया अनुसंधान' : 'New research'}
+            onClick={() => {
+              createAiChat({ roleId: chat?.roleId || 'AUTO' });
+              setHistoryOpen(false);
+              setDocsOpen(false);
+              setModelOpen(false);
+              setFocusOpen(false);
+            }}
+          >
+            <Ico name="plus" size={15} />
+          </button>
+          <div className="ai-v2-history-wrap" ref={historyRef}>
+            <button
+              type="button"
+              className={`ai-v2-icon-btn${historyOpen ? ' on' : ''}`}
+              aria-expanded={historyOpen}
+              aria-label={hi ? 'चैट इतिहास' : 'Chat history'}
+              title={hi ? 'चैट इतिहास' : 'Chat history'}
+              onClick={() => {
+                setHistoryOpen((v) => !v);
+                setDocsOpen(false);
+                setModelOpen(false);
+                setFocusOpen(false);
+              }}
+            >
+              <Ico name="history" size={15} />
+            </button>
+            {historyOpen ? (
+              <>
+                <button
+                  type="button"
+                  className="ai-v2-history-scrim"
+                  aria-label={hi ? 'बंद करें' : 'Close history'}
+                  onClick={() => setHistoryOpen(false)}
+                />
+                <div className="ai-v2-history-pop" role="dialog" aria-label={hi ? 'चैट इतिहास' : 'Chat history'}>
+                  <div className="ai-v2-history-pop-head">
+                    <b>{hi ? 'इतिहास' : 'History'}</b>
+                    <span className="ai-v2-history-count">
+                      {(state.chats || []).length}{' '}
+                      {(state.chats || []).length === 1 ? (hi ? 'चैट' : 'chat') : hi ? 'चैट' : 'chats'}
+                    </span>
+                  </div>
+                  <ul className="ai-v2-history-list">
+                    {(state.chats || []).length ? (
+                      (state.chats || []).map((c) => {
+                        const n = (c.messages || []).length;
+                        const when = c.updatedAt || c.createdAt;
+                        const stamp = when
+                          ? new Date(when).toLocaleString(undefined, {
+                              month: 'short',
+                              day: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                          : '';
+                        return (
+                          <li key={c.id} className={c.id === chat?.id ? 'on' : ''}>
+                            <button
+                              type="button"
+                              className="ai-v2-history-item"
+                              onClick={() => {
+                                setActiveAiChat(c.id);
+                                setHistoryOpen(false);
+                              }}
+                            >
+                              <em>{c.title || (hi ? 'नया अनुसंधान' : 'New research')}</em>
+                              <small>
+                                {stamp}
+                                {n ? ` · ${n} ${hi ? 'संदेश' : n === 1 ? 'message' : 'messages'}` : ''}
+                              </small>
+                            </button>
+                            {(state.chats || []).length > 1 ? (
+                              <button
+                                type="button"
+                                className="ai-v2-history-del"
+                                aria-label={hi ? 'हटाएँ' : 'Delete'}
+                                title={hi ? 'हटाएँ' : 'Delete'}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteAiChat(c.id);
+                                  ensureAiChat();
+                                }}
+                              >
+                                ×
+                              </button>
+                            ) : null}
+                          </li>
+                        );
+                      })
+                    ) : (
+                      <li className="ai-v2-history-empty">{hi ? 'अभी कोई चैट नहीं' : 'No chats yet'}</li>
+                    )}
+                  </ul>
+                </div>
+              </>
+            ) : null}
+          </div>
           <button
             type="button"
             className={`ai-v2-icon-btn${docsOpen ? ' on' : ''}`}
@@ -518,39 +637,6 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
               <li key={line}>{line}</li>
             ))}
           </ul>
-        </div>
-
-        <div className="ai-v2-tabs" role="tablist" aria-label={hi ? 'चैट' : 'Chats'}>
-          <button
-            type="button"
-            className="ai-v2-new"
-            onClick={() => createAiChat({ roleId: chat?.roleId || 'AUTO' })}
-          >
-            <Ico name="doc" size={14} />
-            {hi ? 'नया अनुसंधान' : 'New research'}
-          </button>
-          <div className="ai-v2-tab-scroll">
-            {(state.chats || []).map((c) => (
-              <div key={c.id} className={`ai-v2-tab${c.id === chat?.id ? ' on' : ''}`}>
-                <button type="button" role="tab" aria-selected={c.id === chat?.id} onClick={() => setActiveAiChat(c.id)}>
-                  {c.title || (hi ? 'नया अनुसंधान' : 'New research')}
-                </button>
-                {(state.chats || []).length > 1 ? (
-                  <button
-                    type="button"
-                    className="ai-v2-tab-x"
-                    aria-label="Delete chat"
-                    onClick={() => {
-                      deleteAiChat(c.id);
-                      ensureAiChat();
-                    }}
-                  >
-                    ×
-                  </button>
-                ) : null}
-              </div>
-            ))}
-          </div>
         </div>
 
         <div className="ai-v2-toolbar" aria-label={hi ? 'चैट विकल्प' : 'Chat options'}>
@@ -708,6 +794,7 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
               type="button"
               className={`ai-v2-model-btn${modelOpen ? ' open' : ''}`}
               aria-expanded={modelOpen}
+              aria-label={hi ? 'मॉडल चुनें' : 'Choose model'}
               onClick={() => {
                 setModelOpen((v) => !v);
                 setFocusOpen(false);
@@ -761,22 +848,6 @@ export default function AiPanel({ feed, selected, tab, featureName, lang, seed, 
                 ))}
               </div>
             ) : null}
-          </div>
-          <div className="ai-v2-model-chips" aria-label={hi ? 'मॉडल' : 'Models'}>
-            {AI_PROVIDERS.map((p) => (
-              <button
-                key={p.id}
-                type="button"
-                className={`ai-v2-chip${p.id === picked.id ? ' on' : ''}${p.enabled ? '' : ' locked'}`}
-                disabled={!p.enabled}
-                title={p.hint}
-                onClick={() => selectProvider(p)}
-              >
-                <AiBrandIcon id={p.provider} size={12} />
-                <span>{p.label.replace(/^.*\s-\s*/, '')}</span>
-                {!p.enabled ? <small>{hi ? 'जल्द' : 'Soon'}</small> : null}
-              </button>
-            ))}
           </div>
         </div>
       </div>

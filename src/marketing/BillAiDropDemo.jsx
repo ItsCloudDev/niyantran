@@ -1,64 +1,84 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 const BILLS = [
   'The Finance Bill, 2026',
   'The Boilers Bill, 2024',
   'The Banking Laws (Amendment) Bill, 2024',
+  'The Tribunals Reforms Bill, 2026',
 ];
+
+const CYCLE_MS = 8000;
+/** Swap while card + reply are both hidden (≈86–94% of the CSS cycle). */
+const SWAP_AT_MS = Math.round(CYCLE_MS * 0.88);
 
 /**
  * CR-05 — drag-a-bill-into-AI loop (decorative marketing animation).
- * Honours prefers-reduced-motion via CSS; JS only cycles the label.
+ * Motion is CSS-driven; JS only advances the bill label while the card is invisible.
  */
 export default function BillAiDropDemo() {
   const [idx, setIdx] = useState(0);
-  const [phase, setPhase] = useState('idle'); // idle | drag | drop | reply
+  const [reduced, setReduced] = useState(false);
+  const swapRef = useRef(null);
 
   useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced) {
-      setPhase('reply');
-      return undefined;
-    }
-    let t = 0;
-    const id = setInterval(() => {
-      t = (t + 1) % 8;
-      if (t === 0) {
-        setIdx((n) => (n + 1) % BILLS.length);
-        setPhase('idle');
-      } else if (t === 1 || t === 2) setPhase('drag');
-      else if (t === 3) setPhase('drop');
-      else setPhase('reply');
-    }, 900);
-    return () => clearInterval(id);
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const apply = () => setReduced(mq.matches);
+    apply();
+    mq.addEventListener?.('change', apply);
+    return () => mq.removeEventListener?.('change', apply);
   }, []);
+
+  useEffect(() => {
+    if (reduced) return undefined;
+    const advance = () => setIdx((n) => (n + 1) % BILLS.length);
+    const arm = () => {
+      clearTimeout(swapRef.current);
+      swapRef.current = window.setTimeout(advance, SWAP_AT_MS);
+    };
+    arm();
+    const loop = window.setInterval(arm, CYCLE_MS);
+    return () => {
+      clearInterval(loop);
+      clearTimeout(swapRef.current);
+    };
+  }, [reduced]);
 
   const bill = BILLS[idx];
 
   return (
-    <div className={`mkt-bill-demo phase-${phase}`} aria-hidden="true">
-      <div className="mkt-bill-demo-stage">
-        <div className="mkt-bill-card">
-          <span className="tag">BILL</span>
-          <strong>{bill}</strong>
-          <em>Lok Sabha · introduced</em>
-          <span className="grip">⠿ drag</span>
+    <div className={`mkt-bill-demo${reduced ? ' is-static' : ''}`} aria-hidden="true">
+      <div className="mkt-bill-demo-stage" style={{ '--bill-cycle': `${CYCLE_MS}ms` }}>
+        <div className="mkt-bill-flyer">
+          <div className="mkt-bill-card">
+            <span className="tag">BILL</span>
+            <strong>{bill}</strong>
+            <em>Lok Sabha · introduced</em>
+            <span className="grip">⠿ drag</span>
+          </div>
         </div>
-        <div className="mkt-bill-path" />
-        <div className={`mkt-ai-dock${phase === 'drop' || phase === 'reply' ? ' hot' : ''}`}>
+
+        <svg className="mkt-bill-trail" viewBox="0 0 200 80" preserveAspectRatio="none" aria-hidden="true">
+          <path
+            className="mkt-bill-trail-path"
+            d="M8 40 C 70 8, 130 72, 192 40"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeDasharray="6 8"
+          />
+        </svg>
+
+        <div className="mkt-ai-dock">
           <header>
             <span>Ask AI</span>
             <i />
           </header>
           <div className="drop-zone">
-            {phase === 'idle' || phase === 'drag' ? 'Drop a record here' : null}
-            {phase === 'drop' ? 'Receiving bill…' : null}
-            {phase === 'reply' ? (
-              <p>
-                Linked: passage stage, house, and source columns for <b>{bill}</b>. No recommendation —
-                evidence only.
-              </p>
-            ) : null}
+            <span className="mkt-ai-hint hint-idle">Drop a record here</span>
+            <span className="mkt-ai-hint hint-drop">Receiving bill…</span>
+            <p className="mkt-ai-hint hint-reply">
+              Linked: passage stage, house, and source for <b>{bill}</b>. Evidence only — no recommendation.
+            </p>
           </div>
         </div>
       </div>
